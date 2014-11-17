@@ -1,0 +1,13 @@
+*~
+*.pyc
+*.so
+.*.swp
+*.log
+*.un~
+doc/.build
+doc/_build
+doc/build
+build/
+install
+dist/
+*.egg-info
