@@ -26,14 +26,67 @@ The framework consists of several layers:
   would be to use python sklearn library [7] which already provides broad
   variety of learning algorithms.
 
+Dependencies
+------------
+DCAF currently depends on MongoDB. The MongoDB is object-oriented database. It
+is distributed as a binary package which is available from MongoDB [9] web
+site. Just download appropriate package for your underlying OS and run mongodb
+as following:
+
+```
+port=XXXX # setup your favorite port number
+mongod --fork --dbpath=/path/mongodb/db --port $port --nohttpinterface
+--logpath /path/mongodb/logs/mongodb.log --logappend
+```
+
+The DCAF etc/dcaf.cfg configuration file is place where you'll specify
+your port and database collections.
+
+The pymongo driver [10] is freely available python driver for MongoDB.
+It can be installed via pip or any package management tools on your OS
+as well as normal python package (download, untar, run python setup.py
+install).
+
+Usage
+-----
+To use DCAF package simply setup your environment, see setup.sh for
+example, and run dataframe script as following
+
+```
+# to get some help
+dataframe --help
+Usage: dataframe [options]
+
+Options:
+  -h, --help       show this help message and exit
+  --start=START    Start timestamp
+  --stop=STOP      Stop timestamp
+  --format=FORMAT  Output file format
+  --config=CONFIG  Config file
+
+# to run a script
+dataframe --start=2012-6-26 --stop=2012-7-3
+```
+
 References
 ----------
 
 [1] https://twiki.cern.ch/twiki/bin/view/Main/CMSDataMiningForAnalysisModel
+
 [2] http://www.wikiwand.com/en/Machine_learning
+
 [3] http://www.wikiwand.com/en/Online_machine_learning
+
 [4] http://www.wikiwand.com/en/Vowpal_Wabbit
+
 [5] http://www.wikiwand.com/en/Stochastic_gradient_descent
+
 [6] http://www.wikiwand.com/en/R_(programming_language)
+
 [7] http://scikit-learn.org/
+
 [8] http://0xdata.com/
+
+[9] http://www.mongodb.org/downloads
+
+[10] http://api.mongodb.org/python/current/

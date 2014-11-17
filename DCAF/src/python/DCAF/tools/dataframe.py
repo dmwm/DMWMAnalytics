@@ -26,7 +26,7 @@ class OptionParser():
         self.parser.add_option("--format", action="store", type="string",
             dest="format", default="csv", help="Output file format")
         self.parser.add_option("--config", action="store", type="string",
-            dest="config", default="etc/analytics.cfg", help="Config file")
+            dest="config", default="etc/dcaf.cfg", help="Config file")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
