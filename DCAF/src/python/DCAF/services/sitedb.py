@@ -61,8 +61,8 @@ class SiteDBService(GenericService):
     """
     Helper class to provide DBS service
     """
-    def __init__(self, config=None):
-        GenericService.__init__(self, config)
+    def __init__(self, config=None, verbose=0):
+        GenericService.__init__(self, config, verbose)
         self.name = 'sitedb'
         self.url = 'https://cmsweb.cern.ch/sitedb/data/prod'
         self.storage = StorageManager(config)
