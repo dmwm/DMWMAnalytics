@@ -15,6 +15,17 @@ import sys
 import time
 import hashlib
 
+def popdb_date(tstamp):
+    "Return date in popDB format YYYY-M-D"
+    if  tstamp.find('-') != -1:
+        return tstamp
+    if  len(tstamp)==8: # YYYYMMDD format
+        year = tstamp[:4]
+        month = int(tstamp[4:6])
+        day = int(tstamp[6:8])
+        return '%s-%s-%s' % (year, month, day)
+    return tstamp
+
 def genkey(doc, salt="", truncate=0, method='md5'):
     "Generate hash for given doc and optional salt"
     func = getattr(hashlib, method)
