@@ -21,8 +21,8 @@ class DBSService(GenericService):
     """
     Helper class to provide DBS service
     """
-    def __init__(self, config=None):
-        GenericService.__init__(self, config)
+    def __init__(self, config=None, verbose=0):
+        GenericService.__init__(self, config, verbose)
         self.name = 'dbs'
         self.url = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader/'
         self.storage = StorageManager(config)
@@ -52,6 +52,10 @@ class DBSService(GenericService):
             elif api == 'releases':
                 rec = {'release':row, 'rid':rid}
                 yield rec
+            elif api == 'filesummaries':
+                yield row
+            else:
+                yield row
             rid += 1
 
     def update(self, cname):
@@ -70,6 +74,12 @@ class DBSService(GenericService):
         for row in self.storage.fetch('datasets', spec):
             yield row
 
+    def new_datasets(self, cdate=None):
+        "Return list of new datasets"
+        spec = {'dataset':'/*/*/*', 'detail':'true', 'cdate':cdate}
+        for row in self.fetch('datasets', spec):
+            yield row
+
     def releases(self):
         "Return list of releases"
         spec = {}
@@ -86,6 +96,18 @@ class DBSService(GenericService):
         else:
             return res[0]
 
+    def dataset_summary(self, dataset):
+        "Return dataset summary"
+        # TODO, store dataset summary into analytics db
+        spec = {'dataset':dataset}
+        res = [r for r in self.fetch('filesummaries', spec)]
+        if  not len(res):
+            # TODO look-up dataset in other DBS instances
+            # so far, return zeros
+            return {'num_file':0, 'num_lumi':0, 'num_block':0, 'num_event':0, 'file_size':0}
+        else:
+            return res[0]
+
     def dataset_release_versions(self, dataset):
         "Return dataset release versions"
         url = '%s/releaseversions' % self.url
@@ -93,4 +115,4 @@ class DBSService(GenericService):
         data = json.loads(super(DBSService, self).fetch(url, params))
         for ver in set(data[0]['release_version']):
             row = self.storage.fetch_one('releases', {'release':ver})
-            yield row['rid']
+            yield row['rid'], row['release']
