@@ -14,19 +14,35 @@ import optparse
 
 # package modules
 from DCAF.core.analytics import DCAF
+from DCAF.utils.utils import popdb_date
 
 class OptionParser():
     def __init__(self):
         "User based option parser"
         self.parser = optparse.OptionParser()
+        self.parser.add_option("--fout", action="store", type="string",
+            dest="fout", default="cmscomp.csv", help="Output file")
+        seed = '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'
+        self.parser.add_option("--seed-dataset", action="store", type="string",
+            dest="seed", default=seed,
+            help="Seed dataset, default=%s" % seed)
+        self.parser.add_option("--dbs-extra", action="store", type="int",
+            dest="dbs_extra", default=100,
+            help="Extra datasets from DBS which were not shown in popularityDB")
+        self.parser.add_option("--metric", action="store", type="string",
+            dest="metric", default="naccess",
+            help="Output target metric (naccess by default), supported naccess, nusers, totcpu or python expression of those")
         self.parser.add_option("--start", action="store", type="string",
-            dest="start", default="", help="Start timestamp")
+            dest="start", default="", help="Start timestamp in YYYYMMDD format")
         self.parser.add_option("--stop", action="store", type="string",
-            dest="stop", default="", help="Stop timestamp")
+            dest="stop", default="", help="Stop timestamp in YYYYMMDD format")
+        msg = 'Output file format, deafult csv (supported csv, vw)'
         self.parser.add_option("--format", action="store", type="string",
-            dest="format", default="csv", help="Output file format")
+            dest="dformat", default="csv", help=msg)
         self.parser.add_option("--config", action="store", type="string",
-            dest="config", default="etc/dcaf.cfg", help="Config file")
+            dest="config", default="etc/dcaf.cfg", help="Config file, default etc/dcaf.cfg")
+        self.parser.add_option("--verbose", action="store", type="int",
+            dest="verbose", default=0, help="Verbosity level, default 0")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
@@ -36,11 +52,19 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
 
-    mgr = DCAF(opts.config)
-    time1 = opts.start
-    time2 = opts.stop
-    for row in mgr.dataframe(timeframe=[time1, time2], dformat=opts.format):
-        print row
+    mgr = DCAF(opts.config, opts.verbose)
+    if  opts.start or opts.stop:
+        tframe = [popdb_date(opts.start), popdb_date(opts.stop)]
+    else:
+        tframe = None
+    fout = opts.fout
+    seed = opts.seed
+    dformat = opts.dformat
+    metric = opts.metric
+    dbs_extra = opts.dbs_extra
+    with open(opts.fout, 'w') as ostream:
+        for row in mgr.dataframe(tframe, seed, dformat, metric, dbs_extra):
+            ostream.write(row+'\n')
 
 if __name__ == '__main__':
     main()
