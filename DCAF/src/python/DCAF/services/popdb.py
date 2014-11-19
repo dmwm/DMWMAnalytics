@@ -22,8 +22,8 @@ class PopDBService(GenericService):
     """
     Helper class to provide Popularity service
     """
-    def __init__(self, config=None):
-        GenericService.__init__(self, config)
+    def __init__(self, config=None, verbose=0):
+        GenericService.__init__(self, config, verbose)
         self.name = 'popdb'
         self.url = 'https://cms-popularity.cern.ch/popdb/popularity/'
         self.storage = StorageManager(config)
@@ -32,7 +32,7 @@ class PopDBService(GenericService):
     def fetch(self, api, params=None):
         "Fetch data for given api"
         url = '%s/%s' % (self.url, api)
-        data = json.loads(getdata(url, self.ckey, self.cert))
+        data = json.loads(getdata(url, self.ckey, self.cert, debug=self.verbose))
         for row in data['DATA']:
             yield row
 
@@ -48,7 +48,9 @@ class PopDBService(GenericService):
         params = {'tstart':time1, 'tstop':time2}
         res = self.fetch(api, params)
         for row in res:
-            rec = dict(naccess=row['NACC'], totcpu=row['TOTCPU'],
-                    nusers=row['NUSERS'], dataset=row['COLLNAME'])
+            rec = dict(naccess=float(row['RNACC'])/100,
+                    totcpu=float(row['RTOTCPU'])/100,
+                    nusers=float(row['RNUSERS'])/100,
+                    dataset=row['COLLNAME'])
             yield rec
 
