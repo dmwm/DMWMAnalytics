@@ -21,10 +21,10 @@ class PhedexService(GenericService):
     """
     Helper class to provide Phedex service
     """
-    def __init__(self, config=None):
+    def __init__(self, config=None, verbose=0):
         if  not config:
             config = {}
-        GenericService.__init__(self, config)
+        GenericService.__init__(self, config, verbose)
         self.name = 'phedex'
         self.url = 'https://cmsweb.cern.ch/phedex/datasvc/json/prod'
         self.storage = StorageManager(config)
@@ -49,7 +49,7 @@ class PhedexService(GenericService):
         res = set([r for r in self.fetch('replicas', spec)])
         for node in res:
             row = self.storage.fetch_one('sites', {'site':node})
-            yield row['rid']
+            yield row['rid'], row['site']
 
 def test():
     uri = 'mongodb://localhost:8230'
