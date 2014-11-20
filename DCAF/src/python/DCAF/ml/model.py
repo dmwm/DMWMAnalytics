@@ -26,7 +26,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 
 # local modules
-from DCAF.ml.utils import OptionParser, normalize
+from DCAF.ml.utils import OptionParser, normalize, logloss, GLF
 from DCAF.ml.clf import classifiers, param_search, crossvalidation, print_clf_report
 
 def get_auc(labels, predictions):
@@ -63,8 +63,11 @@ def factorize(col, xdf, sdf=None):
 
 def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
           crossval=None, verbose=False):
-    "Model for given plan"
-    print "Construct model %s" % clf_name
+    """
+    Build and run ML algorihtm for given train/test dataframe
+    and classifier name. The classifiers are defined externally
+    in DCAF.ml.clf module.
+    """
 
     # read data and normalize it
     drops = []
@@ -117,7 +120,13 @@ def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
         bfeatures = best_features(xdf, clf)
     fit = clf.fit(x_train, y_train)
     predictions = fit.predict(x_rest)
-    print "predictions", predictions
+    loss = 0
+    tot = 0
+    for pval, yval in zip(predictions, y_rest):
+        print "predict value %s, real value %s" % (pval, yval)
+        loss += logloss(pval, yval)
+        tot += 1
+    print "Final Logloss", loss/tot
 #    print_clf_report(y_rest, predictions)
 
     # test data
