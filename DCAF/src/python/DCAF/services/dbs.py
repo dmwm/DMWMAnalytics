@@ -14,6 +14,7 @@ from   types import InstanceType
 # package modules
 import DCAF.utils.jsonwrapper as json
 from DCAF.utils.url_utils import getdata
+from DCAF.utils.utils import dates_from_today
 from DCAF.services.generic import GenericService
 from DCAF.core.storage import StorageManager
 
@@ -60,11 +61,14 @@ class DBSService(GenericService):
 
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
-        print "%s update %s" % (self.name, cname)
+        if  self.verbose:
+            print "%s update %s" % (self.name, cname)
         if  cname == 'datasets':
+            self.storage.cleanup('datasets')
             docs = self.fetch('datasets', {'dataset':'/*/*/*', 'detail':'true'})
             self.storage.insert('datasets', docs)
         elif cname == 'releases':
+            self.storage.cleanup('releases')
             docs = self.fetch('releases')
             self.storage.insert('releases', docs)
 
@@ -74,9 +78,11 @@ class DBSService(GenericService):
         for row in self.storage.fetch('datasets', spec):
             yield row
 
-    def new_datasets(self, cdate=None):
+    def new_datasets(self, ndays=7):
         "Return list of new datasets"
-        spec = {'dataset':'/*/*/*', 'detail':'true', 'cdate':cdate}
+        cdate1, cdate2 = dates_from_today(ndays)
+        spec = {'dataset':'/*/*/*', 'detail':'false',
+                'min_cdate':cdate1, 'max_cdate':cdate2}
         for row in self.fetch('datasets', spec):
             yield row
 
