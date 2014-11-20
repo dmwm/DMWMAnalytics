@@ -26,53 +26,70 @@ from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 
 # local modules
-from utils import OptionParser, normalize
-from clf import classifiers, param_search, crossvalidation, print_clf_report
+from DCAF.ml.utils import OptionParser, normalize
+from DCAF.ml.clf import classifiers, param_search, crossvalidation, print_clf_report
 
 def get_auc(labels, predictions):
     fpr, tpr, thresholds = metrics.roc_curve(labels, predictions, pos_label=1)
     auc = metrics.auc(fpr,tpr)
     return auc
 
-def read_data(fname='data/train.csv', **kwds):
+def read_data(fname, drops=[]):
     "Read and return processed data frame"
     xdf = pd.read_csv(fname)
     # fill NAs
     xdf = xdf.fillna(0)
     # drop fields
-    drops = []
     if  drops:
         xdf = xdf.drop(drops, axis=1)
     # drop duplicates
-#    xdf = xdf.drop_duplicates(take_last=True, inplace=False)
+    xdf = xdf.drop_duplicates(take_last=True, inplace=False)
     return xdf
 
-def model(train_file='data/train.csv', test_file='data/test.csv',
-          clf_name='rfc10', idx=0, limit=-1, gsearch=None,
+def factorize(col, xdf, sdf=None):
+    "Factorize given column in dataframe"
+    if  sdf:
+        vals = set(xdf[col] + sdf[col])
+    else:
+        vals = set(xdf[col])
+    ids = []
+    for uid, val in enumerate(vals):
+        ids.append(uid)
+    dval = dict(zip(vals, ids))
+    out = []
+    for val in xdf[col]:
+        out.append(dval[val])
+    return out
+
+def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
           crossval=None, verbose=False):
     "Model for given plan"
     print "Construct model %s" % clf_name
 
     # read data and normalize it
-    xdf = read_data(train_file)
-    tdf = read_data(test_file)
-    ids = tdf.customer_ID # replace with whatever id we need to use
+    drops = []
+    xdf = read_data(train_file, drops)
+    if  test_file:
+        tdf = read_data(test_file, drops)
+    else:
+        tdf = None
+    for col in ['era', 'primds', 'procds']:
+        xdf[col] = factorize(col, xdf, tdf)
+        if  tdf:
+            tdf[col] = factorize(col, tdf, xdf)
+
     # normalize some columns
     columns = []
-    normalize(columns, xdf, tdf)
-    print "sample train:"
-    print xdf.ix[1]
-    print "sample test:"
-    print tdf.ix[1]
-
-    # exclude columns, e.g. customer id
-#    drops = ['customer_ID']
-#    if  drops:
-#        xdf = xdf.drop(drops, axis=1)
-#        tdf = tdf.drop(drops, axis=1)
+#    if  train_file and test_file:
+#        normalize(columns, xdf, tdf)
+#    print "train file:"
+#    print xdf.ix[1]
+#    if  test_file:
+#        print "test file:"
+#        print tdf.ix[1]
 
     # get target variable and exclude choice from train data
-    tcol = 'SOME_NAME' # classification column name (what we'll predict)
+    tcol = 'target' # classification column name (what we'll predict)
     target = xdf[tcol]
     xdf = xdf.drop(tcol, axis=1)
     print "Columns:", ','.join(xdf.columns)
@@ -81,7 +98,7 @@ def model(train_file='data/train.csv', test_file='data/test.csv',
     # split our train data
     x_train, x_rest, y_train, y_rest = \
             train_test_split(xdf, target, test_size=0.33)
-    if  limit > -1 and x_rest != None:
+    if  limit > -1 and x_rest.any():
         x_train = x_train[idx:limit]
         y_train = y_train[idx:limit]
         x_rest = x_rest[idx:limit]
@@ -100,15 +117,17 @@ def model(train_file='data/train.csv', test_file='data/test.csv',
         bfeatures = best_features(xdf, clf)
     fit = clf.fit(x_train, y_train)
     predictions = fit.predict(x_rest)
-    print_clf_report(y_rest, predictions)
+    print "predictions", predictions
+#    print_clf_report(y_rest, predictions)
 
     # test data
-    predictions = fit.predict(tdf)
-    if  not isinstance(predictions[0], int):
-        predictions = [int(round(i)) for i in predictions]
-    out = pd.DataFrame(zip(ids, predictions))
-    ofile = 'prediction.txt'
-    out.to_csv(ofile, header=False, index=False)
+    if  test_file:
+        predictions = fit.predict(tdf)
+        if  not isinstance(predictions[0], int):
+            predictions = [int(round(i)) for i in predictions]
+        out = pd.DataFrame(zip(tdf['dataset'], predictions))
+        ofile = 'prediction.txt'
+        out.to_csv(ofile, header=False, index=False)
 
 def main():
     "Main function"
