@@ -29,6 +29,7 @@ from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import SGDClassifier, RidgeClassifier, RidgeClassifierCV
+from sklearn.svm import SVR
 from sklearn.cross_validation import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler
 
@@ -80,6 +81,7 @@ def classifiers(verbose=0):
     # common regressors
     models['rfr10'] = RandomForestRegressor(n_estimators=10, n_jobs=-1)
     models['rfr100'] = RandomForestRegressor(n_estimators=100, n_jobs=-1)
+    models['svr'] = SVR()
 
     return models
 
