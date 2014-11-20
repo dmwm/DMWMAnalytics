@@ -95,8 +95,9 @@ def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
     tcol = 'target' # classification column name (what we'll predict)
     target = xdf[tcol]
     xdf = xdf.drop(tcol, axis=1)
-    print "Columns:", ','.join(xdf.columns)
-    print "Target:", target
+    if  verbose:
+        print "Columns:", ','.join(xdf.columns)
+        print "Target:", target
 
     # split our train data
     x_train, x_rest, y_train, y_rest = \
@@ -106,7 +107,8 @@ def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
         y_train = y_train[idx:limit]
         x_rest = x_rest[idx:limit]
         y_rest = y_rest[idx:limit]
-    print "train shapes:", x_train.shape, y_train.shape
+    if  verbose:
+        print "train shapes:", x_train.shape, y_train.shape
     clf = classifiers(verbose)[clf_name]
     print "clf:", clf
     if  gsearch:
@@ -123,7 +125,8 @@ def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
     loss = 0
     tot = 0
     for pval, yval in zip(predictions, y_rest):
-        print "predict value %s, real value %s" % (pval, yval)
+        if  verbose:
+            print "predict value %s, real value %s" % (pval, yval)
         loss += logloss(pval, yval)
         tot += 1
     print "Final Logloss", loss/tot
