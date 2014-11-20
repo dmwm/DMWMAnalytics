@@ -157,7 +157,8 @@ class DCAF(object):
             headers = rec.keys()
             headers.sort()
             headers.remove('target')
-            headers += ['target'] # make target to be last column
+            if  target != -1:
+                headers += ['target'] # make target to be last column
             if  dformat == 'headers':
                 yield headers
             elif  dformat == 'csv':
@@ -179,9 +180,17 @@ class DCAF(object):
             headers = [r for r in rows][0]
             yield ','.join(headers)
         if  not timeframe: # request new dataset
+            if  self.verbose:
+                print "Generate dataframe for new datasets"
+            # get fresh copy of datasets db
+            self.dbs.update('datasets')
+            self.dbs.update('releases')
             new_datasets = self.dbs.new_datasets()
-            for dataset in new_datasets:
-                rows = self.dataset_info(dataset, dtypes, stypes, rtypes, tiers, dformat)
+            for row in new_datasets:
+                dataset = row['dataset']
+                target = -1 # we will need to predict it
+                rows = self.dataset_info(dataset, dtypes, stypes, rtypes, tiers, \
+                        dformat, target)
                 for row in rows:
                     yield row
             return
@@ -189,6 +198,8 @@ class DCAF(object):
         res = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
         popdb_datasets = {} #
         for row in res:
+            if  self.verbose:
+                print "Generate dataframe for %s timeframe" % timeframe
             dataset = row['dataset']
             naccess = row['naccess']
             nusers = row['nusers']
