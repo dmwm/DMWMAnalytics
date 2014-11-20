@@ -23,9 +23,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.decomposition import PCA
 from sklearn.lda import LDA
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import SGDClassifier, RidgeClassifier, RidgeClassifierCV
 from sklearn.cross_validation import train_test_split, cross_val_score
@@ -34,7 +35,9 @@ from sklearn.preprocessing import StandardScaler
 def classifiers(verbose=0):
     "Return dict of available classifier"
     models = {}
-    cost = 20 # 20 gives 0.88
+
+    # common classifiers
+    cost = 1 # default cost
     models['svc'] = svm.LinearSVC(C=cost, dual=False, verbose=verbose)
     models['svm_sigm'] = svm.SVC(C=1.0, kernel='sigmoid', degree=3, gamma=0.0)
     models['svm_poly'] = svm.SVC(C=1.0, kernel='poly', degree=3, gamma=0.0)
@@ -73,6 +76,11 @@ def classifiers(verbose=0):
     models['pca_svc'] = Pipeline(steps=steps)
     steps = [('lda', LDA()), ('clf', models['rfc10'])]
     models['lda_rfc10'] = Pipeline(steps=steps)
+
+    # common regressors
+    models['rfr10'] = RandomForestRegressor(n_estimators=10, n_jobs=-1)
+    models['rfr100'] = RandomForestRegressor(n_estimators=100, n_jobs=-1)
+
     return models
 
 def param_search(clf, X_train, Y_train, X_rest, Y_rest, gsearch):
