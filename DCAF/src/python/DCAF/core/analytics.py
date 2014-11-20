@@ -140,7 +140,7 @@ class DCAF(object):
             target_str = '%5.3f' % target if target else 0
             summary = self.dbs.dataset_summary(dataset)
             rec = dict(dataset=dataset_id, primds=prim, procds=proc, tier=tier,
-                    dtype=dtype, created=create_dn, nrel=nrels, nsites=nsites,
+                    dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
                     nfiles=summary['num_file'], nlumis=summary['num_lumi'],
                     nblk=summary['num_block'], nevt=summary['num_event'],
                     size=summary['file_size'], era=era, target=target_str)
