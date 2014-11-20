@@ -14,6 +14,21 @@ import re
 import sys
 import time
 import hashlib
+import calendar
+import datetime
+
+def dates_from_today(ndays=7):
+    "Return unix timestamps for provided ndays from today"
+    today_tstamp = calendar.timegm(datetime.date.today().timetuple())
+    return today_tstamp-ndays*24*60*60, today_tstamp
+
+def unixtstamp(date):
+    "Return unix timestamp for prodided date format YYYYMMDD"
+    return time.gmtime(tstamp)
+
+def date4unixtstamp(unixtime):
+    "Return date in format YYYYMMDD for given unix timestamp"
+    return time.strftime("%Y%m%d", time.gmtime(unixtime))
 
 def popdb_date(tstamp):
     "Return date in popDB format YYYY-M-D"
