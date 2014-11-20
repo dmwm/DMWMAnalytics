@@ -9,7 +9,7 @@ for(i in 1:length(libs)) {
 # set seed
 set.seed(12345)
 
-source("R/plot_helpers.R")
+source(paste0(script.dir, "plot_helpers.R"))
 
 ### Helper function
 download <- function(url, dir="./data") {
