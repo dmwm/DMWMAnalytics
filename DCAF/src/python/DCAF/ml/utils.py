@@ -55,11 +55,9 @@ class OptionParser(object):
             default="rfc10", dest="clf",
             help="model classifier: %s" % classifiers)
         self.parser.add_option("--train-file", action="store", type="string",
-            default="data/train.csv", dest="train",
-            help="train file")
+            default="train.csv", dest="train", help="train file, default train.csv")
         self.parser.add_option("--test-file", action="store", type="string",
-            default="data/test.csv", dest="test",
-            help="test file")
+            default="test.csv", dest="test", help="test file, default test.csv")
         self.parser.add_option("--idx", action="store", type="int",
             default=0, dest="idx",
             help="initial index counter, default 0")
