@@ -9,6 +9,53 @@ Description: generic module with useful set of utilites
 
 # system modules
 import optparse
+from math import log, exp
+
+# B. Bounded logloss
+# INPUT:
+#     p: our prediction
+#     y: real answer
+# OUTPUT
+#     bounded logarithmic loss of p given y
+def logloss(p, y):
+    """
+    Provide logloss function for prediction/real values arrays. Here p is 
+    an array of prediciton and y is an array of real values
+    """
+    p = max(min(p, 1. - 10e-16), 10e-16)
+    return -log(p) if y == 1. else -log(1. - p)
+
+class GLF(object):
+    def __init__(self, a=0, k=1, b=1, q=1, m=0, nu=1):
+        "GLF (Generalized Logistic Function) object"
+        self.a = a
+        self.k = k
+        self.b = b
+        self.q = q
+        self.m = m
+        self.nu = nu
+    def __repr__(self):
+        "Representation of GLF object"
+        return "<GenLogFunc(a=%s, k=%s, b=%s, q=%s, m=%s, nu=%s)>, http://www.wikiwand.com/en/Generalised_logistic_function" \
+                % (self.a, self.k, self.b, self.q, self.m, self.nu)
+    def logistic(self, t):
+        "Generalized logistic function"
+        return self.a+(self.k-self.a)/(1.+self.q*exp(-self.b*(t-self.m)))**(1/self.nu)
+    def sigmoid(self, t):
+        "Generalized logistic function reduced to sigmoid function"
+        return 1./(1.+exp(-t))
+    def tanh(self, t):
+        "hyperbolic tangent function"
+        return (1.+tanh(t))/2. # bounded tanh (in [0,1] range)
+    def algebraic(self, t):
+        "algebraic function"
+        return t/sqrt(1.+t**2)
+    def absval(self, t):
+        "absolute value function"
+        return t/(1.+abs(t))
+    def guderman(self, t):
+        "Gudermannian function"
+        return (2./pi)*atan(pi*t/2.)
 
 def best_features(clf, xdf, targets):
     "Find, print and return best features using simple classifier"
