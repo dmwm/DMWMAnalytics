@@ -110,3 +110,7 @@ class StorageManager(object):
     def count(self, cname, spec):
         "Fetch documents from internal storage for given spec query"
         return self.col(cname).find(spec).count()
+
+    def cleanup(self, cname):
+        "Cleanup given collection"
+        return self.col(cname).remove({})
