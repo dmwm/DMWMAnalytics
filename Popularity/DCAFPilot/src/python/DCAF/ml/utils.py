@@ -96,20 +96,29 @@ def normalize(columns, xdf, tdf):
 
 class OptionParser(object):
     "Option parser"
-    def __init__(self, classifiers=None):
+    def __init__(self, learners=None, scorers=None):
         self.parser = optparse.OptionParser()
-        if  classifiers:
-            classifiers.sort()
-        self.parser.add_option("--clf", action="store", type="string",
-            default="rfc", dest="clf",
-            help="model classifier: %s" % classifiers)
-        self.parser.add_option("--clf-params", action="store", type="string",
-            default="", dest="clf_params",
+        if  learners:
+            learners.sort()
+        if  scorers:
+            scorers.sort()
+        scalers = ['StandardScaler', 'MinMaxScaler']
+        self.parser.add_option("--scaler", action="store", type="string",
+            default="", dest="scaler",
+            help="model scalers: %s, default None" % scalers)
+        self.parser.add_option("--scorer", action="store", type="string",
+            default="", dest="scorer",
+            help="model scorers: %s, default None" % scorers)
+        self.parser.add_option("--learner", action="store", type="string",
+            default="RandomForestClassifier", dest="learner",
+            help="model learners: %s" % learners)
+        self.parser.add_option("--learner-params", action="store", type="string",
+            default="", dest="lparams",
             help="model classifier parameters, supply via JSON")
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
         self.parser.add_option("--test-file", action="store", type="string",
-            default="test.csv", dest="test", help="test file, default test.csv")
+            default="", dest="test", help="test file, default no test file")
         self.parser.add_option("--idx", action="store", type="int",
             default=0, dest="idx",
             help="initial index counter, default 0")
