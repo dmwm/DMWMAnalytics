@@ -41,39 +41,39 @@ def classifiers(clf=None, kwds=None):
     models = {}
 
     # common classifiers
-    models['svc'] = svm.LinearSVC()
-    models['svm'] = svm.SVC()
-    models['knc'] = KNeighborsClassifier()
-    models['rfc'] = RandomForestClassifier()
-    models['etc'] = ExtraTreesClassifier()
-    models['gnb'] = GaussianNB()
-    models['bnb'] = BernoulliNB()
-    models['sgd'] = SGDClassifier()
-    models['rgd'] = RidgeClassifier()
-    models['gbc'] = GradientBoostingClassifier()
-    models['dtc'] = DecisionTreeClassifier()
-    models['pca'] = PCA()
+    models['LinearSVC'] = svm.LinearSVC()
+    models['SVC'] = svm.SVC()
+    models['KNeighborsClassifier'] = KNeighborsClassifier()
+    models['RandomForestClassifier'] = RandomForestClassifier()
+    models['ExtraTreesClassifier'] = ExtraTreesClassifier()
+    models['GaussianNB'] = GaussianNB()
+    models['iBernoulliNB'] = BernoulliNB()
+    models['SGDClassifier'] = SGDClassifier()
+    models['RidgeClassifier'] = RidgeClassifier()
+    models['GradientBoostingClassifier'] = GradientBoostingClassifier()
+    models['DecisionTreeClassifier'] = DecisionTreeClassifier()
+    models['PCA'] = PCA()
 
     # common ensemble classifiers
-    models['abc'] = AdaBoostClassifier()
-    models['bc'] = BaggingClassifier()
+    models['AdaBoostClassifier'] = AdaBoostClassifier()
+    models['BaggincClassifier'] = BaggingClassifier()
 
     # examples how to construct pipelines
-    steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['rfc'])]
+    steps = [('PCA', PCA(n_components='mle', whiten=True)), ('clf', models['RandomForestClassifier'])]
     models['pca_rfc'] = Pipeline(steps=steps)
-    steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['knc'])]
+    steps = [('PCA', PCA(n_components='mle', whiten=True)), ('clf', models['KNeighborsClassifier'])]
     models['pca_knc'] = Pipeline(steps=steps)
-    steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['svc'])]
+    steps = [('PCA', PCA(n_components='mle', whiten=True)), ('clf', models['SVC'])]
     models['pca_svc'] = Pipeline(steps=steps)
-    steps = [('lda', LDA()), ('clf', models['rfc'])]
+    steps = [('LDA', LDA()), ('clf', models['RandomForestClassifier'])]
     models['lda_rfc'] = Pipeline(steps=steps)
 
     # common regressors
-    models['rfr'] = RandomForestRegressor()
-    models['svr'] = SVR()
-    models['gbr'] = GradientBoostingRegressor()
-    models['abr'] = AdaBoostRegressor()
-    models['br'] = BaggingRegressor()
+    models['RandomForestRegressor'] = RandomForestRegressor()
+    models['SVR'] = SVR()
+    models['GradientBoostingRegressor'] = GradientBoostingRegressor()
+    models['AdaBoostRegressor'] = AdaBoostRegressor()
+    models['BagginRegressor'] = BaggingRegressor()
 
     return models
 
