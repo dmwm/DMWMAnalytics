@@ -99,8 +99,11 @@ class OptionParser(object):
     def __init__(self, classifiers=None):
         self.parser = optparse.OptionParser()
         self.parser.add_option("--clf", action="store", type="string",
-            default="rfc10", dest="clf",
+            default="rfc", dest="clf",
             help="model classifier: %s" % classifiers)
+        self.parser.add_option("--clf-params", action="store", type="string",
+            default="", dest="clf_params",
+            help="model classifier parameters, supply via JSON")
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
         self.parser.add_option("--test-file", action="store", type="string",
