@@ -26,7 +26,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import GradientBoostingRegressor, ExtraTreesRegressor
+from sklearn.ensemble import BaggingRegressor, AdaBoostRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import SGDClassifier, RidgeClassifier, RidgeClassifierCV
@@ -53,9 +55,8 @@ def classifiers(clf=None, kwds=None):
     models['pca'] = PCA()
 
     # common ensemble classifiers
-    models['abc_rfc'] = AdaBoostClassifier(base_estimator=models['rfc'])
-    models['abc_etc'] = AdaBoostClassifier(base_estimator=models['etc'])
-    models['abc_gbc'] = AdaBoostClassifier(base_estimator=models['gbc'])
+    models['abc'] = AdaBoostClassifier()
+    models['bc'] = BaggingClassifier()
 
     # examples how to construct pipelines
     steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['rfc'])]
@@ -71,6 +72,8 @@ def classifiers(clf=None, kwds=None):
     models['rfr'] = RandomForestRegressor()
     models['svr'] = SVR()
     models['gbr'] = GradientBoostingRegressor()
+    models['abr'] = AdaBoostRegressor()
+    models['br'] = BaggingRegressor()
 
     return models
 
