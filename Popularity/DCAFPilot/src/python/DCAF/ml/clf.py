@@ -26,6 +26,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import SGDClassifier, RidgeClassifier, RidgeClassifierCV
@@ -33,55 +34,43 @@ from sklearn.svm import SVR
 from sklearn.cross_validation import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler
 
-def classifiers(verbose=0):
+def classifiers(clf=None, kwds=None):
     "Return dict of available classifier"
     models = {}
 
     # common classifiers
-    cost = 1 # default cost
-    models['svc'] = svm.LinearSVC(C=cost, dual=False, verbose=verbose)
-    models['svm_sigm'] = svm.SVC(C=1.0, kernel='sigmoid', degree=3, gamma=0.0)
-    models['svm_poly'] = svm.SVC(C=1.0, kernel='poly', degree=3, gamma=0.0)
-    models['svm_rbf']= svm.SVC(kernel='rbf', C=cost, verbose=verbose)
+    models['svc'] = svm.LinearSVC()
+    models['svm'] = svm.SVC()
     models['knc'] = KNeighborsClassifier()
-    rfc_params = {'max_features': 20, 'min_samples_split': 10, 'min_samples_leaf': 10}
-    models['rfc10_params'] = RandomForestClassifier(n_estimators=10, n_jobs=-1, **rfc_params)
-    models['rfc10'] = RandomForestClassifier(n_estimators=10, n_jobs=-1, criterion='entropy')
-    models['rfc100'] = RandomForestClassifier(n_estimators=100, n_jobs=-1, criterion='entropy')
-    models['rfc50'] = RandomForestClassifier(n_estimators=50, n_jobs=-1, criterion='entropy')
-    models['rfc10_gini'] = RandomForestClassifier(n_estimators=10, n_jobs=-1, criterion='gini')
-    models['rfc100_gini'] = RandomForestClassifier(n_estimators=100, n_jobs=-1, criterion='gini')
-    models['etc10'] = ExtraTreesClassifier(n_estimators=10)
-    models['etc100'] = ExtraTreesClassifier(n_estimators=100)
+    models['rfc'] = RandomForestClassifier()
+    models['etc'] = ExtraTreesClassifier()
     models['gnb'] = GaussianNB()
     models['bnb'] = BernoulliNB()
     models['sgd'] = SGDClassifier()
-    models['rdg'] = RidgeClassifier(alpha=1)
-    models['gbc10'] = GradientBoostingClassifier(n_estimators=10)
-    models['gbc50'] = GradientBoostingClassifier(n_estimators=50)
-    models['dtc'] = DecisionTreeClassifier(criterion='entropy')
-    models['abc_rfc10'] = AdaBoostClassifier(base_estimator=models['rfc10'])
-    models['abc_rfc100'] = AdaBoostClassifier(base_estimator=models['rfc100'])
-    models['abc_rfc50'] = AdaBoostClassifier(base_estimator=models['rfc50'])
-    models['abc_etc10'] = AdaBoostClassifier(base_estimator=models['etc10'])
-    models['abc_etc100'] = AdaBoostClassifier(base_estimator=models['etc100'])
-    models['abc_gbc10'] = AdaBoostClassifier(base_estimator=models['gbc10'])
-    models['abc_gbc50'] = AdaBoostClassifier(base_estimator=models['gbc50'])
-    steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['rfc10'])]
-    models['pca_rfc10'] = Pipeline(steps=steps)
-    steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['rfc100'])]
-    models['pca_rfc100'] = Pipeline(steps=steps)
+    models['rgd'] = RidgeClassifier()
+    models['gbc'] = GradientBoostingClassifier()
+    models['dtc'] = DecisionTreeClassifier()
+    models['pca'] = PCA()
+
+    # common ensemble classifiers
+    models['abc_rfc'] = AdaBoostClassifier(base_estimator=models['rfc'])
+    models['abc_etc'] = AdaBoostClassifier(base_estimator=models['etc'])
+    models['abc_gbc'] = AdaBoostClassifier(base_estimator=models['gbc'])
+
+    # examples how to construct pipelines
+    steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['rfc'])]
+    models['pca_rfc'] = Pipeline(steps=steps)
     steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['knc'])]
     models['pca_knc'] = Pipeline(steps=steps)
     steps = [('pca', PCA(n_components='mle', whiten=True)), ('clf', models['svc'])]
     models['pca_svc'] = Pipeline(steps=steps)
-    steps = [('lda', LDA()), ('clf', models['rfc10'])]
-    models['lda_rfc10'] = Pipeline(steps=steps)
+    steps = [('lda', LDA()), ('clf', models['rfc'])]
+    models['lda_rfc'] = Pipeline(steps=steps)
 
     # common regressors
-    models['rfr10'] = RandomForestRegressor(n_estimators=10, n_jobs=-1)
-    models['rfr100'] = RandomForestRegressor(n_estimators=100, n_jobs=-1)
+    models['rfr'] = RandomForestRegressor()
     models['svr'] = SVR()
+    models['gbr'] = GradientBoostingRegressor()
 
     return models
 
