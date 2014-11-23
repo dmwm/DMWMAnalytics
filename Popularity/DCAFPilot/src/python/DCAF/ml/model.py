@@ -28,6 +28,7 @@ from sklearn import metrics
 # local modules
 from DCAF.ml.utils import OptionParser, normalize, logloss, GLF
 from DCAF.ml.clf import classifiers, param_search, crossvalidation, print_clf_report
+import DCAF.utils.jsonwrapper as json
 
 def get_auc(labels, predictions):
     fpr, tpr, thresholds = metrics.roc_curve(labels, predictions, pos_label=1)
@@ -61,13 +62,24 @@ def factorize(col, xdf, sdf=None):
         out.append(dval[val])
     return out
 
-def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
-          crossval=None, verbose=False):
+def model(train_file, test_file, clf_name, clf_params=None,
+        idx=0, limit=-1, gsearch=None, crossval=None, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The classifiers are defined externally
     in DCAF.ml.clf module.
     """
+    clf = classifiers()[clf_name]
+    if  clf_params:
+        if  isinstance(clf_params, str):
+            clf_params = json.loads(clf_params)
+        elif isinstance(clf_params, dict):
+            pass
+        else:
+            raise Exception('Invalid data type for clf_params="%s", type: %s' % (clf_params, type(clf_params)))
+        for key, val in clf_params.items():
+            setattr(clf, key, val)
+    print "clf:", clf
 
     # read data and normalize it
     drops = []
@@ -109,8 +121,6 @@ def model(train_file, test_file, clf_name, idx=0, limit=-1, gsearch=None,
         y_rest = y_rest[idx:limit]
     if  verbose:
         print "train shapes:", x_train.shape, y_train.shape
-    clf = classifiers(verbose)[clf_name]
-    print "clf:", clf
     if  gsearch:
         param_search(clf, x_train, y_train, x_rest, y_rest, gsearch)
         sys.exit(0)
@@ -145,7 +155,8 @@ def main():
     "Main function"
     optmgr = OptionParser(classifiers().keys())
     opts, _ = optmgr.options()
-    model(train_file=opts.train, test_file=opts.test, clf_name=opts.clf,
+    model(train_file=opts.train, test_file=opts.test,
+            clf_name=opts.clf, clf_params=opts.clf_params,
             idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,
             crossval=opts.cv, verbose=opts.verbose)
 
