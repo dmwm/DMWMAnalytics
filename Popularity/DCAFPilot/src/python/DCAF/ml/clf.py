@@ -4,7 +4,7 @@
 """
 File       : clf.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
-Description: generic module with sklearn classifiers
+Description: generic module with sklearn learners
 """
 
 # system modules
@@ -32,11 +32,12 @@ from sklearn.ensemble import BaggingRegressor, AdaBoostRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.linear_model import SGDClassifier, RidgeClassifier, RidgeClassifierCV
+from sklearn.linear_model import SGDRegressor
 from sklearn.svm import SVR
 from sklearn.cross_validation import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler
 
-def classifiers(clf=None, kwds=None):
+def learners(clf=None, kwds=None):
     "Return dict of available classifier"
     models = {}
 
@@ -47,7 +48,7 @@ def classifiers(clf=None, kwds=None):
     models['RandomForestClassifier'] = RandomForestClassifier()
     models['ExtraTreesClassifier'] = ExtraTreesClassifier()
     models['GaussianNB'] = GaussianNB()
-    models['iBernoulliNB'] = BernoulliNB()
+    models['BernoulliNB'] = BernoulliNB()
     models['SGDClassifier'] = SGDClassifier()
     models['RidgeClassifier'] = RidgeClassifier()
     models['GradientBoostingClassifier'] = GradientBoostingClassifier()
@@ -71,6 +72,7 @@ def classifiers(clf=None, kwds=None):
     # common regressors
     models['RandomForestRegressor'] = RandomForestRegressor()
     models['SVR'] = SVR()
+    models['SGDRegressor'] = SGDRegressor()
     models['GradientBoostingRegressor'] = GradientBoostingRegressor()
     models['AdaBoostRegressor'] = AdaBoostRegressor()
     models['BagginRegressor'] = BaggingRegressor()
