@@ -98,6 +98,8 @@ class OptionParser(object):
     "Option parser"
     def __init__(self, classifiers=None):
         self.parser = optparse.OptionParser()
+        if  classifiers:
+            classifiers.sort()
         self.parser.add_option("--clf", action="store", type="string",
             default="rfc", dest="clf",
             help="model classifier: %s" % classifiers)
