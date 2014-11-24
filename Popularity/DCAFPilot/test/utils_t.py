@@ -12,7 +12,7 @@ import unittest
 
 from pymongo import MongoClient
 
-from DCAF.utils.utils import popdb_date
+from DCAF.utils.utils import popdb_date, ndays
 
 class testStorageManager(unittest.TestCase):
     """
@@ -33,6 +33,13 @@ class testStorageManager(unittest.TestCase):
         self.assertEqual(expect, result)
 
         result = popdb_date(expect)
+        self.assertEqual(expect, result)
+
+    def test_ndays(self):
+        "Test ndays function"
+        time1, time2 = '20141120', '20141124'
+        result = ndays(time1, time2)
+        expect = 4
         self.assertEqual(expect, result)
 #
 # main

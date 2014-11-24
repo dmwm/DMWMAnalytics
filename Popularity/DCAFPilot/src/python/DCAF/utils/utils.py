@@ -24,7 +24,14 @@ def dates_from_today(ndays=7):
 
 def unixtstamp(date):
     "Return unix timestamp for prodided date format YYYYMMDD"
-    return time.gmtime(tstamp)
+    year, mm, dd = int(date[:4]), int(date[4:6]), int(date[6:])
+    tstamp = calendar.timegm(datetime.date(year, mm, dd).timetuple())
+    return tstamp
+
+def ndays(date1, date2):
+    "Return number of days between two dates"
+    diff = abs(unixtstamp(date1)-unixtstamp(date2))
+    return round(diff/(24*60*60))
 
 def date4unixtstamp(unixtime):
     "Return date in format YYYYMMDD for given unix timestamp"
