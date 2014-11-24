@@ -28,7 +28,7 @@ class DBSService(GenericService):
         self.url = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader/'
         self.storage = StorageManager(config)
         if  not self.storage.col('datasets').count():
-            index_list = [('dataset', DESCENDING), ('rid', DESCENDING)]
+            index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
             self.storage.create_indexes('datasets', index_list)
             self.update('datasets')
         if  not self.storage.col('releases').count():
@@ -48,7 +48,12 @@ class DBSService(GenericService):
             data = data[0]['release_version']
         for row in data:
             if  api == 'datasets':
-                row['rid'] = rid
+#                row['rid'] = rid
+                try:
+                    row['rid'] = row['dataset_id']
+                except:
+                    print "Unable to process dataset row", row
+                    raise
                 yield row
             elif api == 'releases':
                 rec = {'release':row, 'rid':rid}
@@ -81,10 +86,12 @@ class DBSService(GenericService):
     def new_datasets(self, ndays=7):
         "Return list of new datasets"
         cdate1, cdate2 = dates_from_today(ndays)
-        spec = {'dataset':'/*/*/*', 'detail':'false',
+        spec = {'dataset':'/*/*/*', 'detail':'true',
                 'min_cdate':cdate1, 'max_cdate':cdate2}
         for row in self.fetch('datasets', spec):
-            yield row
+            rec = {'dataset':row['dataset'], 'dataset_id':row['dataset_id']}
+            yield rec
+#            yield row
 
     def releases(self):
         "Return list of releases"
