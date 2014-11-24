@@ -22,7 +22,7 @@ from DCAF.services.popdb import PopDBService
 from DCAF.services.utils import site_tier, rel_ver, rel_type, cmssw_test
 from DCAF.services.utils import RFULL, RPRE, RPATCH
 from DCAF.services.utils import TIER0, TIER1, TIER2, TIER3, TIER_NA
-from DCAF.utils.utils import genkey
+from DCAF.utils.utils import genkey, ndays
 
 def parse_config(filename):
     "Parse given config file into dict representation"
@@ -156,6 +156,8 @@ class DCAF(object):
                 rec.update({key:val})
             headers = rec.keys()
             headers.sort()
+            headers.remove('dataset')
+            headers = ['dataset'] + headers # let dataset id be the first column
             headers.remove('target')
             if  target != -1:
                 headers += ['target'] # make target to be last column
@@ -171,7 +173,14 @@ class DCAF(object):
                 vwrow = "%s '%s |f %s" % (target_str, uid, vals)
                 yield vwrow
 
-    def dataframe(self, timeframe, seed, dformat, metric, dbs_extra=100, verbose=0):
+    def update(self):
+        # get fresh copy of hashed db's
+        self.dbs.update('datasets')
+        self.dbs.update('releases')
+        self.sitedb.update('people')
+        self.sitedb.update('sites')
+
+    def dataframe(self, timeframe, seed, dformat, metric, dbs_extra=100, newdata=None, verbose=0):
         """Form a dataframe from various CMS data-providers"""
         dtypes, stypes, rtypes, tiers = self.data_types()
         if  dformat == 'csv':
@@ -179,13 +188,13 @@ class DCAF(object):
             rows = self.dataset_info(seed, dtypes, stypes, rtypes, tiers, 'headers')
             headers = [r for r in rows][0]
             yield ','.join(headers)
-        if  not timeframe: # request new dataset
+        if  newdata: # request new dataset
             if  self.verbose:
                 print "Generate dataframe for new datasets"
-            # get fresh copy of datasets db
-            self.dbs.update('datasets')
-            self.dbs.update('releases')
-            new_datasets = self.dbs.new_datasets()
+            n_days = 7
+            if  timeframe:
+                n_days = ndays(timeframe[0], timeframe[1])
+            new_datasets = self.dbs.new_datasets(n_days)
             for row in new_datasets:
                 dataset = row['dataset']
                 target = -1 # we will need to predict it
