@@ -154,8 +154,6 @@ def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, v
     """
     if  learner not in ['SGDClassifier', 'SGDRegressor']:
         raise Exception("Unsupported learner %s" % learner)
-    if  scaler:
-        scaler = getattr(preprocessing, scaler)
     clf = learners()[learner]
     if  lparams:
         if  isinstance(lparams, str):
@@ -190,11 +188,14 @@ def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, v
             print "Columns:", ','.join(xdf.columns)
             print "Target:", target
 
-        x_train = xdf
         if  scaler:
-            x_train = scaler.fit_transform(xdf)
-        y_train = target
+            xdf = getattr(preprocessing, scaler)().fit_transform(xdf)
+#        x_train = xdf
+#        y_train = target
+        x_train, x_rest, y_train, y_rest = \
+                train_test_split(xdf, target, test_size=0.1)
         fit = clf.partial_fit(x_train, y_train)
+        print "### SCORE", clf.score(x_rest, y_rest)
 
     # test data
     if  test_file:
