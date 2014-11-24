@@ -28,7 +28,7 @@ class OptionParser():
             help="Seed dataset, default=%s" % seed)
         self.parser.add_option("--dbs-extra", action="store", type="int",
             dest="dbs_extra", default=100,
-            help="Extra datasets from DBS which were not shown in popularityDB")
+            help="Extra datasets from DBS which were not shown in popularityDB, default 100")
         self.parser.add_option("--metric", action="store", type="string",
             dest="metric", default="naccess",
             help="Output target metric (naccess by default), supported naccess, nusers, totcpu or python expression of those")
@@ -43,6 +43,10 @@ class OptionParser():
             dest="config", default="etc/dcaf.cfg", help="Config file, default etc/dcaf.cfg")
         self.parser.add_option("--verbose", action="store", type="int",
             dest="verbose", default=0, help="Verbosity level, default 0")
+        self.parser.add_option("--update", action="store_true",
+            dest="update", default=False, help="Update internal storage (get new DBS/SiteDB database content")
+        self.parser.add_option("--newdata", action="store_true",
+            dest="newdata", default=False, help="Get new set of data from DBS, instead of popularity DB")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
@@ -53,6 +57,8 @@ def main():
     opts, _ = optmgr.get_opt()
 
     mgr = DCAF(opts.config, opts.verbose)
+    if  opts.update:
+        mgr.update()
     if  opts.start or opts.stop:
         tframe = [popdb_date(opts.start), popdb_date(opts.stop)]
     else:
@@ -61,9 +67,10 @@ def main():
     seed = opts.seed
     dformat = opts.dformat
     metric = opts.metric
-    dbs_extra = opts.dbs_extra
+    dbsextra = opts.dbs_extra
+    newdata = opts.newdata
     with open(opts.fout, 'w') as ostream:
-        for row in mgr.dataframe(tframe, seed, dformat, metric, dbs_extra):
+        for row in mgr.dataframe(tframe, seed, dformat, metric, dbsextra, newdata):
             ostream.write(row+'\n')
 
 if __name__ == '__main__':
