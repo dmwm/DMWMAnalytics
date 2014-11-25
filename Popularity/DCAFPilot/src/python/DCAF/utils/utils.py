@@ -48,6 +48,17 @@ def popdb_date(tstamp):
         return '%s-%s-%s' % (year, month, day)
     return tstamp
 
+def dashboard_date(tstamp):
+    "Return date in dashboard format YY-M-DD:"
+    if  tstamp.find('-') != -1:
+        return tstamp
+    if  len(tstamp)==8: # YYYYMMDD format
+        year = tstamp[2:4]
+        month = tstamp[4:6]
+        day = tstamp[6:8]
+        return '%s-%s-%s' % (year, month, day)
+    return tstamp
+
 def genkey(doc, salt="", truncate=0, method='md5'):
     "Generate hash for given doc and optional salt"
     func = getattr(hashlib, method)
