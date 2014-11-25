@@ -105,7 +105,7 @@ class DBSService(GenericService):
     def dataset_info(self, dataset):
         "Return list of datasets"
         api = 'datasets'
-        spec = {'dataset':dataset, 'dataset_access_type':'*'}
+        spec = {'dataset':dataset}
         res = [r for r in self.storage.fetch(api, spec)]
         if  not len(res):
             # look-up dataset in other DBS instances
