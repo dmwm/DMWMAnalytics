@@ -9,6 +9,7 @@ Description: DBS service module
 
 # system modules
 import time
+import hashlib
 from   types import InstanceType
 
 # pymongo modules
@@ -55,6 +56,13 @@ class DBSService(GenericService):
 #                row['rid'] = rid
                 try:
                     row['rid'] = row['dataset_id']
+                except KeyError:
+                    print "Unable to process dataset row", row
+                    if  'dataset' in row:
+                        h = hashlib.md5()
+                        h.update(row['dataset'])
+                        row['rid'] = int(h.hexdigest()[:10], 16)
+                        print "Generated new dataset_id", row['dataset'], h.hexdigest(), row['rid']
                 except:
                     print "Unable to process dataset row", row
                     raise
