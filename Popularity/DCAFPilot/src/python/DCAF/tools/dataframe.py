@@ -59,6 +59,7 @@ def main():
     mgr = DCAF(opts.config, opts.verbose)
     if  opts.update:
         mgr.update()
+        return
     if  opts.start or opts.stop:
         tframe = [popdb_date(opts.start), popdb_date(opts.stop)]
     else:
