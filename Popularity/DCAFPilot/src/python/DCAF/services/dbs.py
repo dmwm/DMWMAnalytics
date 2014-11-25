@@ -109,7 +109,7 @@ class DBSService(GenericService):
         if  not len(res):
             # look-up dataset in other DBS instances
             for dbsinst in self.instances:
-                res = [r or r in self.fetch(api, spec, dbsinst)]
+                res = [r for r in self.fetch(api, spec, dbsinst)]
                 if  len(res):
                     return res[0]
             return None
@@ -125,7 +125,7 @@ class DBSService(GenericService):
         if  not len(res):
             # look-up dataset in other DBS instances
             for dbsinst in self.instances:
-                res = [r or r in self.fetch(api, spec, dbsinst)]
+                res = [r for r in self.fetch(api, spec, dbsinst)]
                 if  len(res):
                     return res[0]
             # so far, return zeros
