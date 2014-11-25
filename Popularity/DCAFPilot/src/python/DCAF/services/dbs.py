@@ -11,6 +11,9 @@ Description: DBS service module
 import time
 from   types import InstanceType
 
+# pymongo modules
+from pymongo import DESCENDING
+
 # package modules
 import DCAF.utils.jsonwrapper as json
 from DCAF.utils.url_utils import getdata
@@ -29,11 +32,11 @@ class DBSService(GenericService):
         self.storage = StorageManager(config)
         if  not self.storage.col('datasets').count():
             index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
-            self.storage.create_indexes('datasets', index_list)
+            self.storage.indexes('datasets', index_list)
             self.update('datasets')
         if  not self.storage.col('releases').count():
             index_list = [('release', DESCENDING), ('rid', DESCENDING)]
-            self.storage.create_indexes('releases', index_list)
+            self.storage.indexes('releases', index_list)
             self.update('releases')
 
     def fetch(self, api, params=None):
