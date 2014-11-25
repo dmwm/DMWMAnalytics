@@ -38,7 +38,9 @@ class PopDBService(GenericService):
 
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
-        print "%s update %s" % (self.name, cname)
+        if  self.verbose:
+            print "%s update %s" % (self.name, cname)
+        self.storage.cleanup(cname)
         docs = self.fetch(cname)
         self.storage.insert(cname, docs)
 
