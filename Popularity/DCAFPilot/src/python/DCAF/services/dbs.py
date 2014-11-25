@@ -147,6 +147,12 @@ class DBSService(GenericService):
         url = '%s/releaseversions' % self.url
         params = {'dataset':dataset}
         data = json.loads(super(DBSService, self).fetch(url, params))
+        if  not len(data):
+            for dbsinst in self.instances:
+                dbs_url = url.replace('prod/global', dbsinst)
+                data = json.loads(super(DBSService, self).fetch(dbs_url, params))
+                if  len(data):
+                    break
         for ver in set(data[0]['release_version']):
             row = self.storage.fetch_one('releases', {'release':ver})
             yield row['rid'], row['release']
