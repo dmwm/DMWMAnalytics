@@ -27,8 +27,8 @@ class OptionParser():
             dest="seed", default=seed,
             help="Seed dataset, default=%s" % seed)
         self.parser.add_option("--dbs-extra", action="store", type="int",
-            dest="dbs_extra", default=100,
-            help="Extra datasets from DBS which were not shown in popularityDB, default 100")
+            dest="dbs_extra", default=1000,
+            help="Extra datasets from DBS which were not shown in popularityDB, default 1000")
         self.parser.add_option("--metric", action="store", type="string",
             dest="metric", default="naccess",
             help="Output target metric (naccess by default), supported naccess, nusers, totcpu or python expression of those")
