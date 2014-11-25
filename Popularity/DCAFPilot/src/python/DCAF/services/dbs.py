@@ -16,7 +16,6 @@ from pymongo import DESCENDING
 
 # package modules
 import DCAF.utils.jsonwrapper as json
-from DCAF.utils.url_utils import getdata
 from DCAF.utils.utils import dates_from_today
 from DCAF.services.generic import GenericService
 from DCAF.core.storage import StorageManager
