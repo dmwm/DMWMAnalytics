@@ -13,7 +13,6 @@ from   types import InstanceType
 
 # package modules
 import DCAF.utils.jsonwrapper as json
-from DCAF.utils.url_utils import getdata
 from DCAF.services.generic import GenericService
 from DCAF.core.storage import StorageManager
 
@@ -88,7 +87,9 @@ class SiteDBService(GenericService):
 
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
-        print "%s update %s" % (self.name, cname)
+        if  self.verbose:
+            print "%s update %s" % (self.name, cname)
+        self.storage.cleanup(cname)
         docs = self.fetch(cname)
         self.storage.insert(cname, docs)
 
