@@ -28,6 +28,7 @@ class DBSService(GenericService):
         GenericService.__init__(self, config, verbose)
         self.name = 'dbs'
         self.url = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader/'
+        self.instances = ["prod/phys01", "prod/phys02", "prod/phys03", "prod/caf"]
         self.storage = StorageManager(config)
         if  not self.storage.col('datasets').count():
             index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
@@ -38,12 +39,13 @@ class DBSService(GenericService):
             self.storage.indexes('releases', index_list)
             self.update('releases')
 
-    def fetch(self, api, params=None):
+    def fetch(self, api, params=None, dbsinst='prod/global'):
         "Fetch data for given api"
+        dbs_url = self.url.replace('prod/global', dbsinst)
         if  api == 'releases':
-            url = '%s/releaseversions' % self.url
+            url = '%s/releaseversions' % dbs_url
         else:
-            url = '%s/%s' % (self.url, api)
+            url = '%s/%s' % (dbs_url, api)
         data = json.loads(super(DBSService, self).fetch(url, params))
         rid = 0
         if  api == 'releases':
@@ -93,7 +95,6 @@ class DBSService(GenericService):
         for row in self.fetch('datasets', spec):
             rec = {'dataset':row['dataset'], 'dataset_id':row['dataset_id']}
             yield rec
-#            yield row
 
     def releases(self):
         "Return list of releases"
@@ -106,7 +107,11 @@ class DBSService(GenericService):
         spec = {'dataset':dataset}
         res = [r for r in self.storage.fetch('datasets', spec)]
         if  not len(res):
-            # TODO look-up dataset in other DBS instances
+            # look-up dataset in other DBS instances
+            for dbsinst in self.instances:
+                res = [r or r in self.fetch(api, spec, dbsinst)]
+                if  len(res):
+                    return res[0]
             return None
         else:
             return res[0]
@@ -114,10 +119,15 @@ class DBSService(GenericService):
     def dataset_summary(self, dataset):
         "Return dataset summary"
         # TODO, store dataset summary into analytics db
+        api = 'filesummaries'
         spec = {'dataset':dataset}
         res = [r for r in self.fetch('filesummaries', spec)]
         if  not len(res):
-            # TODO look-up dataset in other DBS instances
+            # look-up dataset in other DBS instances
+            for dbsinst in self.instances:
+                res = [r or r in self.fetch(api, spec, dbsinst)]
+                if  len(res):
+                    return res[0]
             # so far, return zeros
             return {'num_file':0, 'num_lumi':0, 'num_block':0, 'num_event':0, 'file_size':0}
         else:
