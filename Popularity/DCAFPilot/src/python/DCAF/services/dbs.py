@@ -104,8 +104,9 @@ class DBSService(GenericService):
 
     def dataset_info(self, dataset):
         "Return list of datasets"
+        api = 'datasets'
         spec = {'dataset':dataset}
-        res = [r for r in self.storage.fetch('datasets', spec)]
+        res = [r for r in self.storage.fetch(api, spec)]
         if  not len(res):
             # look-up dataset in other DBS instances
             for dbsinst in self.instances:
@@ -121,7 +122,7 @@ class DBSService(GenericService):
         # TODO, store dataset summary into analytics db
         api = 'filesummaries'
         spec = {'dataset':dataset}
-        res = [r for r in self.fetch('filesummaries', spec)]
+        res = [r for r in self.fetch(api, spec)]
         if  not len(res):
             # look-up dataset in other DBS instances
             for dbsinst in self.instances:
