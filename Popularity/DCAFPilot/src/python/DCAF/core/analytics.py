@@ -19,6 +19,7 @@ from DCAF.services.sitedb import SiteDBService
 from DCAF.services.dbs import DBSService
 from DCAF.services.phedex import PhedexService
 from DCAF.services.popdb import PopDBService
+from DCAF.services.dashboard import DashboardService
 from DCAF.services.utils import site_tier, rel_ver, rel_type, cmssw_test
 from DCAF.services.utils import RFULL, RPRE, RPATCH
 from DCAF.services.utils import TIER0, TIER1, TIER2, TIER3, TIER_NA
@@ -43,6 +44,7 @@ class DCAF(object):
         self.dbs = DBSService(self.config, verbose)
         self.popdb = PopDBService(self.config, verbose)
         self.phedex = PhedexService(self.config, verbose)
+        self.dashboard = DashboardService(self.config, verbose)
         self.salt = self.config.get('core', {}).get('salt', 'secret sauce')
         self.verbose = verbose
 
@@ -98,7 +100,7 @@ class DCAF(object):
         rtypes = {'series': serdict, 'majors': majdict, 'minors': mindict, 'rtypes': typdict}
         return dtypes, stypes, rtypes, tiers
 
-    def dataset_info(self, dataset, dtypes, stypes, rtypes, tiers, dformat, target=0):
+    def dataset_info(self, timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat, target=0):
         "Return common dataset info in specified data format"
         row = self.dbs.dataset_info(dataset)
         if  row:
@@ -139,11 +141,14 @@ class DCAF(object):
             tier = tiers.index(tier)
             target_str = '%5.3f' % target if target else 0
             summary = self.dbs.dataset_summary(dataset)
+            dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
             rec = dict(dataset=dataset_id, primds=prim, procds=proc, tier=tier,
                     dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
                     nfiles=summary['num_file'], nlumis=summary['num_lumi'],
                     nblk=summary['num_block'], nevt=summary['num_event'],
-                    size=summary['file_size'], era=era, target=target_str)
+                    size=summary['file_size'], era=era,
+                    cpu=dashboard['cpu'], wct=dashboard['wct'], proc_evts=dashboard['nevt'],
+                    target=target_str)
             for key,val in series.items():
                 rec.update({key:val})
             for key, val in majors.items():
@@ -185,7 +190,7 @@ class DCAF(object):
         dtypes, stypes, rtypes, tiers = self.data_types()
         if  dformat == 'csv':
             # seed dataset to determine headers of the dataframe
-            rows = self.dataset_info(seed, dtypes, stypes, rtypes, tiers, 'headers')
+            rows = self.dataset_info(timeframe, seed, dtypes, stypes, rtypes, tiers, 'headers')
             headers = [r for r in rows][0]
             yield ','.join(headers)
         if  newdata: # request new dataset
@@ -198,7 +203,7 @@ class DCAF(object):
             for row in new_datasets:
                 dataset = row['dataset']
                 target = -1 # we will need to predict it
-                rows = self.dataset_info(dataset, dtypes, stypes, rtypes, tiers, \
+                rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, \
                         dformat, target)
                 for row in rows:
                     yield row
@@ -223,7 +228,7 @@ class DCAF(object):
                     raise exc
             else:
                 target = naccess
-            rows = self.dataset_info(dataset, dtypes, stypes, rtypes, tiers, dformat, target)
+            rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat, target)
             popdb_datasets[dataset] = row
             for row in rows:
                 yield row
@@ -232,7 +237,7 @@ class DCAF(object):
         # those who were presented in popdb
         dbs_datasets = [d for d in self.dbs.datasets() if d not in popdb_datasets.keys()]
         for dataset in random.sample(dbs_datasets, dbs_extra):
-            rows = self.dataset_info(dataset, dtypes, stypes, rtypes, tiers, dformat)
+            rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat)
             for row in rows:
                 yield row
 
