@@ -33,12 +33,15 @@ class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
                                                 cert_file=self.cert)
         return httplib.HTTPSConnection(host)
 
-def getdata(url, params, ckey=None, cert=None, debug=0):
+def getdata(url, params, headers=None, ckey=None, cert=None, debug=0):
     "Fetch data for given url and set of parameters"
     if  params:
         url += '?%s' % urllib.urlencode(params, doseq=True)
+    if  debug:
+        print "getdata:url", url
     req = urllib2.Request(url)
-    headers = {'Accept': 'application/json;text/json'}
+    if  headers == None:
+        headers = {'Accept': 'application/json'}
     if  headers:
         for key, val in headers.items():
             req.add_header(key, val)
@@ -64,6 +67,15 @@ def test():
     # test dbs3
     #dbs = "https://cmsweb.cern.ch/dbs/prod/global/DBSReader"
     #url = dbs+"/datasets" + "?dataset=/ZMM*/*/GEN-SIM&detail=True"
+#    data = getdata(url, params)
+#    print data
+
+#    url = 'http://dashb-cms-job.cern.ch/dashboard/request.py/jobefficiencyapi?start=14-10-01&end=14-10-31&site=all&dataset=%2FQCD_Pt-1000to1400_Tune4C_13TeV_pythia8%2FSpring14dr-castor_PU20bx25_POSTLS170_V5-v1%2FAODSIM'
+#    data = getdata(url, params, debug=1)
+#    print data
+    url = 'http://dashb-cms-job.cern.ch/dashboard/request.py/jobefficiencyapi'
+    dataset='/QCD_Pt-1000to1400_Tune4C_13TeV_pythia8/Spring14dr-castor_PU20bx25_POSTLS170_V5-v1/AODSIM'
+    params = {'start':'14-10-01', 'end':'14-10-31', 'site':'all', 'dataset':dataset}
     data = getdata(url, params)
     print data
 
