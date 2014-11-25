@@ -49,23 +49,96 @@ install).
 
 Usage
 -----
+
 To use DCAF package simply setup your environment, see setup.sh for
-example, and run dataframe script as following
+example.
+
+To start any analysis we need data. The DCAF package provides simple
+way to generate dataframe for any period of time, e.g.
 
 ```
 # to get some help
 dataframe --help
-Usage: dataframe [options]
+
+Usage: dataframe.py [options]
 
 Options:
-  -h, --help       show this help message and exit
-  --start=START    Start timestamp
-  --stop=STOP      Stop timestamp
-  --format=FORMAT  Output file format
-  --config=CONFIG  Config file
+  -h, --help            show this help message and exit
+  --fout=FOUT           Output file
+  --seed-dataset=SEED   Seed dataset,
+                        default=/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-
+                        SIM
+  --dbs-extra=DBS_EXTRA
+                        Extra datasets from DBS which were not shown in
+                        popularityDB, default 1000
+  --metric=METRIC       Output target metric (naccess by default), supported
+                        naccess, nusers, totcpu or python expression of those
+  --start=START         Start timestamp in YYYYMMDD format
+  --stop=STOP           Stop timestamp in YYYYMMDD format
+  --format=DFORMAT      Output file format, deafult csv (supported csv, vw)
+  --config=CONFIG       Config file, default etc/dcaf.cfg
+  --verbose=VERBOSE     Verbosity level, default 0
+  --update              Update internal storage (get new DBS/SiteDB database
+                        content
+  --newdata             Get new set of data from DBS, instead of popularity DB
 
 # to run a script
-dataframe --start=2012-6-26 --stop=2012-7-3
+dataframe --start=20141112 --stop=20141119 --fout=file.csv
+```
+
+DCAF package talks to several CMS data-services:
+
+- popularity DB, to get spanshot of popular dataset over period of time
+- DBS, to get meta-data information about given dataset
+- Phedex, to get location information about given dataset
+- SiteDB, to get user and site information
+- Dashboard, to get historical usage of user jobs
+
+All of these information are formed into single dataframe. The popularity
+of certain dataset are defined via Popularity DB metrics, such as number
+of dataset accesses, their CPU usage time, etc. By default the
+dataframe script generates csv files for naccess parameter.
+
+The actual analysis of data can be performed in any Machine Learning
+(ML) tool. But DCAF package also includes series of R/Python sklearn-based
+scripts to do this. For instance, someone can use ```model``` script to
+perform data analysis, e.g.
+
+```
+bin/model --help
+
+Usage: model.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --scaler=SCALER       model scalers: ['StandardScaler', 'MinMaxScaler'],
+                        default None
+  --scorer=SCORER       model scorers: ['accuracy', 'adjusted_rand_score',
+                        'average_precision', 'f1', 'log_loss',
+                        'mean_absolute_error', 'mean_squared_error',
+                        'precision', 'r2', 'recall', 'roc_auc'], default None
+  --learner=LEARNER     model learners: ['AdaBoostClassifier',
+                        'AdaBoostRegressor', 'BagginRegressor',
+                        'BaggincClassifier', 'BernoulliNB',
+                        'DecisionTreeClassifier', 'ExtraTreesClassifier',
+                        'GaussianNB', 'GradientBoostingClassifier',
+                        'GradientBoostingRegressor', 'KNeighborsClassifier',
+                        'LinearSVC', 'PCA', 'RandomForestClassifier',
+                        'RandomForestRegressor', 'RidgeClassifier',
+                        'SGDClassifier', 'SGDRegressor', 'SVC', 'SVR',
+                        'lda_rfc', 'pca_knc', 'pca_rfc', 'pca_svc']
+  --learner-params=LPARAMS
+                        model classifier parameters, supply via JSON
+  --train-file=TRAIN    train file, default train.csv
+  --test-file=TEST      test file, default no test file
+  --idx=IDX             initial index counter, default 0
+  --limit=LIMIT         number of rows to process, default 10000
+  --verbose=VERBOSE     verbose output, default=0
+  --roc                 plot roc curve
+  --full                Use full sample for training, i.e. don't split
+  --crossval            Perform cross-validation for given model and quit
+  --gsearch=GSEARCH     perform grid search, gsearch=<parameters>
+  --predict             Yield prediction, used by pylearn
 ```
 
 References
