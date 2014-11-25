@@ -62,9 +62,8 @@ class StorageManager(object):
 
         # Initialize analytics collection
 
-    def indexes(cname, index_list):
+    def indexes(self, cname, index_list):
         "Create indexes in given collection for given index list"
-#        index_list = [('name', DESCENDING)]
         create_indexes(self.col(cname), index_list)
 
     def __repr__(self):
