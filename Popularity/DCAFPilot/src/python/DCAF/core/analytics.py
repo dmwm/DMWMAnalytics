@@ -185,7 +185,7 @@ class DCAF(object):
         self.sitedb.update('people')
         self.sitedb.update('sites')
 
-    def dataframe(self, timeframe, seed, dformat, metric, dbs_extra=100, newdata=None, verbose=0):
+    def dataframe(self, timeframe, seed, dformat, metric, dbs_extra, newdata=None):
         """Form a dataframe from various CMS data-providers"""
         dtypes, stypes, rtypes, tiers = self.data_types()
         if  dformat == 'csv':
@@ -212,9 +212,9 @@ class DCAF(object):
         res = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
         popdb_datasets = {} #
         for row in res:
-            if  self.verbose:
-                print "Generate dataframe for %s timeframe" % timeframe
             dataset = row['dataset']
+            if  self.verbose:
+                print "Generate dataframe for %s, timeframe: %s" % (dataset, timeframe)
             naccess = row['naccess']
             nusers = row['nusers']
             totcpu = row['totcpu']
