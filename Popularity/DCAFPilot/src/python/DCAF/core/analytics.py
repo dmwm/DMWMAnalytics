@@ -188,6 +188,8 @@ class DCAF(object):
     def dataframe(self, timeframe, seed, dformat, metric, dbs_extra, newdata=None):
         """Form a dataframe from various CMS data-providers"""
         dtypes, stypes, rtypes, tiers = self.data_types()
+        pop_datasets = 0
+        dbs_datasets = 0
         if  dformat == 'csv':
             # seed dataset to determine headers of the dataframe
             rows = self.dataset_info(timeframe, seed, dtypes, stypes, rtypes, tiers, 'headers')
@@ -209,9 +211,9 @@ class DCAF(object):
                     yield row
             return
         # get list of popular datasets in certain time frame
-        res = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
+        popdb_results = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
         popdb_datasets = {} #
-        for row in res:
+        for row in popdb_results:
             dataset = row['dataset']
             if  self.verbose:
                 print "Generate dataframe for %s, timeframe: %s" % (dataset, timeframe)
@@ -232,14 +234,20 @@ class DCAF(object):
             popdb_datasets[dataset] = row
             for row in rows:
                 yield row
+                pop_datasets += 1
 
         # get list of datasets from DBS and discard from this list
         # those who were presented in popdb
-        dbs_datasets = [d for d in self.dbs.datasets() if d not in popdb_datasets.keys()]
+        all_dbs_datasets = self.dbs.datasets()
+        dbs_datasets = [d for d in all_dbs_datasets if d not in popdb_datasets.keys()]
         for dataset in random.sample(dbs_datasets, dbs_extra):
             rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat)
             for row in rows:
                 yield row
+                dbs_datasets += 1
+    if  self.verbose:
+        print "DBS datasets  : %s out of %s" % (dbs_datasets, len(all_dbs_datasets))
+        print "PopDB datasets: %s out of %s" % (pop_datasets, len(popdb_results))
 
     def export(self, dformat):
         "Export analytics dataframe into provided data format"
