@@ -245,9 +245,9 @@ class DCAF(object):
             for row in rows:
                 yield row
                 dbs_datasets += 1
-    if  self.verbose:
-        print "DBS datasets  : %s out of %s" % (dbs_datasets, len(all_dbs_datasets))
-        print "PopDB datasets: %s out of %s" % (pop_datasets, len(popdb_results))
+        if  self.verbose:
+            print "DBS datasets  : %s out of %s" % (dbs_datasets, len(all_dbs_datasets))
+            print "PopDB datasets: %s out of %s" % (pop_datasets, len(popdb_results))
 
     def export(self, dformat):
         "Export analytics dataframe into provided data format"
