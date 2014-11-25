@@ -69,7 +69,11 @@ def loads(idict, **kwargs):
     if  MODULE == 'json':
         return json.loads(idict, **kwargs)
     elif MODULE == 'cjson':
-        return cjson.decode(idict)
+        try:
+            return cjson.decode(idict)
+        except:
+            print 'Unable to decode %s' % idict
+            raise
     elif MODULE == 'yajl':
         try: # yajl.loads("123") will fail
             res = yajl.loads(idict)
