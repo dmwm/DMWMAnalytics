@@ -31,14 +31,6 @@ class DBSService(GenericService):
         self.url = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader/'
         self.instances = ["prod/phys01", "prod/phys02", "prod/phys03"]
         self.storage = StorageManager(config)
-        if  not self.storage.col('datasets').count():
-            index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
-            self.storage.indexes('datasets', index_list)
-            self.update('datasets')
-        if  not self.storage.col('releases').count():
-            index_list = [('release', DESCENDING), ('rid', DESCENDING)]
-            self.storage.indexes('releases', index_list)
-            self.update('releases')
 
     def fetch(self, api, params=None, dbsinst='prod/global'):
         "Fetch data for given api"
@@ -80,14 +72,19 @@ class DBSService(GenericService):
         "Update internal database with fresh snapshot of data"
         if  self.verbose:
             print "%s update %s" % (self.name, cname)
+        self.storage.cleanup(cname)
         if  cname == 'datasets':
-            self.storage.cleanup('datasets')
-            docs = self.fetch('datasets', {'dataset':'/*/*/*', 'detail':'true'})
-            self.storage.insert('datasets', docs)
+            spec = {'dataset':'/*/*/*', 'detail':'true'}
+            for dbsinst in ['prod/global']+self.instances:
+                docs = self.fetch(cname, spec, dbsinst)
+                self.storage.insert('datasets', docs)
+            index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
+            self.storage.indexes('datasets', index_list)
         elif cname == 'releases':
-            self.storage.cleanup('releases')
-            docs = self.fetch('releases')
-            self.storage.insert('releases', docs)
+            docs = self.fetch(cname)
+            self.storage.insert(cname, docs)
+            index_list = [('release', DESCENDING), ('rid', DESCENDING)]
+            self.storage.indexes('releases', index_list)
 
     def datasets(self):
         "Return list of datasets"
