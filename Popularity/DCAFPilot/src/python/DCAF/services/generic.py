@@ -24,7 +24,7 @@ class GenericService(object):
     def fetch(self, url, params):
         "Fetch data for given api"
         debug = 0
-        data = []
+        data = "[]"
         if  self.verbose:
             print "GenericService::fetch", url, params
             debug = self.verbose-1
