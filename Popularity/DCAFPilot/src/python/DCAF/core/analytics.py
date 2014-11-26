@@ -186,6 +186,10 @@ class DCAF(object):
         self.sitedb.update('people')
         self.sitedb.update('sites')
 
+    def cleanup(self, cname):
+        "Clean-up given collection"
+        self.storage.cleanup(cname)
+
     def dataframe(self, timeframe, seed, dformat, metric, dbs_extra, newdata=None):
         """Form a dataframe from various CMS data-providers"""
         dtypes, stypes, rtypes, tiers = self.data_types()
