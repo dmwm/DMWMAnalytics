@@ -45,6 +45,8 @@ class OptionParser():
             dest="verbose", default=0, help="Verbosity level, default 0")
         self.parser.add_option("--seed-cache", action="store_true",
             dest="update", default=False, help="Seed internal cache with DBS/SiteDB database content")
+        self.parser.add_option("--clean-cache", action="store_true",
+            dest="clean", default="cache", help="Clean-up cache")
         self.parser.add_option("--newdata", action="store_true",
             dest="newdata", default=False, help="Get new set of data from DBS, instead of popularity DB")
     def get_opt(self):
@@ -57,6 +59,9 @@ def main():
     opts, _ = optmgr.get_opt()
 
     mgr = DCAF(opts.config, opts.verbose)
+    if  opts.clean:
+        mgr.cleanup('cache')
+        return
     if  opts.update:
         mgr.update()
         return
