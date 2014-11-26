@@ -216,7 +216,7 @@ class DCAF(object):
         popdb_datasets = {} #
         for row in popdb_results:
             dataset = row['dataset']
-            if  not regex.DATASET_PAT.match(dataset):
+            if  not DATASET_PAT.match(dataset):
                 continue
             if  self.verbose:
                 print "Generate dataframe for %s, timeframe: %s" % (dataset, timeframe)
