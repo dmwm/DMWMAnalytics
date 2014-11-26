@@ -78,6 +78,8 @@ class StorageManager(object):
         "Insert docs into given collection"
         size = self.cache_size
         inserted = 0
+        if  not isinstance(docs, list):
+            docs = [docs]
         try:
             while True:
                 nres = self.col(cname).insert(itertools.islice(docs, size))
