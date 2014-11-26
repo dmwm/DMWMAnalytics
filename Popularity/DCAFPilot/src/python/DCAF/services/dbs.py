@@ -155,5 +155,6 @@ class DBSService(GenericService):
                 if  len(data) and 'release_version' in data[0]:
                     break
         for ver in set(data[0]['release_version']):
-            row = self.storage.fetch_one('releases', {'release':ver})
-            yield row['release']
+#            row = self.storage.fetch_one('releases', {'release':ver})
+#            yield row['release']
+            yield ver
