@@ -7,6 +7,9 @@ Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Generic service module
 """
 
+# system modules
+import time
+
 # package modules
 from DCAF.utils.url_utils import getdata
 
