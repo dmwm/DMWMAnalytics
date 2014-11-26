@@ -65,10 +65,6 @@ class SiteDBService(GenericService):
         self.name = 'sitedb'
         self.url = 'https://cmsweb.cern.ch/sitedb/data/prod'
         self.storage = StorageManager(config)
-        if  not self.storage.col('people').count():
-            self.update('people')
-        if  not self.storage.col('sites').count():
-            self.update('sites')
 
     def fetch(self, api, params=None):
         "Fetch data for given api"
