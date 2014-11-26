@@ -43,8 +43,8 @@ class OptionParser():
             dest="config", default="etc/dcaf.cfg", help="Config file, default etc/dcaf.cfg")
         self.parser.add_option("--verbose", action="store", type="int",
             dest="verbose", default=0, help="Verbosity level, default 0")
-        self.parser.add_option("--update", action="store_true",
-            dest="update", default=False, help="Update internal storage (get new DBS/SiteDB database content")
+        self.parser.add_option("--seed-cache", action="store_true",
+            dest="update", default=False, help="Seed internal cache with DBS/SiteDB database content")
         self.parser.add_option("--newdata", action="store_true",
             dest="newdata", default=False, help="Get new set of data from DBS, instead of popularity DB")
     def get_opt(self):
