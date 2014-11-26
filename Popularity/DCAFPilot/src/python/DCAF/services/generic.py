@@ -21,8 +21,21 @@ class GenericService(object):
     def fetch(self, url, params):
         "Fetch data for given api"
         debug = 0
+        data = []
         if  self.verbose:
             print "GenericService::fetch", url, params
             debug = self.verbose-1
-        data = getdata(url, params, debug=debug)
+        try:
+            data = getdata(url, params, debug=debug)
+        except Exception as exc:
+            print str(exc)
+            for attempt in xrange(3):
+                time.sleep(0.1)
+                print "Attempt %s" % attempt
+                try:
+                    data = getdata(url, params, debug=debug)
+                    break
+                except Exception as err:
+                    print str(err)
+                    pass
         return data
