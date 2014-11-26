@@ -46,7 +46,7 @@ class OptionParser():
         self.parser.add_option("--seed-cache", action="store_true",
             dest="update", default=False, help="Seed internal cache with DBS/SiteDB database content")
         self.parser.add_option("--clean-cache", action="store_true",
-            dest="clean", default="cache", help="Clean-up cache")
+            dest="clean", default=False, help="Clean-up cache")
         self.parser.add_option("--newdata", action="store_true",
             dest="newdata", default=False, help="Get new set of data from DBS, instead of popularity DB")
     def get_opt(self):
