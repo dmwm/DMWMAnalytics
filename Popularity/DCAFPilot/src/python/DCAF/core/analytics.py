@@ -104,7 +104,7 @@ class DCAF(object):
         "Return common dataset info in specified data format"
         row = self.dbs.dataset_info(dataset)
         if  row:
-            releases = [rname for _rid,rname in self.dbs.dataset_release_versions(dataset)]
+            releases = [rname for rname in self.dbs.dataset_release_versions(dataset)]
             nrels = len(releases)
             series = rtypes['series']
             majors = rtypes['majors']
