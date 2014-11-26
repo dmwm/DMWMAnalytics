@@ -45,3 +45,5 @@ SE_PAT = \
     re.compile(r'[a-z]+(\.)[a-z]+(\.)') # a.b.c
 NUM_PAT = \
     re.compile(r'^[-]?[0-9][0-9\.]*$') # -123
+
+DATASET_PAT = re.compile(r'/.*/.*/.*')

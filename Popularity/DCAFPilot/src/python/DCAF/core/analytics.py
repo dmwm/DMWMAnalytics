@@ -24,6 +24,7 @@ from DCAF.services.utils import site_tier, rel_ver, rel_type, cmssw_test
 from DCAF.services.utils import RFULL, RPRE, RPATCH
 from DCAF.services.utils import TIER0, TIER1, TIER2, TIER3, TIER_NA
 from DCAF.utils.utils import genkey, ndays
+from DCAF.utils.regex import DATASET_PAT
 
 def parse_config(filename):
     "Parse given config file into dict representation"
@@ -215,6 +216,8 @@ class DCAF(object):
         popdb_datasets = {} #
         for row in popdb_results:
             dataset = row['dataset']
+            if  not regex.DATASET_PAT.match(dataset):
+                continue
             if  self.verbose:
                 print "Generate dataframe for %s, timeframe: %s" % (dataset, timeframe)
             naccess = row['naccess']
