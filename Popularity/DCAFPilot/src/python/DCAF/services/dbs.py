@@ -88,7 +88,7 @@ class DBSService(GenericService):
         "Return list of datasets"
         spec = {}
         for row in self.storage.fetch('datasets', spec):
-            yield row
+            yield row['dataset']
 
     def new_datasets(self, ndays=7):
         "Return list of new datasets"
