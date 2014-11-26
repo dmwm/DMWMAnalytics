@@ -35,13 +35,17 @@ class PhedexService(GenericService):
             url = '%s/blockReplicas' % self.url
         else:
             url = '%s/%s' % (self.url, api)
-        data = json.loads(super(PhedexService, self).fetch(url, params))
-        rid = 0
-        for row in data['phedex']['block']:
-            for repl in row['replica']:
-                node = repl['node']
-                yield node
-            rid += 1
+        try:
+            data = json.loads(super(PhedexService, self).fetch(url, params))
+            rid = 0
+            for row in data['phedex']['block']:
+                for repl in row['replica']:
+                    node = repl['node']
+                    yield node
+                rid += 1
+        except Exception as exc:
+            print str(exc)
+            pass
 
     def sites(self, dataset):
         "Return list of datasets"
