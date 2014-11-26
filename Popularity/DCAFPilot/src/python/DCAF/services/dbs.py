@@ -156,4 +156,4 @@ class DBSService(GenericService):
                     break
         for ver in set(data[0]['release_version']):
             row = self.storage.fetch_one('releases', {'release':ver})
-            yield row['rid'], row['release']
+            yield row['release']
