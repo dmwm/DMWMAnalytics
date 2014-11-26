@@ -117,6 +117,7 @@ class DBSService(GenericService):
         res = [r for r in self.storage.fetch(api, spec)]
         if  not len(res):
             # look-up dataset in other DBS instances
+            spec.update({'detail':'true'})
             for dbsinst in self.instances:
                 res = [r for r in self.fetch(api, spec, dbsinst)]
                 if  len(res):
