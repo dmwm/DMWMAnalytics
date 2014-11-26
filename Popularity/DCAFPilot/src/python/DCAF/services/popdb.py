@@ -14,9 +14,8 @@ from   types import InstanceType
 # package modules
 import DCAF.utils.jsonwrapper as json
 from DCAF.utils.sso_reader import getdata
-from DCAF.utils.utils import get_key_cert
+from DCAF.utils.utils import get_key_cert, genkey
 from DCAF.services.generic import GenericService
-from DCAF.core.storage import StorageManager
 
 class PopDBService(GenericService):
     """
@@ -26,13 +25,24 @@ class PopDBService(GenericService):
         GenericService.__init__(self, config, verbose)
         self.name = 'popdb'
         self.url = 'https://cms-popularity.cern.ch/popdb/popularity/'
-        self.storage = StorageManager(config)
         self.ckey, self.cert = get_key_cert()
 
     def fetch(self, api, params=None):
         "Fetch data for given api"
         url = '%s/%s' % (self.url, api)
-        data = json.loads(getdata(url, self.ckey, self.cert, debug=self.verbose))
+        docid = genkey("url=%s params=%s" % (url, params))
+        res = self.storage.fetch_one('cache', {'_id':docid})
+        if  res and 'data' in res:
+            if  self.verbose:
+                print "%s::fetch url=%s, params=%s, docid=%s" \
+                        % (self.name, url, params, docid)
+            data = res['data']
+        else:
+            if  self.verbose:
+                print "%s::fetch url=%s, params=%s" % (self.name, url, params)
+            data = getdata(url, self.ckey, self.cert, debug=self.verbose)
+            self.storage.insert('cache', {'_id':docid, 'data': data, 'url': url, 'params': params})
+        data = json.loads(data)
         for row in data['DATA']:
             yield row
 

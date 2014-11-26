@@ -16,7 +16,6 @@ import DCAF.utils.jsonwrapper as json
 from DCAF.utils.utils import get_key_cert, dashboard_date
 from DCAF.services.generic import GenericService
 from DCAF.services.sitedb import SiteDBService
-from DCAF.core.storage import StorageManager
 
 class DashboardService(GenericService):
     """
@@ -26,7 +25,6 @@ class DashboardService(GenericService):
         GenericService.__init__(self, config, verbose)
         self.name = 'dashboard'
         self.url = "http://dashb-cms-job.cern.ch/dashboard/request.py"
-        self.storage = StorageManager(config)
         self.ckey, self.cert = get_key_cert()
         self.sitedb = SiteDBService(config)
 

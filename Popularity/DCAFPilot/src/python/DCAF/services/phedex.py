@@ -15,7 +15,6 @@ from   types import InstanceType
 import DCAF.utils.jsonwrapper as json
 from DCAF.utils.url_utils import getdata
 from DCAF.services.generic import GenericService
-from DCAF.core.storage import StorageManager
 
 class PhedexService(GenericService):
     """
@@ -27,7 +26,6 @@ class PhedexService(GenericService):
         GenericService.__init__(self, config, verbose)
         self.name = 'phedex'
         self.url = 'https://cmsweb.cern.ch/phedex/datasvc/json/prod'
-        self.storage = StorageManager(config)
 
     def fetch(self, api, params=None):
         "Fetch data for given api"

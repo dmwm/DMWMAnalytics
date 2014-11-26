@@ -19,7 +19,6 @@ from pymongo import DESCENDING
 import DCAF.utils.jsonwrapper as json
 from DCAF.utils.utils import dates_from_today
 from DCAF.services.generic import GenericService
-from DCAF.core.storage import StorageManager
 
 class DBSService(GenericService):
     """
@@ -30,7 +29,6 @@ class DBSService(GenericService):
         self.name = 'dbs'
         self.url = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader/'
         self.instances = ["prod/phys01", "prod/phys02", "prod/phys03"]
-        self.storage = StorageManager(config)
 
     def fetch(self, api, params=None, dbsinst='prod/global'):
         "Fetch data for given api"

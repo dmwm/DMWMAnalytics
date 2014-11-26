@@ -14,7 +14,6 @@ from   types import InstanceType
 # package modules
 import DCAF.utils.jsonwrapper as json
 from DCAF.services.generic import GenericService
-from DCAF.core.storage import StorageManager
 
 def rowdict(columns, row):
     """Convert given row list into dict with column keys"""
@@ -64,7 +63,6 @@ class SiteDBService(GenericService):
         GenericService.__init__(self, config, verbose)
         self.name = 'sitedb'
         self.url = 'https://cmsweb.cern.ch/sitedb/data/prod'
-        self.storage = StorageManager(config)
 
     def fetch(self, api, params=None):
         "Fetch data for given api"
