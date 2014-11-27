@@ -73,8 +73,10 @@ class DBSService(GenericService):
         self.storage.cleanup(cname)
         if  cname == 'datasets':
             spec = {'dataset':'/*/*/*', 'detail':'true'}
-            for dbsinst in ['prod/global']+self.instances:
-                docs = self.fetch(cname, spec, dbsinst)
+            all_dbs = ['prod/global']+self.instances
+            for dbsinst in all_dbs:
+                inst = {'dbs_instance':all_dbs.index(dbsinst)}
+                docs = [r.update(inst) for r in self.fetch(cname, spec, dbsinst)]
                 self.storage.insert('datasets', docs)
             index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
             self.storage.indexes('datasets', index_list)

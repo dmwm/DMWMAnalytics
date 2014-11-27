@@ -128,6 +128,7 @@ class DCAF(object):
             dataset_id = row['rid']
             era = genkey(row['acquisition_era_name'], self.salt, 5)
             create_dn = self.sitedb.dnid(row['create_by'])
+            dbsinst = row['dbs_instance']
             dtype = row['primary_ds_type']
             # number of data types should be small and simple
             # list look-up shouldn't be a problem
@@ -147,7 +148,7 @@ class DCAF(object):
                     dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
                     nfiles=summary['num_file'], nlumis=summary['num_lumi'],
                     nblk=summary['num_block'], nevt=summary['num_event'],
-                    size=summary['file_size'], era=era,
+                    size=summary['file_size'], era=era, dbs=dbsinst,
                     cpu=dashboard['cpu'], wct=dashboard['wct'], proc_evts=dashboard['nevt'],
                     target=target_str)
             for key,val in series.items():
