@@ -149,7 +149,11 @@ class DBSService(GenericService):
                 data = json.loads(super(DBSService, self).fetch(dbs_url, params))
                 if  len(data) and 'release_version' in data[0]:
                     break
-        for ver in set(data[0]['release_version']):
-#            row = self.storage.fetch_one('releases', {'release':ver})
-#            yield row['release']
-            yield ver
+        if  data and isinstance(data, list) and len(data) > 0:
+            if  'release_version' in data[0]:
+                for ver in set(data[0]['release_version']):
+                    yield ver
+            else:
+                yield "N/A"
+        else:
+            yield "N/A"
