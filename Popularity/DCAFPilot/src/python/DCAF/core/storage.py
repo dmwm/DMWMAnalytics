@@ -11,6 +11,7 @@ Description: analytics storage manager
 import os
 import sys
 import itertools
+from types import GeneratorType
 
 # monogo db modules
 from pymongo import MongoClient, DESCENDING, ASCENDING
@@ -78,7 +79,7 @@ class StorageManager(object):
         "Insert docs into given collection"
         size = self.cache_size
         inserted = 0
-        if  not isinstance(docs, list):
+        if  not isinstance(docs, list) and not isinstance(docs, GeneratorType):
             docs = [docs]
         try:
             while True:
