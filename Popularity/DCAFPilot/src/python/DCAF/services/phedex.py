@@ -50,8 +50,10 @@ class PhedexService(GenericService):
         spec = {'dataset':dataset}
         res = set([r for r in self.fetch('replicas', spec)])
         for node in res:
-            row = self.storage.fetch_one('sites', {'site':node})
-            yield row['rid'], row['site']
+#            row = self.storage.fetch_one('sites', {'site':node})
+#            if  row:
+#                yield row['site']
+            yield node
 
 def test():
     uri = 'mongodb://localhost:8230'
