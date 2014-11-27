@@ -29,10 +29,12 @@ class DBSService(GenericService):
         self.name = 'dbs'
         self.url = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader/'
         self.instances = ["prod/phys01", "prod/phys02", "prod/phys03"]
+        self.all_dbs = ['prod/global']+self.instances
 
     def fetch(self, api, params=None, dbsinst='prod/global'):
         "Fetch data for given api"
         dbs_url = self.url.replace('prod/global', dbsinst)
+        inst = {'dbs_instance':self.all_dbs.index(dbsinst)}
         if  api == 'releases':
             url = '%s/releaseversions' % dbs_url
         else:
@@ -56,6 +58,7 @@ class DBSService(GenericService):
                 except:
                     print "Unable to process dataset row", row
                     raise
+                row.update(inst)
                 yield row
             elif api == 'releases':
                 rec = {'release':row, 'rid':rid}
@@ -73,10 +76,8 @@ class DBSService(GenericService):
         self.storage.cleanup(cname)
         if  cname == 'datasets':
             spec = {'dataset':'/*/*/*', 'detail':'true'}
-            all_dbs = ['prod/global']+self.instances
-            for dbsinst in all_dbs:
-                inst = {'dbs_instance':all_dbs.index(dbsinst)}
-                docs = [r.update(inst) for r in self.fetch(cname, spec, dbsinst)]
+            for dbsinst in self.all_dbs:
+                docs = self.fetch(cname, spec, dbsinst)
                 self.storage.insert('datasets', docs)
             index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
             self.storage.indexes('datasets', index_list)
