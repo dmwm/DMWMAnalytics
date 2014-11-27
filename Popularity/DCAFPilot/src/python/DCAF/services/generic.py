@@ -24,17 +24,18 @@ class GenericService(object):
         self.verbose = verbose
         self.storage = StorageManager(config)
 
-    def fetch(self, url, params):
+    def fetch(self, url, params, cache=True):
         "Fetch data for given api"
         debug = 0
         data = "[]"
-        docid = genkey("url=%s params=%s" % (url, params))
-        res = self.storage.fetch_one('cache', {'_id':docid})
-        if  res and 'data' in res:
-            if  self.verbose:
-                print "%s::fetch url=%s, params=%s, docid=%s" \
-                        % (self.name, url, params, docid)
-            return res['data']
+        if  cache:
+            docid = genkey("url=%s params=%s" % (url, params))
+            res = self.storage.fetch_one('cache', {'_id':docid})
+            if  res and 'data' in res:
+                if  self.verbose:
+                    print "%s::fetch url=%s, params=%s, docid=%s" \
+                            % (self.name, url, params, docid)
+                return res['data']
         if  self.verbose:
             print "%s::fetch url=%s, params=%s" % (self.name, url, params)
             debug = self.verbose-1
@@ -51,5 +52,6 @@ class GenericService(object):
                 except Exception as err:
                     print str(err)
                     pass
-        self.storage.insert('cache', {'_id':docid, 'data': data, 'url': url, 'params': params})
+        if  cache:
+            self.storage.insert('cache', {'_id':docid, 'data': data, 'url': url, 'params': params})
         return data
