@@ -75,7 +75,7 @@ def genkey(doc, salt="", truncate=0, method='md5'):
     func = getattr(hashlib, method)
     res = func(salt+doc).hexdigest()
     if  truncate:
-        return res[len(res)-truncate:]
+        return int(res[len(res)-truncate:], 16)
     return res
 
 def get_key_cert():
