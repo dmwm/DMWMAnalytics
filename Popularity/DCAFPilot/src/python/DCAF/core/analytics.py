@@ -120,7 +120,7 @@ class DCAF(object):
                 majors['rel2_%s'%rmajor] += 1
                 minors['rel3_%s'%rminor] += 1
                 relclf['relt_%s'%rtype] += 1
-            sites = [sname for _rid,sname in self.phedex.sites(dataset)]
+            sites = [sname for sname in self.phedex.sites(dataset)]
             nsites = len(sites)
             for site in sites:
                 stier = site_tier(site)
