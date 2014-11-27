@@ -246,8 +246,8 @@ class DCAF(object):
         # get list of datasets from DBS and discard from this list
         # those who were presented in popdb
         all_dbs_datasets = self.dbs.datasets()
-        dbs_datasets = [d for d in all_dbs_datasets if d not in popdb_datasets.keys()]
-        for dataset in random.sample(dbs_datasets, dbs_extra):
+        dbsdatasets = [d for d in all_dbs_datasets if d not in popdb_datasets.keys()]
+        for dataset in random.sample(dbsdatasets, dbs_extra):
             rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat)
             for row in rows:
                 yield row
