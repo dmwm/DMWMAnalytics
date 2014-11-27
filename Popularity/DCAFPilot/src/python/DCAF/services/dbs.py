@@ -31,7 +31,7 @@ class DBSService(GenericService):
         self.instances = ["prod/phys01", "prod/phys02", "prod/phys03"]
         self.all_dbs = ['prod/global']+self.instances
 
-    def fetch(self, api, params=None, dbsinst='prod/global'):
+    def fetch(self, api, params=None, dbsinst='prod/global', cache=True):
         "Fetch data for given api"
         dbs_url = self.url.replace('prod/global', dbsinst)
         inst = {'dbs_instance':self.all_dbs.index(dbsinst)}
@@ -39,7 +39,7 @@ class DBSService(GenericService):
             url = '%s/releaseversions' % dbs_url
         else:
             url = '%s/%s' % (dbs_url, api)
-        data = json.loads(super(DBSService, self).fetch(url, params))
+        data = json.loads(super(DBSService, self).fetch(url, params, cache))
         rid = 0
         if  api == 'releases':
             data = data[0]['release_version']
@@ -77,12 +77,12 @@ class DBSService(GenericService):
         if  cname == 'datasets':
             spec = {'dataset':'/*/*/*', 'detail':'true'}
             for dbsinst in self.all_dbs:
-                docs = self.fetch(cname, spec, dbsinst)
+                docs = self.fetch(cname, spec, dbsinst, cache=False)
                 self.storage.insert('datasets', docs)
             index_list = [('dataset', DESCENDING), ('rid', DESCENDING), ('dataset_id', DESCENDING)]
             self.storage.indexes('datasets', index_list)
         elif cname == 'releases':
-            docs = self.fetch(cname)
+            docs = self.fetch(cname, cache=False)
             self.storage.insert(cname, docs)
             index_list = [('release', DESCENDING), ('rid', DESCENDING)]
             self.storage.indexes('releases', index_list)
