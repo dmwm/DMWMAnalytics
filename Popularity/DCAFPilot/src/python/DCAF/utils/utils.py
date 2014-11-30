@@ -70,6 +70,18 @@ def dashboard_date(tstamp):
         return '%s-%s-%s' % (year, month, day)
     return tstamp
 
+def yyyymmdd(tstamp):
+    "Return date in dashboard format YYYYMMDD:"
+    if  tstamp.find('-') != -1: # popdb time string
+        year, month, day = tstamp.split('-')
+        month = month if len(month) == 2 else '0%s' % month
+        day = day if len(day) == 2 else '0%s' % day
+        return '%s%s%s' % (year, month, day)
+    elif len(str(tstamp)) == 10: # unix time
+        return date4unixtstamp(unixtime)
+    else:
+        raise Exception("Unsupported time format '%s'" % tstamp)
+
 def genkey(doc, salt="", truncate=0, method='md5'):
     "Generate hash for given doc and optional salt"
     func = getattr(hashlib, method)
