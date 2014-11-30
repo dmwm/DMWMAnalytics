@@ -54,3 +54,8 @@ def cmssw_test(rserie, rmajor, rminor):
     "Return if provided parameter match CMSSW release schema"
     cond = INT_PAT.match(str(rserie)) and INT_PAT.match(str(rmajor)) and INT_PAT.match(str(rminor))
     return cond
+
+def genuid(tstamp, dbsinst, dataset_id):
+    "Generate uid from given dataset_id and timestamp (YYYYMMDD)"
+    val = '%s%s%s' % (tstamp, dbsinst, dataset_id)
+    return long(val) % 2**30
