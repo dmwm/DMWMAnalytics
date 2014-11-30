@@ -141,6 +141,14 @@ class DBSService(GenericService):
         else:
             return res[0]
 
+    def dataset_parents(self, dataset):
+        "Return dataset id of the parent"
+        api = 'datasetparents'
+        spec = {'dataset': dataset}
+        res = [r for r in self.fetch(api, spec)]
+        for row in self.fetch(api, spec):
+            yield row['parent_dataset_id']
+
     def dataset_release_versions(self, dataset):
         "Return dataset release versions"
         url = '%s/releaseversions' % self.url
