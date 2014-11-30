@@ -143,6 +143,7 @@ class DCAF(object):
             tier = tiers.index(tier)
             target_str = '%5.3f' % target if target else 0
             parents = [r for r in self.dbs.dataset_parents(dataset)]
+            parent = parents[0] if len(parents) else 0
             summary = self.dbs.dataset_summary(dataset)
             dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
             uid = genuid(yyyymmdd(timeframe[0]), dbsinst, dataset_id)
@@ -150,7 +151,7 @@ class DCAF(object):
                     dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
                     nfiles=summary['num_file'], nlumis=summary['num_lumi'],
                     nblk=summary['num_block'], nevt=summary['num_event'],
-                    parent=parents[0],
+                    parent=parent,
                     size=summary['file_size']/2**30, era=era, dbs=dbsinst,
                     cpu=dashboard['cpu'], wct=dashboard['wct'], proc_evts=dashboard['nevt'],
                     target=target_str)
