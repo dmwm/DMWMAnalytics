@@ -21,7 +21,7 @@ from DCAF.services.phedex import PhedexService
 from DCAF.services.popdb import PopDBService
 from DCAF.services.dashboard import DashboardService
 from DCAF.services.utils import site_tier, rel_ver, rel_type, cmssw_test
-from DCAF.services.utils import RFULL, RPRE, RPATCH
+from DCAF.services.utils import genuid, RFULL, RPRE, RPATCH
 from DCAF.services.utils import TIER0, TIER1, TIER2, TIER3, TIER_NA
 from DCAF.utils.utils import genkey, ndays
 from DCAF.utils.regex import DATASET_PAT
@@ -144,11 +144,12 @@ class DCAF(object):
             target_str = '%5.3f' % target if target else 0
             summary = self.dbs.dataset_summary(dataset)
             dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
-            rec = dict(dataset=dataset_id, primds=prim, procds=proc, tier=tier,
+            uid = genuid(timeframe[0], dbsinst, dataset_id)
+            rec = dict(id=uid, dataset=dataset_id, primds=prim, procds=proc, tier=tier,
                     dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
                     nfiles=summary['num_file'], nlumis=summary['num_lumi'],
                     nblk=summary['num_block'], nevt=summary['num_event'],
-                    size=summary['file_size'], era=era, dbs=dbsinst,
+                    size=summary['file_size']/2**30, era=era, dbs=dbsinst,
                     cpu=dashboard['cpu'], wct=dashboard['wct'], proc_evts=dashboard['nevt'],
                     target=target_str)
             for key,val in series.items():
@@ -163,8 +164,8 @@ class DCAF(object):
                 rec.update({key:val})
             headers = rec.keys()
             headers.sort()
-            headers.remove('dataset')
-            headers = ['dataset'] + headers # let dataset id be the first column
+            headers.remove('id')
+            headers = ['id'] + headers # let dataset id be the first column
             headers.remove('target')
             if  target != -1:
                 headers += ['target'] # make target to be last column
@@ -211,8 +212,8 @@ class DCAF(object):
             for row in new_datasets:
                 dataset = row['dataset']
                 target = -1 # we will need to predict it
-                rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, \
-                        dformat, target)
+                rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
+                        rtypes, tiers, dformat, target)
                 for row in rows:
                     yield row
             return
@@ -238,7 +239,8 @@ class DCAF(object):
                     raise exc
             else:
                 target = naccess
-            rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat, target)
+            rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
+                    rtypes, tiers, dformat, target)
             popdb_datasets[dataset] = row
             for row in rows:
                 yield row
