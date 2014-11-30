@@ -9,6 +9,7 @@ Description: PopDB service module
 
 # system modules
 import time
+import urllib
 from   types import InstanceType
 
 # package modules
