@@ -16,6 +16,10 @@ import optparse
 # pandas
 import pandas as pd
 
+# sklearn
+from sklearn.metrics import explained_variance_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
 # package modules
 from DCAF.ml.utils import logloss
 
@@ -48,19 +52,25 @@ def loader(ifile, target, sep=','):
         comp = 'gzip'
     elif  ifile.endswith('.bz2'):
         comp = 'bz2'
-    df = pd.read_csv(ifile, sep=sep)
+    df = pd.read_csv(ifile, sep=sep, engine='python')
     return df[target]
 
-def checker(predictions, y_rest, verbose=False):
+def checker(predictions, y_true, verbose=False):
     "Check our model prediction and dump logloss value"
     loss = 0
     tot = 0
-    for pval, yval in zip(predictions, y_rest):
+    for pval, yval in zip(predictions, y_true):
         if  verbose:
             print "predict value %s, real value %s" % (pval, yval)
         loss += logloss(pval, yval)
         tot += 1
     print "Final Logloss", loss/tot
+
+    # sklearn metrics for regression
+    print "Explaied variance score", explained_variance_score(y_true, predictions)
+    print "Mean absolute error", mean_absolute_error(y_true, predictions)
+    print "Mean squared error", mean_squared_error(y_true, predictions)
+    print "R2 score", r2_score(y_true, predictions)
 
 def main():
     "Main function"
