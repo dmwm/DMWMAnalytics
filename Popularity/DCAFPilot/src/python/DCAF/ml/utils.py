@@ -109,9 +109,10 @@ class OptionParser(object):
         self.parser.add_option("--scorer", action="store", type="string",
             default="", dest="scorer",
             help="model scorers: %s, default None" % scorers)
+        learner = "RandomForestClassifier"
         self.parser.add_option("--learner", action="store", type="string",
-            default="RandomForestClassifier", dest="learner",
-            help="model learners: %s" % learners)
+            default=learner, dest="learner",
+            help="model learners: %s, default %s" % (learners, learner))
         self.parser.add_option("--learner-params", action="store", type="string",
             default="", dest="lparams",
             help="model classifier parameters, supply via JSON")
@@ -140,9 +141,9 @@ class OptionParser(object):
         self.parser.add_option("--gsearch", action="store", type="string",
             default=None, dest="gsearch",
             help="perform grid search, gsearch=<parameters>")
-        self.parser.add_option("--predict", action="store_true",
-            default=False, dest="predict",
-            help="Yield prediction, used by pylearn")
+        self.parser.add_option("--predict", action="store", type="string",
+            default=None, dest="predict",
+            help="Prediction file name, default <learner>.predictions")
     def options(self):
         "Returns parse list of options"
         return self.parser.parse_args()
