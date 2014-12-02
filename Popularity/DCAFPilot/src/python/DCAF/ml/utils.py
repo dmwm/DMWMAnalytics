@@ -124,8 +124,8 @@ class OptionParser(object):
             default=0, dest="idx",
             help="initial index counter, default 0")
         self.parser.add_option("--limit", action="store", type="int",
-            default=10000, dest="limit",
-            help="number of rows to process, default 10000")
+            default=-1, dest="limit",
+            help="number of rows to process, default -1 (everything)")
         self.parser.add_option("--verbose", action="store", type="int",
             default=0, dest="verbose",
             help="verbose output, default=0")
