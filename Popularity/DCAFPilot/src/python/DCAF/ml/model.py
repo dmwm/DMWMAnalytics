@@ -40,7 +40,12 @@ def get_auc(labels, predictions):
 
 def read_data(fname, drops=[], idx=0, limit=-1):
     "Read and return processed data frame"
-    xdf = pd.read_csv(fname)
+    comp = None
+    if  fname.endswith('.gz'):
+        comp = 'gzip'
+    elif  fname.endswith('.bz2'):
+        comp = 'bz2'
+    xdf = pd.read_csv(fname, compression=comp)
     # fill NAs
     xdf = xdf.fillna(0)
     # drop fields
