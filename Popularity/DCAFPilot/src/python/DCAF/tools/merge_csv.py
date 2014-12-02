@@ -64,7 +64,7 @@ def merger(fin, fout, verbose=False):
             comp = 'bz2'
         df = pd.read_csv(fname, compression=comp)
         df.to_csv(fdsc, header=first, index=False)
-        if  not first:
+        if  first:
             first = False
     fdsc.close()
 
