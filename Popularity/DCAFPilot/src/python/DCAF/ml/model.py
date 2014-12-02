@@ -8,8 +8,9 @@ Description: Generic classification model template
 """
 
 # system modules
+import os
 import sys
-#import time
+import time
 #import random
 #import pprint
 #try:
@@ -33,6 +34,12 @@ from DCAF.ml.utils import OptionParser, normalize, logloss, GLF
 from DCAF.ml.clf import learners, param_search, crossvalidation, print_clf_report
 import DCAF.utils.jsonwrapper as json
 
+def files(idir, ext=".csv.gz"):
+    "Return list of files from given directory"
+    for fname in os.listdir(idir):
+        if  fname.endswith(ext):
+            yield '%s/%s' % (idir, fname)
+
 def get_auc(labels, predictions):
     fpr, tpr, thresholds = metrics.roc_curve(labels, predictions, pos_label=1)
     auc = metrics.auc(fpr,tpr)
@@ -45,7 +52,7 @@ def read_data(fname, drops=[], idx=0, limit=-1):
         comp = 'gzip'
     elif  fname.endswith('.bz2'):
         comp = 'bz2'
-    xdf = pd.read_csv(fname, compression=comp)
+    xdf = pd.read_csv(fname, compression=comp, dtype=np.float32)
     # fill NAs
     xdf = xdf.fillna(0)
     # drop fields
@@ -73,14 +80,12 @@ def factorize(col, xdf, sdf=None):
     return out
 
 def model(train_file, test_file, learner, lparams=None, scorer=None,
-        scaler=None, idx=0, limit=-1, gsearch=None, crossval=None, verbose=False):
+        scaler=None, ofile=None, idx=0, limit=-1, gsearch=None, crossval=None, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
     in DCAF.ml.clf module.
     """
-    if  scaler:
-        scaler = getattr(preprocessing, scaler)
     clf = learners()[learner]
     if  lparams:
         if  isinstance(lparams, str):
@@ -94,24 +99,18 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
     print "clf:", clf
 
     # read data and normalize it
-    drops = []
+    drops = ['id']
     xdf = read_data(train_file, drops, idx, limit)
-    if  test_file:
-        tdf = read_data(test_file, drops)
-    else:
-        tdf = None
-    for col in ['era', 'primds', 'procds']:
-        xdf[col] = factorize(col, xdf, tdf)
-        if  tdf:
-            tdf[col] = factorize(col, tdf, xdf)
 
     # get target variable and exclude choice from train data
     tcol = 'target' # classification column name (what we'll predict)
     target = xdf[tcol]
     xdf = xdf.drop(tcol, axis=1)
     if  verbose:
+        print "Train file", train_file
         print "Columns:", ','.join(xdf.columns)
-        print "Target:", target
+        if  verbose>1:
+            print "Target:", target
 
     # split our train data
     x_train, x_rest, y_train, y_rest = \
@@ -126,8 +125,11 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
         sys.exit(0)
 
     if  scaler:
-        x_train = scaler.fit_transform(x_train)
+        x_train = getattr(preprocessing, scaler)().fit_transform(x_train)
+    time0 = time.time()
     fit = clf.fit(x_train, y_train)
+    if  verbose:
+        print "Train elapsed time", time.time()-time0
     predictions = fit.predict(x_rest)
     if  scorer:
         print "Score metric: %s" % scorer
@@ -135,7 +137,7 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
     loss = 0
     tot = 0
     for pval, yval in zip(predictions, y_rest):
-        if  verbose:
+        if  verbose>1:
             print "predict value %s, real value %s" % (pval, yval)
         loss += logloss(pval, yval)
         tot += 1
@@ -144,14 +146,22 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
 
     # test data
     if  test_file:
+        tdf = read_data(test_file, drops)
+        if  tcol in tdf.columns:
+            tdf = tdf.drop(tcol, axis=1)
+        if  verbose:
+            print "Test file", test_file
+            print "Columns:", ','.join(tdf.columns)
+            print "test shapes:", tdf.shape
+        datasets = tdf['dataset']
+        if  scaler:
+            tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict(tdf)
-        if  not isinstance(predictions[0], int):
-            predictions = [int(round(i)) for i in predictions]
-        out = pd.DataFrame(zip(tdf['dataset'], predictions))
-        ofile = 'prediction.txt'
-        out.to_csv(ofile, header=False, index=False)
+        out = pd.DataFrame(zip(datasets, predictions))
+        if  ofile:
+            out.to_csv(ofile, header=False, index=False)
 
-def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, verbose=False):
+def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, ofile=None, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
@@ -175,16 +185,9 @@ def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, v
     tcol = 'target' # classification column name (what we'll predict)
     fit = None
     for train_file in train_file_list:
+        print "Train file", train_file
         # read data and normalize it
         xdf = read_data(train_file, drops)
-        if  test_file:
-            tdf = read_data(test_file, drops)
-        else:
-            tdf = None
-        for col in ['era', 'primds', 'procds']:
-            xdf[col] = factorize(col, xdf, tdf)
-            if  tdf:
-                tdf[col] = factorize(col, tdf, xdf)
 
         # get target variable and exclude choice from train data
         target = xdf[tcol]
@@ -199,32 +202,51 @@ def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, v
 #        y_train = target
         x_train, x_rest, y_train, y_rest = \
                 train_test_split(xdf, target, test_size=0.1)
+        time0 = time.time()
         fit = clf.partial_fit(x_train, y_train)
+        if  verbose:
+            print "Train elapsed time", time.time()-time0
         print "### SCORE", clf.score(x_rest, y_rest)
 
     # test data
     if  test_file:
+        tdf = read_data(test_file, drops)
+        if  tcol in tdf.columns:
+            tdf = tdf.drop(tcol, axis=1)
+        datasets = tdf['dataset']
+        if  scaler:
+            tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict(tdf)
-        if  not isinstance(predictions[0], int):
-            predictions = [int(round(i)) for i in predictions]
-        out = pd.DataFrame(zip(tdf['dataset'], predictions))
-        ofile = 'prediction.txt'
-        out.to_csv(ofile, header=False, index=False)
+        out = pd.DataFrame(zip(datasets, predictions))
+        if  ofile:
+            out.to_csv(ofile, header=False, index=False)
 
 def main():
     "Main function"
     optmgr = OptionParser(learners().keys(), SCORERS.keys())
     opts, _ = optmgr.options()
+    ofile = opts.predict
+    if  not ofile:
+        ofile = "%s.predictions" % opts.learner
+    model2run = 'model'
     if  opts.train.find(',') != -1: # list of files
         train_files = opts.train.split(',')
-        print "Train file list", train_files
+        model2run = 'model_iter'
+    elif os.path.isdir(opts.train): # we got directory name
+        for ext in ['.csv.gz', '.csv']:
+            train_files = [f for f in files(opts.train, ext)]
+            model2run = 'model_iter'
+            if  len(train_files):
+                break
+
+    if  model2run == 'model_iter':
         model_iter(train_file_list=train_files, test_file=opts.test,
                 learner=opts.learner, lparams=opts.lparams,
-                scaler=opts.scaler, verbose=opts.verbose)
+                scaler=opts.scaler, ofile=ofile, verbose=opts.verbose)
     else:
         model(train_file=opts.train, test_file=opts.test,
                 learner=opts.learner, lparams=opts.lparams,
-                scorer=opts.scorer, scaler=opts.scaler,
+                scorer=opts.scorer, scaler=opts.scaler, ofile=ofile,
                 idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,
                 crossval=opts.cv, verbose=opts.verbose)
 
