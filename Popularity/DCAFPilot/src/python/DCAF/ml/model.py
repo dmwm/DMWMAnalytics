@@ -52,7 +52,8 @@ def read_data(fname, drops=[], idx=0, limit=-1):
         comp = 'gzip'
     elif  fname.endswith('.bz2'):
         comp = 'bz2'
-    xdf = pd.read_csv(fname, compression=comp, dtype=np.float32)
+    xdf = pd.read_csv(fname, compression=comp)
+#    xdf = pd.read_csv(fname, compression=comp, dtype=np.float32)
     # fill NAs
     xdf = xdf.fillna(0)
     # drop fields
@@ -97,6 +98,8 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
         for key, val in lparams.items():
             setattr(clf, key, val)
     print "clf:", clf
+    if  verbose:
+        print "idx/limit", idx, limit
 
     # read data and normalize it
     drops = ['id']
@@ -109,6 +112,7 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
     if  verbose:
         print "Train file", train_file
         print "Columns:", ','.join(xdf.columns)
+        print "train shapes:", xdf.shape, target.shape
         if  verbose>1:
             print "Target:", target
 
@@ -116,7 +120,7 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
     x_train, x_rest, y_train, y_rest = \
             train_test_split(xdf, target, test_size=0.33)
     if  verbose:
-        print "train shapes:", x_train.shape, y_train.shape
+        print "train shapes after splitting:", x_train.shape, y_train.shape
     if  gsearch:
         param_search(clf, x_train, y_train, x_rest, y_rest, gsearch)
         sys.exit(0)
@@ -132,8 +136,8 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
         print "Train elapsed time", time.time()-time0
     predictions = fit.predict(x_rest)
     if  scorer:
-        print "Score metric: %s" % scorer
-        print metrics.SCORERS[scorer](clf, x_rest, y_rest)
+        res = metrics.SCORERS[scorer](clf, x_rest, y_rest)
+        print "Score metric (%s): %s" % (scorer, res)
     loss = 0
     tot = 0
     for pval, yval in zip(predictions, y_rest):
