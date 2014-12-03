@@ -45,15 +45,17 @@ def get_auc(labels, predictions):
     auc = metrics.auc(fpr,tpr)
     return auc
 
-def read_data(fname, drops=[], idx=0, limit=-1):
+def read_data(fname, drops=[], idx=0, limit=-1, scaler=None):
     "Read and return processed data frame"
     comp = None
     if  fname.endswith('.gz'):
         comp = 'gzip'
     elif  fname.endswith('.bz2'):
         comp = 'bz2'
-    xdf = pd.read_csv(fname, compression=comp)
-#    xdf = pd.read_csv(fname, compression=comp, dtype=np.float32)
+    if  scaler:
+        xdf = pd.read_csv(fname, compression=comp, dtype=np.float32)
+    else:
+        xdf = pd.read_csv(fname, compression=comp)
     # fill NAs
     xdf = xdf.fillna(0)
     # drop fields
@@ -103,7 +105,7 @@ def model(train_file, newdata_file, learner, lparams=None, scorer=None,
 
     # read data and normalize it
     drops = ['id']
-    xdf = read_data(train_file, drops, idx, limit)
+    xdf = read_data(train_file, drops, idx, limit, scaler)
 
     # get target variable and exclude choice from train data
     tcol = 'target' # classification column name (what we'll predict)
@@ -150,7 +152,7 @@ def model(train_file, newdata_file, learner, lparams=None, scorer=None,
 
     # new data file for which we want to predict
     if  newdata_file:
-        tdf = read_data(newdata_file, drops)
+        tdf = read_data(newdata_file, drops, scaler=scaler)
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         if  verbose:
@@ -191,7 +193,7 @@ def model_iter(train_file_list, newdata_file, learner, lparams=None, scaler=None
     for train_file in train_file_list:
         print "Train file", train_file
         # read data and normalize it
-        xdf = read_data(train_file, drops)
+        xdf = read_data(train_file, drops, scaler=scaler)
 
         # get target variable and exclude choice from train data
         target = xdf[tcol]
@@ -214,7 +216,7 @@ def model_iter(train_file_list, newdata_file, learner, lparams=None, scaler=None
 
     # new data for which we want to predict
     if  newdata_file:
-        tdf = read_data(newdata_file, drops)
+        tdf = read_data(newdata_file, drops, scaler=scaler)
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         datasets = tdf['dataset']
