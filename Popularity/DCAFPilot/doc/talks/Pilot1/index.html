@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>reveal.js - The HTML Presentation Framework</title>
+
+    <meta name="description" content="DCAFPilot for CMS">
+    <meta name="author" content="Valentin Kuznetsov">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+        document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section>
+    <h2>DCAFPilot for CMS</h2>
+    <h3>pilot project for CMS computing data-mining</h3>
+    <p>
+    <small>by
+        <a href="http://github.com/vkuznet">Valentin Kuznetsov</a> /
+        <a href="http://www.cornell.edu">Cornell University</a>
+    </small>
+    </p>
+</section>
+
+<section>
+    <h2>Talk outlines</h2>
+    <ul>
+        <li>Project outlines</li>
+        <li>First dataset</li>
+        <li>Data</li>
+        <li>Predictions</li>
+        <li>Future direction</li>
+    </ul>
+</section>
+
+<section>
+<div align="left">
+<p>
+<a href="https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot">DCAFPilot</a>
+stands for Data and Computing Analysis Framework.
+It is initiative within DMWM analytics group to 
+imporve our understanding of CMS computing data.
+</p>
+
+<p>
+Ultimately we'd like to learn from CMS data and make prediction to improve our resource utilization.
+</p>
+
+<p>
+Initial goal was to predict popularity of datasets on weekly basis.
+</p>
+
+</div>
+</section>
+
+<section>
+<h2>Project outlines</h2>
+<div align="left">
+    <p>
+The DCAFPilot consists of several components:
+<small>
+    <ul>
+    <li>Dataframe generator talks to DBS/Phedex/SiteDB/PopularityDB/Dashboard
+        APIs and extract necessary bits for datasets in questions
+    </li>
+    <li>Machine Learning (ML) algorithms (python/R code) for data analysis</li>
+    <li>Scripts for data manipulation (supports CSV/VW/libSVM data-formats)</li>
+    </ul>
+</small>
+</p>
+
+<p>
+Setup and dependencies:
+<small>
+    <ul>
+        <li><a href="https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot">DCAFPilot</a> project, available at github</li>
+        <li><a href="http://www.mongodb.org">MongoDB</a> for internal cache</li>
+        <li>Python tools: <a href="http://pandas.pydata.org/">pandas</a>,
+            <a href="http://www.numpy.org/">NumPy</a>, <a href="http://www.scipy.org/">SciPy</a>,
+            <a href="http://scikit-learn.org/stable">sklearn</a> ML toolkit</li>
+        <li><a href="http://www.r-project.org">R language</a> (for data exploration, statistical computing and ML algorithms)</li>
+        <li>Optional: <a href="https://github.com/EducationalTestingService/skll">SKLL</a> toolkit to run/experiment with various ML algorithms, <a href="https://github.com/JohnLangford/vowpal_wabbit">Vowpal Wabbit</a> online-learning algorithm</li>
+    </ul>
+</small>
+</p>
+
+</div>
+</section>
+
+<section>
+<h2>Data collection flow</h2>
+<div align="left">
+We collect data via the following set of rules
+<small>
+    <ul>
+    <li>Divide workflow on weekly basis</li>
+    <li>Collect all datasets (4 DBS instances) into internal cache</li>
+    <li>Collection popular datasets from PopularityDB</li>
+    <li>Get summary for datasets from DBS/Phedex/SiteDB/Dashboard data-services</li>
+    <li>Complement dataframe with random set of DBS datasets which were not
+    visible in popularity for given time internval</li>
+    </ul>
+</small>
+</div>
+</section>
+
+<section>
+<h2>Data collection flow, cont'd</h2>
+<div align="left">
+List of used CMS data-service APIs used by DCAFPilot package
+</br>
+<small>
+    <ul>
+        <li><a href="https://cmsweb.cern.ch/dbs/">DBS:</a> datasets, releases, filesummaries APIs</li>
+        <li><a href="https://cmsweb.cern.ch/phedex">Phedex:</a> blockReplicas API</li>
+        <li><a href="https://cmsweb.cern.ch/sitedb">SiteDB:</a> site-names, people APIs</li>
+        <li><a href="https://cms-popularity.cern.ch/popdb/popularity/apidoc">PopularityDB:</a> DSStatInTimeWindow API</li>
+        <li><a href="https://twiki.cern.ch/twiki/bin/view/ITAnalyticsWorkingGroup/ExperimentDashboard">Dashboard:</a> jobefficiencyapi API</li>
+    </ul>
+</small>
+</div>
+</section>
+
+
+<section>
+<h2>Statistics</h2>
+<div align="left">
+    <pre style="width:1000px">
+Queried 5 CMS data-services: DBS, Phedex, SiteDB, PopularityDB, Dashboard
+
+Placed ~610K queries, ~345K went to data-services and
+the rest used internal cache
+
+Used ~217K datasets from 4 DBS instances
+
+The final dataframe is constructed out of 71 variables and has 46 files and ~114K rows
+   - each file is worth of 1 week of CMS data
+
+The average size of the object is 1KB, ~0.6GB of CMS data
+
+Elapsed time: ~2h to 25m per job
+    </pre>
+</small>
+</section>
+
+<section>
+<h2>Live Data plots</h2>
+<p><img src="images/dbs1.gif" alt="DBS plots" /></p>
+</section>
+
+<section>
+<h2>Live Data plots, cont'd</h2>
+<p><img src="images/dbs2.gif" alt="DBS plots" /></p>
+</section>
+
+<section>
+<h2>Live Data plots, cont'd</h2>
+<p><img src="images/dbs3.gif" alt="DBS plots" /></p>
+</section>
+
+<section>
+<h2>Correlations</h2>
+<p><img src="images/corr.gif" alt="Correlations" /></p>
+</section>
+
+<section>
+<h2>What we're looking for</h2>
+<p><img src="images/popularity.jpg" alt="Popularity" /></p>
+A few datasets behavior through 2014
+</section>
+
+<section>
+<h2>How to train your model</h2>
+<div align="left">
+<small>
+    <pre style="width:1000px"><code>
+Usage: model.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --scaler=SCALER       model scalers: ['StandardScaler', 'MinMaxScaler'], default None
+  --scorer=SCORER       model scorers: ['accuracy', 'adjusted_rand_score', 'average_precision',
+                        'f1', 'log_loss', 'mean_absolute_error', 'mean_squared_error',
+                        'precision', 'r2', 'recall', 'roc_auc'], default None
+  --learner=LEARNER     model learners: ['AdaBoostClassifier', 'AdaBoostRegressor',
+                        'BagginRegressor', 'BaggincClassifier', 'BernoulliNB',
+                        'DecisionTreeClassifier', 'ExtraTreesClassifier',
+                        'GaussianNB', 'GradientBoostingClassifier',
+                        'GradientBoostingRegressor', 'KNeighborsClassifier',
+                        'LinearSVC', 'PCA', 'RandomForestClassifier',
+                        'RandomForestRegressor', 'RidgeClassifier',
+                        'SGDClassifier', 'SGDRegressor', 'SVC', 'SVR',
+                        'lda_rfc', 'pca_knc', 'pca_rfc', 'pca_svc'], default RandomForestClassifier
+  --learner-params=LPARAMS
+                        model classifier parameters, supply via JSON
+  --train-file=TRAIN    train file, default train.csv
+  --test-file=TEST      test file, default no test file
+  --gsearch=GSEARCH     perform grid search, gsearch=parameters
+  --predict=PREDICT     Prediction file name, default None
+    </code></pre>
+</small>
+</div>
+</section>
+
+<section>
+<h2>First results</h2>
+<div align="left">
+    <pre style="width:1000px"><code>
+# merge all 2014 files into single file
+merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
+          --fout=2014.csv.gz --verbose
+
+# Train the model
+model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2
+
+RandomForestRegressor(bootstrap=True, compute_importances=None,
+           criterion='mse', max_depth=None, max_features='auto',
+           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
+           random_state=None, verbose=0)
+Score metric (r2): 0.897606379597
+Final Logloss 0.000383744987074
+    </code></pre>
+</div>
+<small>
+We should hold our breath with this though, too many things to test first ...
+</small>
+</section>
+
+<section>
+<h2>First results, prediction</h2>
+<div align="left">
+<small>
+    <pre style="width:1000px">
+        <code>
+model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt
+RandomForestRegressor(bootstrap=True, compute_importances=None,
+           criterion='mse', max_depth=None, max_features='auto',
+           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
+           random_state=None, verbose=0)
+Score metric (r2): 0.93623237727
+Final Logloss 0.000381044756446
+Traceback (most recent call last):
+...
+  File "/Users/vk/CMS/DMWM/GIT/DMWMAnalytics/Popularity/DCAFPilot/src/python/DCAF/ml/model.py", line 165, in model
+    predictions = fit.predict(tdf)
+  File "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/sklearn/ensemble/forest.py", line 564, in predict
+    if getattr(X, "dtype", None) != DTYPE or X.ndim != 2:
+  File "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/pandas/core/ops.py", line 600, in wrapper
+    res = na_op(values, other)
+  File "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/pandas/core/ops.py", line 564, in na_op
+    raise TypeError("invalid type comparison")
+TypeError: invalid type comparison
+        </code>
+    </pre>
+Some data requires normalization/scaling, e.g. cpu/wct were generated as long's, while should be floats.
+<br />
+Use consistent random seed to avoid results deviations
+</small>
+</div>
+</section>
+
+<section>
+<h2>First results, prediction w/ scaling</h2>
+<div align="left">
+<small>
+    <pre style="width:1000px">
+        <code>
+# run model with scaler
+model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
+RandomForestRegressor(bootstrap=True, compute_importances=None,
+           criterion='mse', max_depth=None, max_features='auto',
+           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
+           random_state=None, verbose=0)
+Score metric (r2): -4.22807249175
+Final Logloss 0.00572480564966
+
+# check our prediction
+
+check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+Final Logloss 0.000613868898737
+Explaied variance score 0.898592908177
+Mean absolute error 0.000386050647644
+Mean squared error 2.42792029612e-06
+R2 score 0.896133210959
+        </code>
+    </pre>
+</small>
+</div>
+</section>
+
+<section>
+<h2>Other algorithms</h2>
+<div align="left">
+<small>
+    <pre style="width:1000px">
+        <code>
+model --learner=AdaBoostRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
+AdaBoostRegressor(base_estimator=None, learning_rate=1.0, loss='linear',
+         n_estimators=50, random_state=None)
+Score metric (r2): -0.943959694892
+Final Logloss 0.0030894192674
+
+model --learner=BaggingRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
+BaggingRegressor(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=None,
+         verbose=0)
+Score metric (r2): -2.11591876017
+Final Logloss 0.00463396625721
+
+model --learner=SGDRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
+SGDRegressor(alpha=0.0001, epsilon=0.1, eta0=0.01, fit_intercept=True,
+       l1_ratio=0.15, learning_rate='invscaling', loss='squared_loss',
+       n_iter=5, penalty='l2', power_t=0.25, random_state=None,
+       shuffle=False, verbose=0, warm_start=False)
+Score metric (r2): -3.12784471837e+24
+Final Logloss 31.6102818114
+        </code>
+    </pre>
+</small>
+</div>
+</section>
+
+<section>
+<h2>Future direction</h2>
+<ul>
+    <li>Explore various ML algorithms both within python sklearn toolkit and R</li>
+    <li>Try out different popularity metrics</li>
+    <li>Test predictions with real data</li>
+    <li>Try out online learners (may work better with time-dependent features)</li>
+    <li>Automate tools (weekly crontabs, generate model updates, verify model predictions)</li>
+</ul>
+</section>
+
+<section>
+<h1>THE END</h1>
+<h2>Happy data mining</h2>
+</section>
+
+</div> <!-- end of reveal -->
+
+</div> <!-- end of slides -->
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+
+    theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+    transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+    // Optional libraries used to extend on reveal.js
+    dependencies: [
+        { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+        { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+        { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+        // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+    ]
+});
+
+</script>
+
+</body>
+</html>
+
