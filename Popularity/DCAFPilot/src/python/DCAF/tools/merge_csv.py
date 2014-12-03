@@ -11,6 +11,7 @@ Description:
 import os
 import sys
 import gzip
+import bz2
 import optparse
 
 import pandas as pd
@@ -51,6 +52,8 @@ def merger(fin, fout, verbose=False):
 
     if  fout.endswith('.gz'):
         fdsc = gzip.open(fout, 'wb')
+    elif  fout.endswith('.bz2'):
+        fdsc = bz2.BZ2File(fname, 'r')
     else:
         fdsc = open(fout, 'w')
     first = True
