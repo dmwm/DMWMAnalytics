@@ -11,6 +11,8 @@ Description: Convert CSV file into VW data format
 # system modules
 import os
 import sys
+import gzip
+import bz2
 from   optparse import OptionParser
 
 class OptionManager:
@@ -37,10 +39,16 @@ class OptionManager:
 
 def csv2vw(fname, oname, sep=',', rid='id', target='target', drops=''):
     """Read and parse CSV input and write VW rows"""
+    if  fname.endswith('.gz'):
+        istream = gzip.open(fname, 'rb')
+    elif  fname.endswith('.bz2'):
+        istream = bz2.BZ2File(fname, 'r')
+    else:
+        istream = open(fname, 'r')
     drops = drops.split(',')
     headers = []
     idx = 0
-    with open(fname, 'r') as istream, open(oname, 'w') as ostream:
+    with open(oname, 'w') as ostream:
         for line in istream.readlines():
             line = line.replace('\n', '')
             if  not headers:
@@ -56,6 +64,7 @@ def csv2vw(fname, oname, sep=',', rid='id', target='target', drops=''):
             out += ''.join([' %s:%s'%(k,v) for k,v in fdict.items()])
             ostream.write(out + '\n')
             idx += 1
+    istream.close()
 
 def main():
     "Main function"
