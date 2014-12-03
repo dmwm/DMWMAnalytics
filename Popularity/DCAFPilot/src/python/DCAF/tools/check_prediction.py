@@ -52,7 +52,7 @@ def loader(ifile, target, sep=','):
         comp = 'gzip'
     elif  ifile.endswith('.bz2'):
         comp = 'bz2'
-    df = pd.read_csv(ifile, sep=sep, engine='python')
+    df = pd.read_csv(ifile, sep=sep, compression=comp, engine='python')
     return df[target]
 
 def checker(predictions, y_true, verbose=False):
