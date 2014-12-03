@@ -57,20 +57,21 @@ def loader(ifile, target, sep=','):
 
 def checker(predictions, y_true, verbose=False):
     "Check our model prediction and dump logloss value"
-    loss = 0
-    tot = 0
-    for pval, yval in zip(predictions, y_true):
-        if  verbose:
-            print "predict value %s, real value %s" % (pval, yval)
-        loss += logloss(pval, yval)
-        tot += 1
-    print "Final Logloss", loss/tot
+    if  verbose:
+        loss = 0
+        tot = 0
+        for pval, yval in zip(predictions, y_true):
+            if  verbose:
+                print "predict value %s, real value %s" % (pval, yval)
+            loss += logloss(pval, yval)
+            tot += 1
+        print "Final Logloss          :", loss/tot
 
     # sklearn metrics for regression
-    print "Explaied variance score", explained_variance_score(y_true, predictions)
-    print "Mean absolute error", mean_absolute_error(y_true, predictions)
-    print "Mean squared error", mean_squared_error(y_true, predictions)
-    print "R2 score", r2_score(y_true, predictions)
+    print "Explaied variance score:", explained_variance_score(y_true, predictions)
+    print "Mean absolute error    :", mean_absolute_error(y_true, predictions)
+    print "Mean squared error     :", mean_squared_error(y_true, predictions)
+    print "R2 score               :", r2_score(y_true, predictions)
 
 def main():
     "Main function"
