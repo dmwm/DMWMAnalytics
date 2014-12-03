@@ -304,13 +304,12 @@ Score metric (r2): -4.22807249175
 Final Logloss 0.00572480564966
 
 # check our prediction
-
 check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=pred.txt
-Final Logloss 0.000613868898737
-Explaied variance score 0.898592908177
-Mean absolute error 0.000386050647644
-Mean squared error 2.42792029612e-06
-R2 score 0.896133210959
+
+Explaied variance score: 0.898592908177
+Mean absolute error    : 0.000386050647644
+Mean squared error     : 2.42792029612e-06
+R2 score               : 0.896133210959
         </code>
     </pre>
 </small>
@@ -327,7 +326,6 @@ model --learner=AdaBoostRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=
 AdaBoostRegressor(base_estimator=None, learning_rate=1.0, loss='linear',
          n_estimators=50, random_state=None)
 Score metric (r2): -0.943959694892
-Final Logloss 0.0030894192674
 
 model --learner=BaggingRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
 BaggingRegressor(base_estimator=None, bootstrap=True,
@@ -335,7 +333,6 @@ BaggingRegressor(base_estimator=None, bootstrap=True,
          n_estimators=10, n_jobs=1, oob_score=False, random_state=None,
          verbose=0)
 Score metric (r2): -2.11591876017
-Final Logloss 0.00463396625721
 
 model --learner=SGDRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
 SGDRegressor(alpha=0.0001, epsilon=0.1, eta0=0.01, fit_intercept=True,
@@ -343,10 +340,71 @@ SGDRegressor(alpha=0.0001, epsilon=0.1, eta0=0.01, fit_intercept=True,
        n_iter=5, penalty='l2', power_t=0.25, random_state=None,
        shuffle=False, verbose=0, warm_start=False)
 Score metric (r2): -3.12784471837e+24
-Final Logloss 31.6102818114
         </code>
     </pre>
 </small>
+</div>
+</section>
+
+<section>
+<h2>Online learning algorithm</h2>
+<div align="left">
+<small>
+The <a href="http://hunch.net/~vw/">Vowpal wabbit</a> is online learning
+algorithm started at Yahoo! Research and continuing at Microsoft Research to
+design a fast, scalable, useful learning algorithm. VW is the essence of speed
+in machine learning, able to learn from <u>terafeature</u> datasets with ease. Via
+parallel learning, it can exceed the throughput of any single machine network
+interface when doing linear learning, a first amongst learning algorithms.
+    <pre style="width:1000px">
+vklaptop(13:07:30)> csv2vw --csv=2014.csv.gz --vw=2014.vw
+vklaptop(12:08:47)> head -2 2014.vw
+
+0.006 '999669242 |f size:8002 nevt:21675970 creator:2179 wct:216946588 dtype:0 dataset:20186 procds:373256 nfiles:2158 dbs:3 rel3_8:1 rel3_22:0 rel3_20:0 rel3_21:0 rel3_7:0 rel3_6:0 rel3_5:0 rel3_4:0 rel3_3:0 rel3_2:1 rel3_1:0 rel3_0:0 nsites:10 rel3_9:0 rel3_23:0 rel2_8:0 rel2_9:0 rel2_6:0 rel2_7:0 rel2_4:0 rel2_5:0 rel2_2:1 rel2_3:1 rel2_0:0 rel2_1:0 parent:5862538 rel1_1:0 rel1_0:0 rel1_3:0 rel1_2:0 rel1_5:1 rel1_4:1 rel1_7:0 nrel:1 rel3_17:0 rel3_16:0 rel3_15:0 nblk:6 rel3_13:0 rel3_12:0 rel3_11:0 rel3_10:0 tier:5 primds:335429 rel1_6:0 rel2_10:0 rel2_11:0 rel3_19:0 rel3_18:0 s_1:3 s_0:0 s_3:0 s_2:8 s_4:0 relt_0:1 relt_1:0 relt_2:1 rel3_14:0 era:759090 nlumis:72274 proc_evts:30667701 cpu:207737071
+
+0.008 '332990665 |f size:96689 nevt:334493030 creator:2179 wct:276683510 dtype:1 dataset:176521 procds:1037052 nfiles:32621 dbs:3 rel3_8:1 rel3_22:0 rel3_20:0 rel3_21:0 rel3_7:1 rel3_6:0 rel3_5:0 rel3_4:0 rel3_3:0 rel3_2:1 rel3_1:0 rel3_0:0 nsites:4 rel3_9:0 rel3_23:0 rel2_8:0 rel2_9:0 rel2_6:0 rel2_7:0 rel2_4:0 rel2_5:0 rel2_2:1 rel2_3:2 rel2_0:0 rel2_1:0 parent:6086362 rel1_1:0 rel1_0:0 rel1_3:0 rel1_2:0 rel1_5:2 rel1_4:1 rel1_7:0 nrel:1 rel3_17:0 rel3_16:0 rel3_15:0 nblk:88 rel3_13:0 rel3_12:0 rel3_11:0 rel3_10:0 tier:3 primds:968016 rel1_6:0 rel2_10:0 rel2_11:0 rel3_19:0 rel3_18:0 s_1:6 s_0:0 s_3:0 s_2:9 s_4:0 relt_0:1 relt_1:0 relt_2:2 rel3_14:0 era:759090 nlumis:86197 proc_evts:123342232 cpu:114683734
+    </pre>
+</small>
+</div>
+</section>
+
+<section>
+<h2>Online learning algorithm, cont'd</h2>
+<div align="left">
+    <pre style="width:1000px">
+        <code>
+# train our model
+vw -d 2014.vw -c -k -f model.vw
+Num weight bits = 18, learning rate = 0.5, initial_t = 0, power_t = 0.5
+average    since         example     example  current  current  current
+loss       last          counter      weight    label  predict features
+0.000036   0.000036            1         1.0   0.0060   0.0000       29
+...
+0.000014   0.000010        65536     65536.0   0.0010   0.0000       46
+
+finished run, number of examples per pass = 113908, passes used = 1
+weighted example sum = 113908
+weighted label sum = 41.78
+average loss = 1.29019e-05
+best constant = 0.000366787
+best constants loss = 0.000366653
+total feature number = 6071657
+
+# make prediction
+vw -d new.vw -t -i model.vw -p preds.txt
+
+# convert VW prediction into CSV format
+vw_pred2csv --fin=preds.txt --fout=preds.csv
+
+# check VW prediction against data sample
+check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=preds.csv
+        </code>
+                        RandomForestRegressor   VW regression
+Explaied variance score: 0.898592908177         0.341559976762
+Mean absolute error    : 0.000386050647644      0.000349310257493
+Mean squared error     : 2.42792029612e-06      1.54817975922e-05
+R2 score               : 0.896133210959         0.337686411265
+    </pre>
 </div>
 </section>
 
