@@ -140,15 +140,15 @@ def model(train_file, newdata_file, learner, lparams=None, scorer=None,
     if  scorer:
         res = metrics.SCORERS[scorer](clf, x_rest, y_rest)
         print "Score metric (%s): %s" % (scorer, res)
-    loss = 0
-    tot = 0
-    for pval, yval in zip(predictions, y_rest):
-        if  verbose>1:
-            print "predict value %s, real value %s" % (pval, yval)
-        loss += logloss(pval, yval)
-        tot += 1
-    print "Final Logloss", loss/tot
-#    print_clf_report(y_rest, predictions)
+    if  verbose:
+        loss = 0
+        tot = 0
+        for pval, yval in zip(predictions, y_rest):
+            if  verbose>1:
+                print "predict value %s, real value %s" % (pval, yval)
+            loss += logloss(pval, yval)
+            tot += 1
+        print "Final Logloss", loss/tot
 
     # new data file for which we want to predict
     if  newdata_file:
