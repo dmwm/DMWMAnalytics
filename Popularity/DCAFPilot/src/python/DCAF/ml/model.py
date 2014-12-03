@@ -163,7 +163,7 @@ def model(train_file, newdata_file, learner, lparams=None, scorer=None,
         predictions = fit.predict(tdf)
         out = pd.DataFrame(zip(datasets, predictions))
         if  ofile:
-            out.to_csv(ofile, header=False, index=False)
+            out.to_csv(ofile, header=['dataset','prediction'], index=False)
 
 def model_iter(train_file_list, newdata_file, learner, lparams=None, scaler=None, ofile=None, verbose=False):
     """
@@ -223,7 +223,7 @@ def model_iter(train_file_list, newdata_file, learner, lparams=None, scaler=None
         predictions = fit.predict(tdf)
         out = pd.DataFrame(zip(datasets, predictions))
         if  ofile:
-            out.to_csv(ofile, header=False, index=False)
+            out.to_csv(ofile, header=['dataset','prediction'], index=False)
 
 def main():
     "Main function"
