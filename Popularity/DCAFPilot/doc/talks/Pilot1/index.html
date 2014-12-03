@@ -409,6 +409,47 @@ R2 score               : 0.896133210959         0.337686411265
 </section>
 
 <section>
+<h2>From data to prediction</h2>
+<div align="left">
+<small>
+    <pre style="width:1000px">
+        <code>
+# merge dataframes
+merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
+          --fout=2014.csv.gz --verbose
+
+# train the model
+vklaptop(14:36:44)> model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
+RandomForestRegressor(bootstrap=True, compute_importances=None,
+           criterion='mse', max_depth=None, max_features='auto',
+           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
+           random_state=123, verbose=0)
+Score metric (r2): -12.6244503822
+
+# check prediction
+vklaptop(14:38:35)> check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+Explaied variance score: 0.82718229836
+Mean absolute error    : 0.000560324232394
+Mean squared error     : 4.2115601847e-06
+R2 score               : 0.819828832958
+
+# convert prediction into human/CMS data format
+vklaptop(14:38:44)> pred2dataset --fin=pred.txt --fout=pred.txt.out
+
+# inspect prediction
+vklaptop(14:39:13)> head -3 pred.txt.out
+0.23900000005960464,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
+0.007299999927636236,/QCD_Pt-15to3000_Tune4C_14TeV_pythia8/SHCAL2023Upg14DR-PU140bx25_PH2_1K_FB_V4-v1/GEN-SIM-RECO
+0.025100000109523533,/SingleMu/Run2012D-22Jan2013-v1/AOD
+        </code>
+    </pre>
+</small>
+</div>
+
+</section>
+
+<section>
 <h2>Future direction</h2>
 <ul>
     <li>Explore various ML algorithms both within python sklearn toolkit and R</li>
