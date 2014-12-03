@@ -28,17 +28,17 @@ class OptionParser():
         "User based option parser"
         self.parser = optparse.OptionParser()
         self.parser.add_option("--fin", action="store", type="string",
-            dest="fin", default="", help="Input file")
+            dest="fin", default="", help="Input file, default None")
         self.parser.add_option("--fin-target", action="store", type="string",
-            dest="fin_target", default="target", help="Name of target column for input file")
+            dest="fin_target", default="target", help="Name of target column for input file, default target")
         self.parser.add_option("--fin-sep", action="store", type="string",
-            dest="fin_sep", default="", help="Separator for input file")
+            dest="fin_sep", default=",", help="Separator for input file, default comma")
         self.parser.add_option("--fpred", action="store", type="string",
             dest="fpred", default="", help="Prediction file")
         self.parser.add_option("--fpred-target", action="store", type="string",
-            dest="fpred_target", default="prediction", help="Name of target column for prediction file")
+            dest="fpred_target", default="prediction", help="Name of target column for prediction file, default prediction")
         self.parser.add_option("--fpred-sep", action="store", type="string",
-            dest="fpred_sep", default=",", help="Separator for prediction file")
+            dest="fpred_sep", default=",", help="Separator for prediction file, default comma")
         self.parser.add_option("--verbose", action="store_true",
             dest="verbose", default=False, help="verbose mode")
     def get_opt(self):
