@@ -57,7 +57,7 @@ def learners(clf=None, kwds=None):
 
     # common ensemble classifiers
     models['AdaBoostClassifier'] = AdaBoostClassifier()
-    models['BaggincClassifier'] = BaggingClassifier()
+    models['BaggingClassifier'] = BaggingClassifier()
 
     # examples how to construct pipelines
     steps = [('PCA', PCA(n_components='mle', whiten=True)), ('clf', models['RandomForestClassifier'])]
@@ -75,7 +75,7 @@ def learners(clf=None, kwds=None):
     models['SGDRegressor'] = SGDRegressor()
     models['GradientBoostingRegressor'] = GradientBoostingRegressor()
     models['AdaBoostRegressor'] = AdaBoostRegressor()
-    models['BagginRegressor'] = BaggingRegressor()
+    models['BaggingRegressor'] = BaggingRegressor()
 
     return models
 
