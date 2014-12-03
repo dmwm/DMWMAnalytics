@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <link rel="stylesheet" href="css/reveal.min.css">
+    <!-- beige.css,moon.css,serif.css,sky.css,default.css,night.css,simple.css,solarized.css -->
     <link rel="stylesheet" href="css/theme/default.css" id="theme">
 
     <!-- For syntax highlighting -->
@@ -65,7 +66,7 @@
 <a href="https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot">DCAFPilot</a>
 stands for Data and Computing Analysis Framework.
 It is initiative within DMWM analytics group to 
-imporve our understanding of CMS computing data.
+improve our understanding of CMS computing data.
 </p>
 
 <p>
@@ -145,19 +146,8 @@ List of used CMS data-service APIs used by DCAFPilot package
 
 
 <section>
-<h2>Data & Statistics</h2>
+<h2>Dataframe preparation</h2>
 <div align="left">
-<small>
-    <pre style="width:1000px">
-        <code>
-id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,s_0,s_1,s_2,s_3,s_4,size,tier,wct,target
-999669242,207737071,2179,20186,3,0,759090,6,21675970,2158,72274,1,10,5862538,335429,30667701,373256,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,3,8,0,0,8002,5,216946588,0.006
-332990665,114683734,2179,176521,3,1,759090,88,334493030,32621,86197,1,4,6086362,968016,123342232,1037052,0,0,0,0,1,2,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,0,1,0,2,0,6,9,0,0,96689,3,276683510,0.008
-....
-        </code>
-    </pre>
-</small>
-
     <pre style="width:1000px">
 Queried 5 CMS data-services: DBS, Phedex, SiteDB, PopularityDB, Dashboard
 
@@ -173,26 +163,41 @@ The average size of the object is 1KB, ~0.6GB of CMS data
 
 Elapsed time: ~2h to 25m per job
     </pre>
+<small>
+    <pre style="width:1000px">
+        <code>
+id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,s_0,s_1,s_2,s_3,s_4,size,tier,wct,target
+999669242,207737071,2179,20186,3,0,759090,6,21675970,2158,72274,1,10,5862538,335429,30667701,373256,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,3,8,0,0,8002,5,216946588,0.006
+332990665,114683734,2179,176521,3,1,759090,88,334493030,32621,86197,1,4,6086362,968016,123342232,1037052,0,0,0,0,1,2,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,0,1,0,2,0,6,9,0,0,96689,3,276683510,0.008
+....
+        </code>
+    </pre>
+</small>
+
 </section>
 
 <section>
 <h2>Live Data plots</h2>
 <p><img src="images/dbs1.gif" alt="DBS plots" /></p>
+One week data transition through 2014
 </section>
 
 <section>
 <h2>Live Data plots, cont'd</h2>
 <p><img src="images/dbs2.gif" alt="DBS plots" /></p>
+One week data transition through 2014
 </section>
 
 <section>
 <h2>Live Data plots, cont'd</h2>
 <p><img src="images/dbs3.gif" alt="DBS plots" /></p>
+One week data transition through 2014
 </section>
 
 <section>
 <h2>Correlations</h2>
 <p><img src="images/corr.gif" alt="Correlations" /></p>
+One week data transition through 2014
 </section>
 
 <section>
@@ -206,6 +211,9 @@ A few datasets behavior through 2014
 <div align="left">
 <small>
     <pre style="width:1000px"><code>
+# use model script to train your model
+vklaptop> model --help
+
 Usage: model.py [options]
 
 Options:
@@ -234,6 +242,32 @@ Options:
 </div>
 </section>
 
+<section>
+<h2>Analyze and play with your model</h2>
+<div>
+    <pre style="width:1000px">
+        <code>
+# we can pass additional parameters to the learner, e.g. find out rank of features
+model --learner=RandomForestRegressor --train-file=2014.csv.gz --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123, "compute_importances":true}'
+RandomForestRegressor(bootstrap=True, compute_importances=True,
+           criterion='mse', max_depth=None, max_features='auto',
+           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
+           random_state=123, verbose=0)
+Feature ranking:
+1. importance 0.558986, feature nsites
+2. importance 0.105061, feature s_2
+3. importance 0.074761, feature rel3_0
+4. importance 0.049544, feature proc_evts
+5. importance 0.043663, feature s_1
+6. importance 0.035363, feature rel3_2
+7. importance 0.034260, feature s_3
+8. importance 0.029350, feature rel3_4
+9. importance 0.005171, feature relt_2
+        </code>
+    </pre>
+</div>
+</section>
 <section>
 <h2>First results</h2>
 <div align="left">
@@ -363,8 +397,8 @@ in machine learning, able to learn from <u>terafeature</u> datasets with ease. V
 parallel learning, it can exceed the throughput of any single machine network
 interface when doing linear learning, a first amongst learning algorithms.
     <pre style="width:1000px">
-vklaptop(13:07:30)> csv2vw --csv=2014.csv.gz --vw=2014.vw
-vklaptop(12:08:47)> head -2 2014.vw
+vklaptop> csv2vw --csv=2014.csv.gz --vw=2014.vw
+vklaptop> head -2 2014.vw
 
 0.006 '999669242 |f size:8002 nevt:21675970 creator:2179 wct:216946588 dtype:0 dataset:20186 procds:373256 nfiles:2158 dbs:3 rel3_8:1 rel3_22:0 rel3_20:0 rel3_21:0 rel3_7:0 rel3_6:0 rel3_5:0 rel3_4:0 rel3_3:0 rel3_2:1 rel3_1:0 rel3_0:0 nsites:10 rel3_9:0 rel3_23:0 rel2_8:0 rel2_9:0 rel2_6:0 rel2_7:0 rel2_4:0 rel2_5:0 rel2_2:1 rel2_3:1 rel2_0:0 rel2_1:0 parent:5862538 rel1_1:0 rel1_0:0 rel1_3:0 rel1_2:0 rel1_5:1 rel1_4:1 rel1_7:0 nrel:1 rel3_17:0 rel3_16:0 rel3_15:0 nblk:6 rel3_13:0 rel3_12:0 rel3_11:0 rel3_10:0 tier:5 primds:335429 rel1_6:0 rel2_10:0 rel2_11:0 rel3_19:0 rel3_18:0 s_1:3 s_0:0 s_3:0 s_2:8 s_4:0 relt_0:1 relt_1:0 relt_2:1 rel3_14:0 era:759090 nlumis:72274 proc_evts:30667701 cpu:207737071
 
@@ -377,6 +411,7 @@ vklaptop(12:08:47)> head -2 2014.vw
 <section>
 <h2>Online learning algorithm, cont'd</h2>
 <div align="left">
+<small>
     <pre style="width:1000px">
         <code>
 # train our model
@@ -411,6 +446,7 @@ Mean absolute error    : 0.000386050647644      0.000349310257493
 Mean squared error     : 2.42792029612e-06      1.54817975922e-05
 R2 score               : 0.896133210959         0.337686411265
     </pre>
+</small>
 </div>
 </section>
 
@@ -425,7 +461,7 @@ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
           --fout=2014.csv.gz --verbose
 
 # train the model
-vklaptop(14:36:44)> model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
+vklaptop> model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -434,17 +470,17 @@ RandomForestRegressor(bootstrap=True, compute_importances=None,
 Score metric (r2): -12.6244503822
 
 # check prediction
-vklaptop(14:38:35)> check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+vklaptop> check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=pred.txt
 Explaied variance score: 0.82718229836
 Mean absolute error    : 0.000560324232394
 Mean squared error     : 4.2115601847e-06
 R2 score               : 0.819828832958
 
 # convert prediction into human/CMS data format
-vklaptop(14:38:44)> pred2dataset --fin=pred.txt --fout=pred.txt.out
+vklaptop> pred2dataset --fin=pred.txt --fout=pred.txt.out
 
 # inspect prediction
-vklaptop(14:39:13)> head -3 pred.txt.out
+vklaptop> head -3 pred.txt.out
 0.23900000005960464,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
 0.007299999927636236,/QCD_Pt-15to3000_Tune4C_14TeV_pythia8/SHCAL2023Upg14DR-PU140bx25_PH2_1K_FB_V4-v1/GEN-SIM-RECO
 0.025100000109523533,/SingleMu/Run2012D-22Jan2013-v1/AOD
