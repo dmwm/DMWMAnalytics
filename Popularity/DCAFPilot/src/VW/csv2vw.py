@@ -57,7 +57,7 @@ def csv2vw(fname, oname, sep=',', rid='id', target='target', drops='', preds=Non
                 headers = line.split(sep)
                 continue
             fdict = dict(zip(headers, line.split(sep)))
-            if  preds != None:
+            if  preds:
                 tval = float(preds)
             else:
                 tval = fdict.get(target, 1)
