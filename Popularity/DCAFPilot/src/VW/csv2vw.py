@@ -32,12 +32,14 @@ class OptionManager:
             default='target', dest="target", help="target(label) name in CSV, default target. If not provided (in a test set) we'll use 1 for label assignment")
         self.parser.add_option("--drops", action="store", type="string",
             default='', dest="drops", help="comma separated list of drop attributes, e.g. a,b")
+        self.parser.add_option("--prediction", action="store", type="string",
+            default='', dest="preds", help="prediction value to assign")
 
     def get_opt(self):
         """Returns parse list of options"""
         return self.parser.parse_args()
 
-def csv2vw(fname, oname, sep=',', rid='id', target='target', drops=''):
+def csv2vw(fname, oname, sep=',', rid='id', target='target', drops='', preds=None):
     """Read and parse CSV input and write VW rows"""
     if  fname.endswith('.gz'):
         istream = gzip.open(fname, 'rb')
@@ -55,7 +57,10 @@ def csv2vw(fname, oname, sep=',', rid='id', target='target', drops=''):
                 headers = line.split(sep)
                 continue
             fdict = dict(zip(headers, line.split(sep)))
-            tval = fdict.get(target, 1)
+            if  preds != None:
+                tval = float(preds)
+            else:
+                tval = fdict.get(target, 1)
             rval = fdict.get(rid, idx)
             for kkk in drops + [target, rid]:
                 if  kkk in fdict:
@@ -75,7 +80,7 @@ def main():
         print "No input CSV file is provided"
         sys.exit(1)
     vwname  = opts.vw if opts.vw else '%s.vw' % csvname.split('.csv')[0]
-    csv2vw(csvname, vwname, opts.sep, opts.rid, opts.target, opts.drops)
+    csv2vw(csvname, vwname, opts.sep, opts.rid, opts.target, opts.drops, opts.preds)
 
 if __name__ == '__main__':
     main()
