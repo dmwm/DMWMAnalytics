@@ -159,13 +159,15 @@ def model(train_file, newdata_file, learner, lparams=None, scorer=None,
             print "New data file", newdata_file
             print "Columns:", ','.join(tdf.columns)
             print "test shapes:", tdf.shape
-        datasets = tdf['dataset']
+        datasets = [int(i) for i in list(tdf['dataset'])]
+        dbses = [int(i) for i in list(tdf['dbs'])]
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict(tdf)
-        out = pd.DataFrame(zip(datasets, predictions))
+        data = {'dataset':datasets, 'dbs': dbses, 'prediction':predictions}
+        out = pd.DataFrame(data=data)
         if  ofile:
-            out.to_csv(ofile, header=['dataset','prediction'], index=False)
+            out.to_csv(ofile, header=True, index=False)
 
 def model_iter(train_file_list, newdata_file, learner, lparams=None, scaler=None, ofile=None, verbose=False):
     """
@@ -219,11 +221,13 @@ def model_iter(train_file_list, newdata_file, learner, lparams=None, scaler=None
         tdf = read_data(newdata_file, drops, scaler=scaler)
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
-        datasets = tdf['dataset']
+        datasets = [int(i) for i in list(tdf['dataset'])]
+        dbses = [int(i) for i in list(tdf['dbs'])]
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict(tdf)
-        out = pd.DataFrame(zip(datasets, predictions))
+        data = {'dataset':datasets, 'dbs': dbses, 'prediction':predictions}
+        out = pd.DataFrame(data=data)
         if  ofile:
             out.to_csv(ofile, header=['dataset','prediction'], index=False)
 
