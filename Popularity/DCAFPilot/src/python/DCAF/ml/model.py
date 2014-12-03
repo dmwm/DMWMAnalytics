@@ -137,6 +137,14 @@ def model(train_file, newdata_file, learner, lparams=None, scorer=None,
     if  verbose:
         print "Train elapsed time", time.time()-time0
     predictions = fit.predict(x_rest)
+    importances = clf.feature_importances_
+    if  importances.any():
+        print "Feature ranking:"
+        columns = xdf.columns
+        indices = np.argsort(importances)[::-1]
+        num = 9 if len(columns)>9 else len(columns)
+        for f in range(num):
+            print("%d. importance %f, feature %s" % (f + 1, importances[indices[f]], columns[indices[f]]))
     if  scorer:
         res = metrics.SCORERS[scorer](clf, x_rest, y_rest)
         print "Score metric (%s): %s" % (scorer, res)
