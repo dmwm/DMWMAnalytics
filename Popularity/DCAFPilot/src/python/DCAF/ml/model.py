@@ -80,7 +80,7 @@ def factorize(col, xdf, sdf=None):
         out.append(dval[val])
     return out
 
-def model(train_file, test_file, learner, lparams=None, scorer=None,
+def model(train_file, newdata_file, learner, lparams=None, scorer=None,
         scaler=None, ofile=None, idx=0, limit=-1, gsearch=None, crossval=None, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
@@ -97,7 +97,7 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
             raise Exception('Invalid data type for lparams="%s", type: %s' % (lparams, type(lparams)))
         for key, val in lparams.items():
             setattr(clf, key, val)
-    print "clf:", clf
+    print clf
     if  verbose:
         print "idx/limit", idx, limit
 
@@ -148,13 +148,13 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
     print "Final Logloss", loss/tot
 #    print_clf_report(y_rest, predictions)
 
-    # test data
-    if  test_file:
-        tdf = read_data(test_file, drops)
+    # new data file for which we want to predict
+    if  newdata_file:
+        tdf = read_data(newdata_file, drops)
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         if  verbose:
-            print "Test file", test_file
+            print "New data file", newdata_file
             print "Columns:", ','.join(tdf.columns)
             print "test shapes:", tdf.shape
         datasets = tdf['dataset']
@@ -165,7 +165,7 @@ def model(train_file, test_file, learner, lparams=None, scorer=None,
         if  ofile:
             out.to_csv(ofile, header=False, index=False)
 
-def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, ofile=None, verbose=False):
+def model_iter(train_file_list, newdata_file, learner, lparams=None, scaler=None, ofile=None, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
@@ -212,9 +212,9 @@ def model_iter(train_file_list, test_file, learner, lparams=None, scaler=None, o
             print "Train elapsed time", time.time()-time0
         print "### SCORE", clf.score(x_rest, y_rest)
 
-    # test data
-    if  test_file:
-        tdf = read_data(test_file, drops)
+    # new data for which we want to predict
+    if  newdata_file:
+        tdf = read_data(newdata_file, drops)
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         datasets = tdf['dataset']
@@ -244,11 +244,11 @@ def main():
                 break
 
     if  model2run == 'model_iter':
-        model_iter(train_file_list=train_files, test_file=opts.test,
+        model_iter(train_file_list=train_files, newdata_file=opts.newdata,
                 learner=opts.learner, lparams=opts.lparams,
                 scaler=opts.scaler, ofile=ofile, verbose=opts.verbose)
     else:
-        model(train_file=opts.train, test_file=opts.test,
+        model(train_file=opts.train, newdata_file=opts.newdata,
                 learner=opts.learner, lparams=opts.lparams,
                 scorer=opts.scorer, scaler=opts.scaler, ofile=ofile,
                 idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,

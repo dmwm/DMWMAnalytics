@@ -118,8 +118,8 @@ class OptionParser(object):
             help="model classifier parameters, supply via JSON")
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
-        self.parser.add_option("--test-file", action="store", type="string",
-            default="", dest="test", help="test file, default no test file")
+        self.parser.add_option("--newdata", action="store", type="string",
+            default="", dest="newdata", help="new data file, default None")
         self.parser.add_option("--idx", action="store", type="int",
             default=0, dest="idx",
             help="initial index counter, default 0")
@@ -143,7 +143,7 @@ class OptionParser(object):
             help="perform grid search, gsearch=<parameters>")
         self.parser.add_option("--predict", action="store", type="string",
             default=None, dest="predict",
-            help="Prediction file name, default <learner>.predictions")
+            help="Prediction file name, default None")
     def options(self):
         "Returns parse list of options"
         return self.parser.parse_args()
