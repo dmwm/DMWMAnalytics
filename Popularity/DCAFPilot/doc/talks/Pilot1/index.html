@@ -21,6 +21,11 @@
     <!-- For syntax highlighting -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
 
+    <!-- local styles-->
+    <style type="text/css" media="all">
+    .highlight {color:#FF8000;}
+    </style>
+
     <!-- If the query includes 'print-pdf', use the PDF print sheet -->
     <script>
         document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
@@ -53,9 +58,13 @@
     <h2>Talk outlines</h2>
     <ul>
         <li>Project outlines</li>
-        <li>First dataset</li>
-        <li>Data</li>
-        <li>Predictions</li>
+        <li>From data to prediction</li>
+        <ul>
+            <li>gather information from data-services</li>
+            <li>prepare information suitable for data analysis</li>
+            <li>train learner algorithm</li>
+            <li>make prediction</li>
+        </ul>
         <li>Future direction</li>
     </ul>
 </section>
@@ -164,7 +173,7 @@ The average size of the object is 1KB, ~0.6GB of CMS data
 Elapsed time: ~2h to 25m per job
     </pre>
 <small>
-We anomised all data and performed factorization via internal cache
+We anonymised all data and performed factorization via internal cache
     <pre style="width:1000px">
         <code>
 id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,s_0,s_1,s_2,s_3,s_4,size,tier,wct,target
@@ -177,6 +186,38 @@ id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,
 
 </section>
 
+<section>
+<h2>Dataframe description</h2>
+<small>
+<pre style="width:1000px">
+<span class="highlight">id:</span> unique id constructed as long('%s%s%s'%(tstamp,dbsinst,dataset_id)) % 2**30
+<span class="highlight">cpu:</span> CPU time reported by Dashboard data-service for given dataset
+<span class="highlight">creator:</span> anonymized DN of the user who created given dataset, reported by DBS
+<span class="highlight">dataset:</span> DBS dataset id (comes from DBS APIs/database backend)
+<span class="highlight">dbs:</span> DBS instance id
+<span class="highlight">dtype:</span> anonymized DBS data type (e.g. data, mc)
+<span class="highlight">era:</span> anonymized DBS acquisition era name associated with given dataset
+<span class="highlight">nblk:</span> number of blocks in given dataset, reported by DBS
+<span class="highlight">nevt:</span> number of events in given dataset, reported by DBS
+<span class="highlight">nfiles:</span> number of files in given dataset, reported by DBS
+<span class="highlight">nlumis:</span> number of lumi sections in given dataset, reported by DBS
+<span class="highlight">nrel:</span> number of releases associated with given dataset, reported by DBS
+<span class="highlight">nsites:</span> number of sites associated with given dataset, reported by Phedex
+<span class="highlight">parent:</span> parent id of given dataset, reported by DBS
+<span class="highlight">primds:</span> anonymized primary dataset name, reported by DBS
+<span class="highlight">proc_evts:</span> number of processed events, reported by Dashboard
+<span class="highlight">procds:</span> anonymized processed dataset name, reported by DBS
+<span class="highlight">rel1_N:</span> DBS release counter defined as N-number of series releases associated with given dataset
+<span class="highlight">rel2_N:</span> DBS release counter defined as N-number of major releases associated with given dataset
+<span class="highlight">rel3_N:</span> DBS release counter defined as N-number of minor releases associated with given dataset
+<span class="highlight">s_X:</span> Phedex site counter, i.e. number of Tier sites holding this dataset replica
+<span class="highlight">size:</span> size of the dataset, reported by DBS and normalized to GB metric
+<span class="highlight">tier:</span> anonymized tier name, reported by DBS
+<span class="highlight">wct:</span> wall clock counter for given dataset, reported by Dashboard
+<span class="highlight">target:</span> target metric reported by PopularityDB, current default is normalized number of access to given dataset (other metrics can be normalized CPU and number of users associated with given dataset).
+</pre>
+</small>
+</section>
 <section>
 <h2>Live Data plots</h2>
 <p><img src="images/dbs1.gif" alt="DBS plots" /></p>
@@ -409,7 +450,7 @@ vklaptop> head -2 2014.vw
 
 0.008 '332990665 |f size:96689 nevt:334493030 creator:2179 wct:276683510 dtype:1 dataset:176521 procds:1037052 nfiles:32621 dbs:3 rel3_8:1 rel3_22:0 rel3_20:0 rel3_21:0 rel3_7:1 rel3_6:0 rel3_5:0 rel3_4:0 rel3_3:0 rel3_2:1 rel3_1:0 rel3_0:0 nsites:4 rel3_9:0 rel3_23:0 rel2_8:0 rel2_9:0 rel2_6:0 rel2_7:0 rel2_4:0 rel2_5:0 rel2_2:1 rel2_3:2 rel2_0:0 rel2_1:0 parent:6086362 rel1_1:0 rel1_0:0 rel1_3:0 rel1_2:0 rel1_5:2 rel1_4:1 rel1_7:0 nrel:1 rel3_17:0 rel3_16:0 rel3_15:0 nblk:88 rel3_13:0 rel3_12:0 rel3_11:0 rel3_10:0 tier:3 primds:968016 rel1_6:0 rel2_10:0 rel2_11:0 rel3_19:0 rel3_18:0 s_1:6 s_0:0 s_3:0 s_2:9 s_4:0 relt_0:1 relt_1:0 relt_2:2 rel3_14:0 era:759090 nlumis:86197 proc_evts:123342232 cpu:114683734
     </pre>
-    <span style="color:#FF8000;">Please note:</span>
+    <span class="highlight">Please note:</span>
     VW should be installed externally, here we show its data format
 and how to use it. The <b>csv2vw</b> script is provided by DCAFPilot package.
 </small>
@@ -500,20 +541,35 @@ vklaptop> head -3 pred.txt.out
 </section>
 
 <section>
-<h2>Future direction</h2>
+<h2>Conclusions & Future directions</h2>
+<div align="left">
+<small>
 <ul>
+    <li>We show the proof of concept how to predict dataset popularity based on existing CMS tools</li>
+    <ul>
+        <li>DCAFPilot package have main components to do the work</li>
+        <li>Initial dataframe shows some potential but should be throughfully studied to avoid
+        main ML obstucles, such as as data memorization, overfitting, etc.</li>
+        <li>More data in terms of volume and attributes may be required for
+        further analysis, e.g. find physicists clustering on certain topics</li>
+        <li>Even though all work was done on a single node with existing APIs we may need
+        to pursue other approaches, e.g. ORACLE-Hadoop mapping, etc.</li>
+    </ul>
     <li>Explore various ML algorithms both within python sklearn toolkit and R</li>
-    <li>Try out different popularity metrics</li>
-    <li>Test predictions with real data</li>
-    <li>Try out online learners,
+    <li>Try out different popularity metrics, e.g. naccess, ncpu, nusers or any
+    combination of them</li>
+    <li>Test predictions with real data, i.e. acquire new datasets and make prediction for them,
+    then wait for data from popularity DB and compare prediction with actual data</li>
+    <li>Try out online learners, they
         may work better with time-dependent features or larger datasts</li>
     <li>Automate tools, e.g. weekly crontabs, generate model updates, verify model predictions</li>
 </ul>
+</small>
+</div>
 </section>
 
 <section>
-<h1>THE END</h1>
-<h2>Happy data mining</h2>
+<h1>Happy Data Mining</h1>
 </section>
 
 </div> <!-- end of reveal -->
