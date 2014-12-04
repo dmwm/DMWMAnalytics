@@ -266,6 +266,11 @@ def main():
     "Main function"
     optmgr = OptionParser(learners().keys(), SCORERS.keys())
     opts, _ = optmgr.options()
+    if  opts.learner_help:
+        obj = learners()[opts.learner_help]
+        print obj
+        print obj.__doc__
+        sys.exit(0)
     ofile = opts.predict
     if  not ofile:
         ofile = "%s.predictions" % opts.learner
