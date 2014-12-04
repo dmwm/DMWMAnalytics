@@ -195,6 +195,11 @@ class DCAF(object):
         "Clean-up given collection"
         self.storage.cleanup(cname)
 
+    def remove(self, cname, docid):
+        "Remove given docid from given collection"
+        spec = {"_id": docid}
+        self.storage.cleanup(cname, spec)
+
     def dataframe(self, timeframe, seed, dformat, metric, dbs_extra, newdata=None):
         """Form a dataframe from various CMS data-providers"""
         dtypes, stypes, rtypes, tiers = self.data_types()
