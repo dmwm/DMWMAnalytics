@@ -164,6 +164,7 @@ The average size of the object is 1KB, ~0.6GB of CMS data
 Elapsed time: ~2h to 25m per job
     </pre>
 <small>
+We anomised all data and performed factorization via internal cache
     <pre style="width:1000px">
         <code>
 id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,s_0,s_1,s_2,s_3,s_4,size,tier,wct,target
@@ -179,31 +180,33 @@ id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,
 <section>
 <h2>Live Data plots</h2>
 <p><img src="images/dbs1.gif" alt="DBS plots" /></p>
-One week data transition through 2014
+Data transition through 2014 on weekly basis
 </section>
 
 <section>
 <h2>Live Data plots, cont'd</h2>
 <p><img src="images/dbs2.gif" alt="DBS plots" /></p>
-One week data transition through 2014
+Data transition through 2014 on weekly basis
 </section>
 
 <section>
 <h2>Live Data plots, cont'd</h2>
 <p><img src="images/dbs3.gif" alt="DBS plots" /></p>
-One week data transition through 2014
+Data transition through 2014 on weekly basis
 </section>
 
 <section>
 <h2>Correlations</h2>
 <p><img src="images/corr.gif" alt="Correlations" /></p>
-One week data transition through 2014
+Data transition through 2014 on weekly basis
 </section>
 
 <section>
 <h2>What we're looking for</h2>
 <p><img src="images/popularity.jpg" alt="Popularity" /></p>
-A few datasets behavior through 2014
+<small>
+Datasets behavior through 2014 (plot shows few random datasets)
+</small>
 </section>
 
 <section>
@@ -234,7 +237,7 @@ Options:
   --learner-params=LPARAMS
                         model classifier parameters, supply via JSON
   --train-file=TRAIN    train file, default train.csv
-  --test-file=TEST      test file, default no test file
+  --newdata=NEWDATA     new data file, default None
   --gsearch=GSEARCH     perform grid search, gsearch=parameters
   --predict=PREDICT     Prediction file name, default None
     </code></pre>
@@ -248,7 +251,7 @@ Options:
     <pre style="width:1000px">
         <code>
 # we can pass additional parameters to the learner, e.g. find out rank of features
-model --learner=RandomForestRegressor --train-file=2014.csv.gz --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123, "compute_importances":true}'
+model --learner=RandomForestRegressor --train-file=2014.csv.gz --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123, "compute_importances":true}'
 RandomForestRegressor(bootstrap=True, compute_importances=True,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -299,7 +302,7 @@ We should hold our breath with this though, too many things to test first ...
 <small>
     <pre style="width:1000px">
         <code>
-model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt
+model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -334,7 +337,7 @@ Use consistent random seed to have consistent results
     <pre style="width:1000px">
         <code>
 # run model with scaler
-model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
+model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -344,7 +347,7 @@ Score metric (r2): -4.22807249175
 Final Logloss 0.00572480564966
 
 # check our prediction
-check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
 
 Explaied variance score: 0.898592908177
 Mean absolute error    : 0.000386050647644
@@ -357,7 +360,7 @@ R2 score               : 0.896133210959
 </section>
 
 <section>
-<h2>Other algorithms</h2>
+<h2>Other learners</h2>
 <div align="left">
 <small>
     <pre style="width:1000px">
@@ -382,6 +385,8 @@ SGDRegressor(alpha=0.0001, epsilon=0.1, eta0=0.01, fit_intercept=True,
 Score metric (r2): -3.12784471837e+24
         </code>
     </pre>
+DCAFPilot supports five regressors, and 15+ classifiers which may be
+used if we'll use different metrics.
 </small>
 </div>
 </section>
@@ -404,6 +409,9 @@ vklaptop> head -2 2014.vw
 
 0.008 '332990665 |f size:96689 nevt:334493030 creator:2179 wct:276683510 dtype:1 dataset:176521 procds:1037052 nfiles:32621 dbs:3 rel3_8:1 rel3_22:0 rel3_20:0 rel3_21:0 rel3_7:1 rel3_6:0 rel3_5:0 rel3_4:0 rel3_3:0 rel3_2:1 rel3_1:0 rel3_0:0 nsites:4 rel3_9:0 rel3_23:0 rel2_8:0 rel2_9:0 rel2_6:0 rel2_7:0 rel2_4:0 rel2_5:0 rel2_2:1 rel2_3:2 rel2_0:0 rel2_1:0 parent:6086362 rel1_1:0 rel1_0:0 rel1_3:0 rel1_2:0 rel1_5:2 rel1_4:1 rel1_7:0 nrel:1 rel3_17:0 rel3_16:0 rel3_15:0 nblk:88 rel3_13:0 rel3_12:0 rel3_11:0 rel3_10:0 tier:3 primds:968016 rel1_6:0 rel2_10:0 rel2_11:0 rel3_19:0 rel3_18:0 s_1:6 s_0:0 s_3:0 s_2:9 s_4:0 relt_0:1 relt_1:0 relt_2:2 rel3_14:0 era:759090 nlumis:86197 proc_evts:123342232 cpu:114683734
     </pre>
+    <span style="color:#FF8000;">Please note:</span>
+    VW should be installed externally, here we show its data format
+and how to use it. The <b>csv2vw</b> script is provided by DCAFPilot package.
 </small>
 </div>
 </section>
@@ -438,7 +446,7 @@ vw -d new.vw -t -i model.vw -p preds.txt
 vw_pred2csv --fin=preds.txt --fout=preds.csv
 
 # check VW prediction against data sample
-check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=preds.csv
+check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=preds.csv
         </code>
                         RandomForestRegressor   VW regression
 Explaied variance score: 0.898592908177         0.341559976762
@@ -461,7 +469,7 @@ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
           --fout=2014.csv.gz --verbose
 
 # train the model
-vklaptop> model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=skll/cms/dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
+vklaptop> model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -470,7 +478,7 @@ RandomForestRegressor(bootstrap=True, compute_importances=None,
 Score metric (r2): -12.6244503822
 
 # check prediction
-vklaptop> check_prediction --fin=skll/cms/dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+vklaptop> check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
 Explaied variance score: 0.82718229836
 Mean absolute error    : 0.000560324232394
 Mean squared error     : 4.2115601847e-06
@@ -497,8 +505,9 @@ vklaptop> head -3 pred.txt.out
     <li>Explore various ML algorithms both within python sklearn toolkit and R</li>
     <li>Try out different popularity metrics</li>
     <li>Test predictions with real data</li>
-    <li>Try out online learners (may work better with time-dependent features)</li>
-    <li>Automate tools (weekly crontabs, generate model updates, verify model predictions)</li>
+    <li>Try out online learners,
+        may work better with time-dependent features or larger datasts</li>
+    <li>Automate tools, e.g. weekly crontabs, generate model updates, verify model predictions</li>
 </ul>
 </section>
 
