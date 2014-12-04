@@ -23,7 +23,7 @@
 
     <!-- local styles-->
     <style type="text/css" media="all">
-    .highlight {color:#FF8000;}
+    .highlight {color:#FF8000; padding: 30px;}
     </style>
 
     <!-- If the query includes 'print-pdf', use the PDF print sheet -->
@@ -118,6 +118,10 @@ Setup and dependencies:
         <li>Optional: <a href="https://github.com/EducationalTestingService/skll">SKLL</a> toolkit to run/experiment with various ML algorithms, <a href="https://github.com/JohnLangford/vowpal_wabbit">Vowpal Wabbit</a> online-learning algorithm</li>
     </ul>
 </small>
+Get the code:
+<pre style="width:1000px">
+git clone git@github.com:dmwm/DMWMAnalytics.git
+</pre>
 </p>
 
 </div>
@@ -143,7 +147,7 @@ List of used CMS data-service APIs used by DCAFPilot package
 </br>
 <small>
     <ul>
-        <li><a href="https://cmsweb.cern.ch/dbs/">DBS:</a> datasets, releases, filesummaries APIs</li>
+        <li><a href="https://cmsweb.cern.ch/dbs/">DBS:</a> datasets, releases, filesummaries, releaseversions, datasetparents APIs</li>
         <li><a href="https://cmsweb.cern.ch/phedex">Phedex:</a> blockReplicas API</li>
         <li><a href="https://cmsweb.cern.ch/sitedb">SiteDB:</a> site-names, people APIs</li>
         <li><a href="https://cms-popularity.cern.ch/popdb/popularity/apidoc">PopularityDB:</a> DSStatInTimeWindow API</li>
@@ -153,24 +157,60 @@ List of used CMS data-service APIs used by DCAFPilot package
 </div>
 </section>
 
-
 <section>
 <h2>Dataframe preparation</h2>
 <div align="left">
+<small>
+    <span class="highlight">DCAFPilot tools:</span>
+    <code>generate_scripts.sh, dataframe</code>
+    <pre style="width:1000px">
+    <code>
+# generate run-time scripts starting from given date
+prompt$ bin/generate_scripts.sh 20140101 > run.sh
+
+# content of run.sh
+prompt$ head run.sh
+#!/bin/bash
+dataframe --seed-cache
+nohup time dataframe --start=20140101 --stop=20140108 --dbs-extra=1000 --verbose=1 --fout=dataframe-20140101-20140108.csv  2>&1 1>& dataframe-20140101-20140108.log < /dev/null &
+...
+
+# run dataframe generator
+prompt$ nohup time dataframe --start=20141126 --stop=20141203 --dbs-extra=1000 --verbose=1 --fout=dataframe-20141126-20141203.csv 2>&1 1>& dataframe-20141126-20141203.log < /dev/null &
+
+# check log content
+prompt$ head dataframe-20141126-20141203.log
+dbs::fetch url=https://cmsweb.cern.ch/dbs/prod/global/DBSReader//releaseversions, params={'dataset': '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'}, docid=0f6c2bcc3970ab7812cfa17f1b92c930
+phedex::fetch url=https://cmsweb.cern.ch/phedex/datasvc/json/prod/blockReplicas, params={'dataset': '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'}, docid=7c718caf86d31108c57fcf0cad47a722
+dbs::fetch url=https://cmsweb.cern.ch/dbs/prod/global/DBSReader//datasetparents, params={'dataset': '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'}, docid=d7c76de195d92e4b885376a25db28964
+dbs::fetch url=https://cmsweb.cern.ch/dbs/prod/global/DBSReader//datasetparents, params={'dataset': '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'}, docid=d7c76de195d92e4b885376a25db28964
+dbs::fetch url=https://cmsweb.cern.ch/dbs/prod/global/DBSReader//filesummaries, params={'dataset': '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'}, docid=5f41d7d0855411af390e1d2c641c9aa0
+dashboard::fetch url=http://dashb-cms-job.cern.ch/dashboard/request.py/jobefficiencyapi, params={'start': '2014-11-26', 'type': 'analysis', 'end': '2014-12-3', 'site': 'all', 'dataset': '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'}
+popdb::fetch url=https://cms-popularity.cern.ch/popdb/popularity//DSStatInTimeWindow?tstop=2014-12-3&tstart=2014-11-26, params={'tstop': '2014-12-3', 'tstart': '2014-11-26'}
+
+    </code>
+    </pre>
+</small>
+</div>
+</section>
+
+<section>
+<h2>Dataframe preparation, cont'd</h2>
+<div align="left">
     <pre style="width:1000px">
 Queried 5 CMS data-services: DBS, Phedex, SiteDB, PopularityDB, Dashboard
+    - used 10 APIs to get data content
+    - feed internal cache with ~217K datasets from 4 DBS istances,
+      ~900 release names, 500+ site names, ~5k people DNs.
 
-Placed ~610K queries, ~345K went to data-services and
-the rest used internal cache
-
-Used ~217K datasets from 4 DBS instances
+Placed ~610K queries, ~345K went to data-services and the rest used internal cache
 
 The final dataframe is constructed out of 71 variables and has 46 files and ~114K rows
    - each file is worth of 1 week of CMS data
 
 The average size of the object is 1KB, ~0.6GB of CMS data
 
-Elapsed time: ~2h to 25m per job
+Elapsed time: ~2h to 25m per job, times fade out due to cache usage
     </pre>
 <small>
 We anonymised all data and performed factorization via internal cache
@@ -254,9 +294,11 @@ Datasets behavior through 2014 (plot shows few random datasets)
 <h2>How to train your model</h2>
 <div align="left">
 <small>
+    <span class="highlight">DCAFPilot tools:</span>
+    <code>model</code>
     <pre style="width:1000px"><code>
 # use model script to train your model
-vklaptop> model --help
+prompt$ model --help
 
 Usage: model.py [options]
 
@@ -292,7 +334,7 @@ Options:
     <pre style="width:1000px">
         <code>
 # we can pass additional parameters to the learner, e.g. find out rank of features
-model --learner=RandomForestRegressor --train-file=2014.csv.gz --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123, "compute_importances":true}'
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123, "compute_importances":true}'
 RandomForestRegressor(bootstrap=True, compute_importances=True,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -315,13 +357,20 @@ Feature ranking:
 <section>
 <h2>First results</h2>
 <div align="left">
+<small>
+    <span class="highlight">DCAFPilot tools:</span>
+    <code>merge_csv, model</code>
+</small>
     <pre style="width:1000px"><code>
+# get the data, we keep it sequre in separate CERN based repository
+prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
+
 # merge all 2014 files into single file
-merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
+prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
           --fout=2014.csv.gz --verbose
 
 # Train the model
-model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2
 
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
@@ -329,7 +378,6 @@ RandomForestRegressor(bootstrap=True, compute_importances=None,
            min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
            random_state=None, verbose=0)
 Score metric (r2): 0.897606379597
-Final Logloss 0.000383744987074
     </code></pre>
 </div>
 <small>
@@ -343,7 +391,7 @@ We should hold our breath with this though, too many things to test first ...
 <small>
     <pre style="width:1000px">
         <code>
-model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -364,9 +412,8 @@ Traceback (most recent call last):
 TypeError: invalid type comparison
         </code>
     </pre>
-Some data requires normalization/scaling, e.g. cpu/wct were generated as long's, while should be floats.
-<br />
-Use random seed to have consistent results
+<span class="highlight">Hint:</span>
+Some data requires normalization/scaling, e.g. cpu/wct were generated as int's (to save output file space), while they should be floats.
 </small>
 </div>
 </section>
@@ -378,17 +425,16 @@ Use random seed to have consistent results
     <pre style="width:1000px">
         <code>
 # run model with scaler
-model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
            min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
            random_state=None, verbose=0)
 Score metric (r2): -4.22807249175
-Final Logloss 0.00572480564966
 
 # check our prediction
-check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
 
 Explaied variance score: 0.898592908177
 Mean absolute error    : 0.000386050647644
@@ -396,6 +442,12 @@ Mean squared error     : 2.42792029612e-06
 R2 score               : 0.896133210959
         </code>
     </pre>
+<span class="highlight">Observation:</span>
+You may see different results if run your model several times.
+That's due to random splitting for train/validation sets.
+<br />
+<span class="highlight">Hint:</span>
+Use random seed and no splitting to have consistent results
 </small>
 </div>
 </section>
@@ -406,19 +458,22 @@ R2 score               : 0.896133210959
 <small>
     <pre style="width:1000px">
         <code>
-model --learner=AdaBoostRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
+# run AdaBoost regressor model
+prompt$ model --learner=AdaBoostRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
 AdaBoostRegressor(base_estimator=None, learning_rate=1.0, loss='linear',
          n_estimators=50, random_state=None)
 Score metric (r2): -0.943959694892
 
-model --learner=BaggingRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
+# run Bagging regressor model
+prompt$ model --learner=BaggingRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
 BaggingRegressor(base_estimator=None, bootstrap=True,
          bootstrap_features=False, max_features=1.0, max_samples=1.0,
          n_estimators=10, n_jobs=1, oob_score=False, random_state=None,
          verbose=0)
 Score metric (r2): -2.11591876017
 
-model --learner=SGDRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
+# run SGD regressor model
+prompt$ model --learner=SGDRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
 SGDRegressor(alpha=0.0001, epsilon=0.1, eta0=0.01, fit_intercept=True,
        l1_ratio=0.15, learning_rate='invscaling', loss='squared_loss',
        n_iter=5, penalty='l2', power_t=0.25, random_state=None,
@@ -426,6 +481,7 @@ SGDRegressor(alpha=0.0001, epsilon=0.1, eta0=0.01, fit_intercept=True,
 Score metric (r2): -3.12784471837e+24
         </code>
     </pre>
+<span class="highlight">Hint:</span>
 DCAFPilot supports five regressors, and 15+ classifiers which may be
 used if we'll use different metrics.
 </small>
@@ -442,9 +498,13 @@ design a fast, scalable, useful learning algorithm. VW is the essence of speed
 in machine learning, able to learn from <u>terafeature</u> datasets with ease. Via
 parallel learning, it can exceed the throughput of any single machine network
 interface when doing linear learning, a first amongst learning algorithms.
+<br />
+<br />
+<span class="highlight">DCAFPilot tools:</span>
+<code>csv2vw</code>
     <pre style="width:1000px">
-vklaptop> csv2vw --csv=2014.csv.gz --vw=2014.vw
-vklaptop> head -2 2014.vw
+prompt$ csv2vw --csv=2014.csv.gz --vw=2014.vw
+prompt$ head -2 2014.vw
 
 0.006 '999669242 |f size:8002 nevt:21675970 creator:2179 wct:216946588 dtype:0 dataset:20186 procds:373256 nfiles:2158 dbs:3 rel3_8:1 rel3_22:0 rel3_20:0 rel3_21:0 rel3_7:0 rel3_6:0 rel3_5:0 rel3_4:0 rel3_3:0 rel3_2:1 rel3_1:0 rel3_0:0 nsites:10 rel3_9:0 rel3_23:0 rel2_8:0 rel2_9:0 rel2_6:0 rel2_7:0 rel2_4:0 rel2_5:0 rel2_2:1 rel2_3:1 rel2_0:0 rel2_1:0 parent:5862538 rel1_1:0 rel1_0:0 rel1_3:0 rel1_2:0 rel1_5:1 rel1_4:1 rel1_7:0 nrel:1 rel3_17:0 rel3_16:0 rel3_15:0 nblk:6 rel3_13:0 rel3_12:0 rel3_11:0 rel3_10:0 tier:5 primds:335429 rel1_6:0 rel2_10:0 rel2_11:0 rel3_19:0 rel3_18:0 s_1:3 s_0:0 s_3:0 s_2:8 s_4:0 relt_0:1 relt_1:0 relt_2:1 rel3_14:0 era:759090 nlumis:72274 proc_evts:30667701 cpu:207737071
 
@@ -461,10 +521,12 @@ and how to use it. The <b>csv2vw</b> script is provided by DCAFPilot package.
 <h2>Online learning algorithm, cont'd</h2>
 <div align="left">
 <small>
+    <span class="highlight">External tools:</span>
+    <code>vw</code>
     <pre style="width:1000px">
         <code>
 # train our model
-vw -d 2014.vw -c -k -f model.vw
+prompt$ vw -d 2014.vw -c -k -f model.vw
 Num weight bits = 18, learning rate = 0.5, initial_t = 0, power_t = 0.5
 average    since         example     example  current  current  current
 loss       last          counter      weight    label  predict features
@@ -473,21 +535,18 @@ loss       last          counter      weight    label  predict features
 0.000014   0.000010        65536     65536.0   0.0010   0.0000       46
 
 finished run, number of examples per pass = 113908, passes used = 1
-weighted example sum = 113908
-weighted label sum = 41.78
 average loss = 1.29019e-05
-best constant = 0.000366787
 best constants loss = 0.000366653
 total feature number = 6071657
 
 # make prediction
-vw -d new.vw -t -i model.vw -p preds.txt
+prompt$ vw -d new.vw -t -i model.vw -p preds.txt
 
 # convert VW prediction into CSV format
-vw_pred2csv --fin=preds.txt --fout=preds.csv
+prompt$ vw_pred2csv --fin=preds.txt --fout=preds.csv
 
 # check VW prediction against data sample
-check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=preds.csv
+prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=preds.csv
         </code>
                         RandomForestRegressor   VW regression
 Explaied variance score: 0.898592908177         0.341559976762
@@ -503,14 +562,16 @@ R2 score               : 0.896133210959         0.337686411265
 <h2>From data to prediction</h2>
 <div align="left">
 <small>
+<span class="highlight">DCAFPilot tools:</span>
+<code>merge_csv, model, check_prediction, pred2dataset</code>
     <pre style="width:1000px">
         <code>
 # merge dataframes
-merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
+prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
           --fout=2014.csv.gz --verbose
 
 # train the model
-vklaptop> model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
@@ -519,17 +580,17 @@ RandomForestRegressor(bootstrap=True, compute_importances=None,
 Score metric (r2): -12.6244503822
 
 # check prediction
-vklaptop> check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
 Explaied variance score: 0.82718229836
 Mean absolute error    : 0.000560324232394
 Mean squared error     : 4.2115601847e-06
 R2 score               : 0.819828832958
 
 # convert prediction into human/CMS data format
-vklaptop> pred2dataset --fin=pred.txt --fout=pred.txt.out
+prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
 
 # inspect prediction
-vklaptop> head -3 pred.txt.out
+prompt$ head -3 pred.txt.out
 0.23900000005960464,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
 0.007299999927636236,/QCD_Pt-15to3000_Tune4C_14TeV_pythia8/SHCAL2023Upg14DR-PU140bx25_PH2_1K_FB_V4-v1/GEN-SIM-RECO
 0.025100000109523533,/SingleMu/Run2012D-22Jan2013-v1/AOD
