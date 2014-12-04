@@ -308,21 +308,74 @@ Options:
   --scorer=SCORER       model scorers: ['accuracy', 'adjusted_rand_score', 'average_precision',
                         'f1', 'log_loss', 'mean_absolute_error', 'mean_squared_error',
                         'precision', 'r2', 'recall', 'roc_auc'], default None
-  --learner=LEARNER     model learners: ['AdaBoostClassifier', 'AdaBoostRegressor',
-                        'BagginRegressor', 'BaggincClassifier', 'BernoulliNB',
-                        'DecisionTreeClassifier', 'ExtraTreesClassifier',
-                        'GaussianNB', 'GradientBoostingClassifier',
-                        'GradientBoostingRegressor', 'KNeighborsClassifier',
-                        'LinearSVC', 'PCA', 'RandomForestClassifier',
-                        'RandomForestRegressor', 'RidgeClassifier',
+  --learner=LEARNER     model learners: ['AdaBoostClassifier', 'AdaBoostRegressor', 'BaggingClassifier',
+                        'BaggingRegressor', 'BernoulliNB', 'DecisionTreeClassifier', 'DecisionTreeRegressor',
+                        'ExtraTreesClassifier', 'ExtraTreesRegressor', 'GaussianNB', 'GradientBoostingClassifier',
+                        'GradientBoostingRegressor', 'KNeighborsClassifier', 'LinearSVC', 'PCA',
+                        'RandomForestClassifier', 'RandomForestRegressor', 'RidgeClassifier',
                         'SGDClassifier', 'SGDRegressor', 'SVC', 'SVR',
                         'lda_rfc', 'pca_knc', 'pca_rfc', 'pca_svc'], default RandomForestClassifier
   --learner-params=LPARAMS
                         model classifier parameters, supply via JSON
+  --learner-help=LEARNER_HELP
+                        Print learner description, default None
+  --split=SPLIT         split level for train/validation, default 0.33
   --train-file=TRAIN    train file, default train.csv
   --newdata=NEWDATA     new data file, default None
-  --gsearch=GSEARCH     perform grid search, gsearch=parameters
+  --idx=IDX             initial index counter, default 0
+  --limit=LIMIT         number of rows to process, default -1 (everything)
+  --verbose=VERBOSE     verbose output, default=0
+  --crossval            Perform cross-validation for given model and quit
+  --gsearch=GSEARCH     perform grid search, gsearch=<parameters>
   --predict=PREDICT     Prediction file name, default None
+    </code></pre>
+<span class="highlight">Note:</span>
+model script offers 8 regressors and 18 classifiers from
+<a href="http://scikit-learn.org/stable/">sklearn</a> ML library
+</small>
+</div>
+</section>
+
+<section>
+<h2>Knowing your learner</h2>
+<div align="left">
+<small>
+    <pre style="width:1000px"><code>
+prompt$ model --learner-help=RandomForestRegressor
+
+RandomForestRegressor(bootstrap=True, compute_importances=None,
+           criterion='mse', max_depth=None, max_features='auto',
+           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
+           random_state=None, verbose=0)
+A random forest regressor.
+
+    A random forest is a meta estimator that fits a number of classifying
+    decision trees on various sub-samples of the dataset and use averaging
+    to improve the predictive accuracy and control over-fitting.
+
+    Parameters
+    ----------
+    n_estimators : integer, optional (default=10)
+        The number of trees in the forest.
+
+    criterion : string, optional (default="mse")
+        The function to measure the quality of a split. The only supported
+        criterion is "mse" for the mean squared error.
+        Note: this parameter is tree-specific.
+
+    max_features : int, float, string or None, optional (default="auto")
+        The number of features to consider when looking for the best split:
+
+        - If int, then consider `max_features` features at each split.
+        - If float, then `max_features` is a percentage and
+          `int(max_features * n_features)` features are considered at each
+          split.
+        - If "auto", then `max_features=n_features`.
+        - If "sqrt", then `max_features=sqrt(n_features)`.
+        - If "log2", then `max_features=log2(n_features)`.
+        - If None, then `max_features=n_features`.
+...
     </code></pre>
 </small>
 </div>
@@ -330,7 +383,7 @@ Options:
 
 <section>
 <h2>Analyze and play with your model</h2>
-<div>
+<div align="left">
     <pre style="width:1000px">
         <code>
 # we can pass additional parameters to the learner, e.g. find out rank of features
