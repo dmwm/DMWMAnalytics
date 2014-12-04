@@ -116,7 +116,7 @@ class DBSService(GenericService):
         if  not len(res):
             # look-up dataset in other DBS instances
             spec.update({'detail':'true'})
-            for dbsinst in self.instances:
+            for dbsinst in self.all_dbs:
                 res = [r for r in self.fetch(api, spec, dbsinst)]
                 if  len(res):
                     return res[0]
@@ -132,7 +132,7 @@ class DBSService(GenericService):
         res = [r for r in self.fetch(api, spec)]
         if  not len(res):
             # look-up dataset in other DBS instances
-            for dbsinst in self.instances:
+            for dbsinst in self.all_dbs:
                 res = [r for r in self.fetch(api, spec, dbsinst)]
                 if  len(res):
                     return res[0]
@@ -155,7 +155,7 @@ class DBSService(GenericService):
         params = {'dataset':dataset}
         data = json.loads(super(DBSService, self).fetch(url, params))
         if  not len(data) or not 'release_version' in data[0]:
-            for dbsinst in self.instances:
+            for dbsinst in self.all_dbs:
                 dbs_url = url.replace('prod/global', dbsinst)
                 data = json.loads(super(DBSService, self).fetch(dbs_url, params))
                 if  len(data) and 'release_version' in data[0]:
