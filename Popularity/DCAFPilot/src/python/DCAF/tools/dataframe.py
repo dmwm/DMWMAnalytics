@@ -47,6 +47,8 @@ class OptionParser():
             dest="update", default=False, help="Seed internal cache with DBS/SiteDB database content")
         self.parser.add_option("--clean-cache", action="store_true",
             dest="clean", default=False, help="Clean-up cache")
+        self.parser.add_option("--remove-doc", action="store", type="string",
+            dest="docid", default=None, help="Remove given docid from cache")
         self.parser.add_option("--newdata", action="store_true",
             dest="newdata", default=False, help="Get new set of data from DBS, instead of popularity DB")
     def get_opt(self):
@@ -61,6 +63,9 @@ def main():
     mgr = DCAF(opts.config, opts.verbose)
     if  opts.clean:
         mgr.cleanup('cache')
+        return
+    if  opts.docid:
+        mgr.remove('cache', opts.docid)
         return
     if  opts.update:
         mgr.update()
