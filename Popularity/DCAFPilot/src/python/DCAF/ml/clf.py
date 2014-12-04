@@ -26,7 +26,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
-from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import BaggingClassifier, ExtraTreesRegressor
 from sklearn.ensemble import GradientBoostingRegressor, ExtraTreesRegressor
 from sklearn.ensemble import BaggingRegressor, AdaBoostRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
@@ -71,6 +71,8 @@ def learners(clf=None, kwds=None):
 
     # common regressors
     models['RandomForestRegressor'] = RandomForestRegressor()
+    models['ExtraTreesRegressor'] = ExtraTreesRegressor()
+    models['DecisionTreeRegressor'] = DecisionTreeRegressor()
     models['SVR'] = SVR()
     models['SGDRegressor'] = SGDRegressor()
     models['GradientBoostingRegressor'] = GradientBoostingRegressor()
