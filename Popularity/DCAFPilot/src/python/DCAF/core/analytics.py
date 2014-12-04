@@ -210,7 +210,7 @@ class DCAF(object):
                 print "Generate dataframe for new datasets"
             n_days = 7
             if  timeframe:
-                n_days = ndays(timeframe[0], timeframe[1])
+                n_days = ndays(yyyymmdd(timeframe[0]), yyyymmdd(timeframe[1]))
             new_datasets = self.dbs.new_datasets(n_days)
             for row in new_datasets:
                 dataset = row['dataset']
