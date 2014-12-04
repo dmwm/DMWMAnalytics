@@ -113,6 +113,8 @@ class StorageManager(object):
         "Fetch documents from internal storage for given spec query"
         return self.col(cname).find(spec).count()
 
-    def cleanup(self, cname):
-        "Cleanup given collection"
+    def cleanup(self, cname, spec=None):
+        "Cleanup given collection with optional spec"
+        if  spec:
+            return self.col(cname).remove(spec)
         return self.col(cname).remove({})
