@@ -116,6 +116,9 @@ class OptionParser(object):
         self.parser.add_option("--learner-params", action="store", type="string",
             default="", dest="lparams",
             help="model classifier parameters, supply via JSON")
+        self.parser.add_option("--split", action="store", type="float",
+            default=0.33, dest="split",
+            help="split level for train/validation, default 0.33")
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
         self.parser.add_option("--newdata", action="store", type="string",
