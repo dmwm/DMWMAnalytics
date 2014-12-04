@@ -97,7 +97,7 @@ class DBSService(GenericService):
         "Return list of new datasets"
         cdate1, cdate2 = dates_from_today(ndays)
         spec = {'dataset':'/*/*/*', 'detail':'true',
-                'min_cdate':cdate1, 'max_cdate':cdate2}
+                'min_cdate':int(cdate1), 'max_cdate':int(cdate2)}
         for row in self.fetch('datasets', spec):
             rec = {'dataset':row['dataset'], 'dataset_id':row['dataset_id']}
             yield rec
