@@ -11,7 +11,7 @@ Description: Generic classification model template
 import os
 import sys
 import time
-#import random
+import random
 #import pprint
 #try:
 #    import cPickle as pickle
@@ -257,6 +257,7 @@ def main():
             if  len(train_files):
                 break
 
+    random.seed(12345)
     if  model2run == 'model_iter':
         model_iter(train_file_list=train_files, newdata_file=opts.newdata,
                 learner=opts.learner, lparams=opts.lparams,
