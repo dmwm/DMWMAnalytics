@@ -135,12 +135,6 @@ class OptionParser(object):
         self.parser.add_option("--verbose", action="store", type="int",
             default=0, dest="verbose",
             help="verbose output, default=0")
-        self.parser.add_option("--roc", action="store_true",
-            default=False, dest="roc",
-            help="plot roc curve")
-        self.parser.add_option("--full", action="store_true",
-            default=False, dest="full",
-            help="Use full sample for training, i.e. don't split")
         self.parser.add_option("--crossval", action="store_true",
             default=False, dest="cv",
             help="Perform cross-validation for given model and quit")
