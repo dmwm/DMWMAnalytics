@@ -202,9 +202,15 @@ class DCAF(object):
         dtypes, stypes, rtypes, tiers = self.data_types()
         pop_datasets = 0
         dbs_datasets = 0
+        popdb_results = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
         if  dformat == 'csv':
+            row = popdb_results[0]
+            dataset = row['dataset']
+            target = dict(naccess=row['naccess'],nusers=row['nusers'],totcpu=row['totcpu'],
+                    rnaccess=row['rnaccess'],rnusers=row['rnusers'],rtotcpu=row['rtotcpu'])
             # seed dataset to determine headers of the dataframe
-            rows = self.dataset_info(timeframe, seed, dtypes, stypes, rtypes, tiers, 'headers')
+            rows = self.dataset_info(timeframe, seed, dtypes, stypes, rtypes,
+                    tiers, 'headers', target)
             headers = [r for r in rows][0]
             yield ','.join(headers)
         if  newdata: # request new dataset
@@ -223,7 +229,7 @@ class DCAF(object):
                     yield row
             return
         # get list of popular datasets in certain time frame
-        popdb_results = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
+#        popdb_results = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
         popdb_datasets = {} #
         for row in popdb_results:
             dataset = row['dataset']
