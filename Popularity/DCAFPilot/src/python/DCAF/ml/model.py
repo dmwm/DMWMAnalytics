@@ -82,7 +82,8 @@ def factorize(col, xdf, sdf=None):
         out.append(dval[val])
     return out
 
-def model(train_file, newdata_file, learner, lparams=None, split=0.3, scorer=None,
+def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
+        drops=None, split=0.3, scorer=None,
         scaler=None, ofile=None, idx=0, limit=-1, gsearch=None, crossval=None, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
@@ -112,11 +113,16 @@ def model(train_file, newdata_file, learner, lparams=None, split=0.3, scorer=Non
         print "idx/limit", idx, limit
 
     # read data and normalize it
-    drops = ['id']
+    if  drops:
+        if  isinstance(drops, basestring):
+            drops = drops.split(',')
+        if  idcol not in drops:
+            drops += [idcol]
+    else:
+        drops = [idcol]
     xdf = read_data(train_file, drops, idx, limit, scaler)
 
     # get target variable and exclude choice from train data
-    tcol = 'target' # classification column name (what we'll predict)
     target = xdf[tcol]
     xdf = xdf.drop(tcol, axis=1)
     if  verbose:
@@ -124,7 +130,7 @@ def model(train_file, newdata_file, learner, lparams=None, split=0.3, scorer=Non
         print "Columns:", ','.join(xdf.columns)
         print "train shapes:", xdf.shape, target.shape
         if  verbose>1:
-            print "Target:", target
+            print "Target:", tcol, target
 
     # split our train data
     if  split:
@@ -194,7 +200,8 @@ def model(train_file, newdata_file, learner, lparams=None, split=0.3, scorer=Non
         if  ofile:
             out.to_csv(ofile, header=True, index=False)
 
-def model_iter(train_file_list, newdata_file, learner, lparams=None, split=0.1, scaler=None, ofile=None, verbose=False):
+def model_iter(train_file_list, newdata_file, idcol, tcol,
+    learner, lparams=None, drops=None, split=0.1, scaler=None, ofile=None, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
@@ -214,8 +221,13 @@ def model_iter(train_file_list, newdata_file, learner, lparams=None, split=0.1, 
             setattr(clf, key, val)
     print "clf:", clf
 
-    drops = []
-    tcol = 'target' # classification column name (what we'll predict)
+    if  drops:
+        if  isinstance(drops, basestring):
+            drops = drops.split(',')
+        if  idcol not in drops:
+            drops += [idcol]
+    else:
+        drops = [idcol]
     fit = None
     for train_file in train_file_list:
         print "Train file", train_file
@@ -288,11 +300,15 @@ def main():
     random.seed(12345)
     if  model2run == 'model_iter':
         model_iter(train_file_list=train_files, newdata_file=opts.newdata,
-                learner=opts.learner, lparams=opts.lparams, split=opts.split,
+                idcol=opts.idcol, tcol=opts.target,
+                learner=opts.learner, lparams=opts.lparams,
+                drops=opts.drops, split=opts.split,
                 scaler=opts.scaler, ofile=ofile, verbose=opts.verbose)
     else:
         model(train_file=opts.train, newdata_file=opts.newdata,
-                learner=opts.learner, lparams=opts.lparams, split=opts.split,
+                idcol=opts.idcol, tcol=opts.target,
+                learner=opts.learner, lparams=opts.lparams,
+                drops=opts.drops, split=opts.split,
                 scorer=opts.scorer, scaler=opts.scaler, ofile=ofile,
                 idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,
                 crossval=opts.cv, verbose=opts.verbose)
