@@ -50,7 +50,7 @@ def convert(fin, fout, uri, sep=','):
             spec = {'dataset_id':int(did), 'dbs_instance':int(dbs)}
             res = mgr.find_one(spec)
             if  res:
-                ostream.write("%s%s%s\n" % (pred,sep,res['dataset']))
+                ostream.write("%5.3f%s%s\n" % (pred,sep,res['dataset']))
 
 def main():
     "Main function"
