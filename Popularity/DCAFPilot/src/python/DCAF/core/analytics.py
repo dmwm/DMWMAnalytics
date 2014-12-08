@@ -232,7 +232,7 @@ class DCAF(object):
             if  self.verbose:
                 print "Generate dataframe for %s, timeframe: %s" % (dataset, timeframe)
             target = dict(naccess=row['naccess'],nusers=row['nusers'],totcpu=['totcpu'],
-                    rnaccess=row['rnaccess'],rnusers=row['rnusers'],rtotcpu=['rtotcpu'])
+                    rnaccess=row['rnaccess'],rnusers=row['rnusers'],rtotcpu=row['rtotcpu'])
             rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
                     rtypes, tiers, dformat, target)
             popdb_datasets[dataset] = row
