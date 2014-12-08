@@ -141,7 +141,6 @@ class DCAF(object):
             if  tier not in tiers:
                 tiers.append(tier)
             tier = tiers.index(tier)
-            target_str = '%5.3f' % target if target else 0
             parents = [r for r in self.dbs.dataset_parents(dataset)]
             parent = parents[0] if len(parents) else 0
             summary = self.dbs.dataset_summary(dataset)
@@ -153,8 +152,9 @@ class DCAF(object):
                     nblk=summary['num_block'], nevt=summary['num_event'],
                     parent=parent,
                     size=summary['file_size']/2**30, era=era, dbs=dbsinst,
-                    cpu=dashboard['cpu'], wct=dashboard['wct'], proc_evts=dashboard['nevt'],
-                    target=target_str)
+                    cpu=dashboard['cpu'], wct=dashboard['wct'], proc_evts=dashboard['nevt'])
+            if  isinstance(target, dict):
+                rec.update(target)
             for key,val in series.items():
                 rec.update({key:val})
             for key, val in majors.items():
@@ -169,16 +169,13 @@ class DCAF(object):
             headers.sort()
             headers.remove('id')
             headers = ['id'] + headers # let dataset id be the first column
-            headers.remove('target')
-            if  target != -1:
-                headers += ['target'] # make target to be last column
             if  dformat == 'headers':
                 yield headers
             elif  dformat == 'csv':
                 res = [str(rec[h]) for h in headers]
                 yield ','.join(res)
             elif dformat == 'vw':
-                target = rec.pop('target')
+                target_str = target.get('rnaccess')
                 vals = ' '.join([str(rec[h]) for h in headers])
                 uid = genkey(vals, self.salt, 5) # unique row identified
                 vwrow = "%s '%s |f %s" % (target_str, uid, vals)
@@ -200,7 +197,7 @@ class DCAF(object):
         spec = {"_id": docid}
         self.storage.cleanup(cname, spec)
 
-    def dataframe(self, timeframe, seed, dformat, metric, dbs_extra, newdata=None):
+    def dataframe(self, timeframe, seed, dformat, dbs_extra, newdata=None):
         """Form a dataframe from various CMS data-providers"""
         dtypes, stypes, rtypes, tiers = self.data_types()
         pop_datasets = 0
@@ -237,16 +234,8 @@ class DCAF(object):
             naccess = row['naccess']
             nusers = row['nusers']
             totcpu = row['totcpu']
-            if  metric=='naccess' or metric=='nusers' or metric=='totcpu':
-                target = row[metric]
-            elif basestring(metric, str) and len(metric)>0:
-                try:
-                    target = eval(metric)
-                except Exception as exc:
-                    print 'ERROR, unable to eval metric="%s"' % metric
-                    raise exc
-            else:
-                target = naccess
+            target = dict(naccess=row['naccess'],nusers=row['nusers'],totcpu=['totcpu'],
+                    rnaccess=row['rnaccess'],rnusers=row['rnusers'],rtotcpu=['rtotcpu'])
             rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
                     rtypes, tiers, dformat, target)
             popdb_datasets[dataset] = row
