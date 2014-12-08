@@ -29,9 +29,6 @@ class OptionParser():
         self.parser.add_option("--dbs-extra", action="store", type="int",
             dest="dbs_extra", default=1000,
             help="Extra datasets from DBS which were not shown in popularityDB, default 1000")
-        self.parser.add_option("--metric", action="store", type="string",
-            dest="metric", default="naccess",
-            help="Output target metric (naccess by default), supported naccess, nusers, totcpu or python expression of those")
         self.parser.add_option("--start", action="store", type="string",
             dest="start", default="", help="Start timestamp in YYYYMMDD format")
         self.parser.add_option("--stop", action="store", type="string",
@@ -77,11 +74,10 @@ def main():
     fout = opts.fout
     seed = opts.seed
     dformat = opts.dformat
-    metric = opts.metric
     dbsextra = opts.dbs_extra
     newdata = opts.newdata
     with open(opts.fout, 'w') as ostream:
-        for row in mgr.dataframe(tframe, seed, dformat, metric, dbsextra, newdata):
+        for row in mgr.dataframe(tframe, seed, dformat, dbsextra, newdata):
             ostream.write(row+'\n')
 
 if __name__ == '__main__':
