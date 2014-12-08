@@ -61,9 +61,12 @@ class PopDBService(GenericService):
         params = {'tstart':time1, 'tstop':time2}
         res = self.fetch(api, params)
         for row in res:
-            rec = dict(naccess=float(row['RNACC'])/100,
-                    totcpu=float(row['RTOTCPU'])/100,
-                    nusers=float(row['RNUSERS'])/100,
+            rec = dict(naccess=float(row['NACC']),
+                    totcpu=float(row['TOTCPU']),
+                    nusers=float(row['NUSERS']),
+                    rnaccess=float(row['NRACC'],
+                    rtotcpu=float(row['RTOTCPU']),
+                    rnusers=float(row['RNUSERS']),
                     dataset=row['COLLNAME'])
             yield rec
 
