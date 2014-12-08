@@ -61,7 +61,7 @@ class DashboardService(GenericService):
 #            rec = dict(cpu=row['WrapCPU'], wct=row['WrapWC'],
 #                    nevt=row['NEventsProcessed'], site=siteid)
 #            yield rec
-        return {'cpu':int(round(cpu)), 'wct': int(round(wct)), 'nevt': nevt}
+        return {'cpu':round(cpu), 'wct': round(wct), 'nevt': nevt}
 
 def test():
     dataset="/QCD_Pt-1000to1400_Tune4C_13TeV_pythia8/Spring14dr-castor_PU20bx25_POSTLS170_V5-v1/AODSIM"
