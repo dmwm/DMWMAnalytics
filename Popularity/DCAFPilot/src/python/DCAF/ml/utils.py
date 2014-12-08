@@ -119,6 +119,12 @@ class OptionParser(object):
         self.parser.add_option("--learner-help", action="store", type="string",
             default=None, dest="learner_help",
             help="Print learner description, default None")
+        self.parser.add_option("--drops", action="store", type="string",
+            default="id", dest="drops",
+            help="Comma separated list of columns to drop, default id")
+        self.parser.add_option("--target", action="store", type="string",
+            default="naccess", dest="target",
+            help="Target column name, default naccess")
         self.parser.add_option("--split", action="store", type="float",
             default=0.33, dest="split",
             help="split level for train/validation, default 0.33")
