@@ -64,7 +64,7 @@ class PopDBService(GenericService):
             rec = dict(naccess=float(row['NACC']),
                     totcpu=float(row['TOTCPU']),
                     nusers=float(row['NUSERS']),
-                    rnaccess=float(row['NRACC'],
+                    rnaccess=float(row['NRACC']),
                     rtotcpu=float(row['RTOTCPU']),
                     rnusers=float(row['RNUSERS']),
                     dataset=row['COLLNAME'])
