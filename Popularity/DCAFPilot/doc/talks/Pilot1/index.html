@@ -74,7 +74,7 @@
 <p>
 <a href="https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot">DCAFPilot</a>
 stands for Data and Computing Analysis Framework.
-It is initiative within DMWM analytics group to 
+It is initiative within DMWM analytics group to
 improve our understanding of CMS computing data.
 </p>
 
@@ -404,6 +404,7 @@ Feature ranking:
 8. importance 0.029350, feature rel3_4
 9. importance 0.005171, feature relt_2
         </code>
+Do site variables are good predictors?
     </pre>
 </div>
 </section>
@@ -612,6 +613,50 @@ R2 score               : 0.896133210959         0.337686411265
 </section>
 
 <section>
+<h2>Regression or classification</h2>
+<div align="left">
+<small>
+<span class="highlight">Expernal tools:</span>
+<code>R-language, e1071 library (Support Vector Machine classification)</code>
+    <pre style="width:1000px">
+        <code>
+library(e1071)
+
+csv_files <- list.files(path="./", full.names=TRUE, pattern="dataframe-.*.csv.gz")
+df <- read.csv(file=csv_files[1])
+for ( i in 2:length(csv_files) ) {
+  df <- rbind(df,read.csv(file=csv_files[1]))
+}
+
+# remove variables which will not be useful for predicting _new_ data popularity
+df <- df[,cbind("cpu","creator","dtype","era","nblk","nevt","nfiles","nlumis",
+                "parent","primds","proc_evts","procds","size","tier","wct","target")]
+
+# define classifcation
+df$target <- df$target > 0.001
+dLen <- nrow(df)
+nTrain <- floor(dLen * 0.8)
+dTrain <- df[1:nTrain,]
+dTest  <- df[nTrain+1:(dLen-nTrain-1),]
+
+# The default cost=1 gives only 90% accuracty, 2611 support vectors.
+# cost=10 gives 97% accuracy with 1012 support vectors.
+# cost=100 gives 100% accuracy with only 431 support vectors.
+# putting the cost to infinity (10^6) gives 285 support vectors.
+s <- svm(target ~ ., data=dTrain, type="C-classification", cost=50)
+print(s) # 542 support  for cost=50
+
+yTest <- predict(s,dTest)
+print("Confusion matrix for test sample")
+print(table(yTest,dTest$target))
+        </code>
+    </pre>
+</small>
+</div>
+
+</section>
+
+<section>
 <h2>From data to prediction</h2>
 <div align="left">
 <small>
@@ -644,9 +689,9 @@ prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
 
 # inspect prediction
 prompt$ head -3 pred.txt.out
-0.23900000005960464,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
-0.007299999927636236,/QCD_Pt-15to3000_Tune4C_14TeV_pythia8/SHCAL2023Upg14DR-PU140bx25_PH2_1K_FB_V4-v1/GEN-SIM-RECO
-0.025100000109523533,/SingleMu/Run2012D-22Jan2013-v1/AOD
+0.239,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
+0.007,/QCD_Pt-15to3000_Tune4C_14TeV_pythia8/SHCAL2023Upg14DR-PU140bx25_PH2_1K_FB_V4-v1/GEN-SIM-RECO
+0.025,/SingleMu/Run2012D-22Jan2013-v1/AOD
         </code>
     </pre>
 </small>
