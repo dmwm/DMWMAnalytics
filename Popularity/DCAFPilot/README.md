@@ -141,6 +141,22 @@ Options:
   --predict             Yield prediction, used by pylearn
 ```
 
+DCAFPilot toolkit
+-----------------
+
+- check_prediction: provides ability to test your predicted output with actual data
+- dataframe: is a general script to generate a dataframe from CMS data
+- merge_csv: merge series of CSV files into one
+- pred2dataset: converts prediction file into CMS human readable format, i.e.
+  convert dataset ids into dataset names
+- vw_pred2csv: converts VW prediction file into CSV one
+- csv2vw: converts CSV file into VW data format
+- generate_scripts.sh: generates dataframe scripts for given date
+- model: runs Machine Learning algorithm over the data
+- transform_csv: transforms given CSV to another CSV file, allows dropping
+  columns, choose specific target and convert target from regression to
+  classification.
+
 References
 ----------
 
