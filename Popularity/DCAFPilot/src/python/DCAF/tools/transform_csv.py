@@ -39,7 +39,7 @@ class OptionParser():
 def transform(fin, fout, target, thr, drops, verbose=0):
     "Perform transformation on given CSV file"
     if  fin.endswith('.gz'):
-        istream = gzip.open(fin, 'wb')
+        istream = gzip.open(fin, 'rb')
     elif  fin.endswith('.bz2'):
         istream = bz2.BZ2File(fname, 'r')
     else:
