@@ -122,8 +122,11 @@ class OptionParser(object):
         self.parser.add_option("--drops", action="store", type="string",
             default="id", dest="drops",
             help="Comma separated list of columns to drop, default id")
+        self.parser.add_option("--idcol", action="store", type="string",
+            default="id", dest="idcol",
+            help="id column name, default id")
         self.parser.add_option("--target", action="store", type="string",
-            default="naccess", dest="target",
+            default="target", dest="target",
             help="Target column name, default naccess")
         self.parser.add_option("--split", action="store", type="float",
             default=0.33, dest="split",
