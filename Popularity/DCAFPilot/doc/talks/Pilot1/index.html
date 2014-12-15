@@ -256,8 +256,10 @@ id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,
 <span class="highlight">wct:</span> wall clock counter for given dataset, reported by Dashboard
 <span class="highlight">target:</span> target metric reported by PopularityDB, current default is normalized number of access to given dataset (other metrics can be normalized CPU and number of users associated with given dataset).
 </pre>
+Please check README.md for each dataset release.
 </small>
 </section>
+
 <section>
 <h2>Live Data plots</h2>
 <p><img src="images/dbs1.gif" alt="DBS plots" /></p>
@@ -404,7 +406,7 @@ Feature ranking:
 8. importance 0.029350, feature rel3_4
 9. importance 0.005171, feature relt_2
         </code>
-Do site variables are good predictors?
+Do you think site variables are good predictors?
     </pre>
 </div>
 </section>
@@ -697,6 +699,50 @@ prompt$ head -3 pred.txt.out
 </small>
 </div>
 
+</section>
+
+<section>
+<h2>New data and features</h2>
+<div align="left">
+<small>
+<ul>
+    <li>So far we generated two distinct datasets, version 0.0.2 and 0.0.3</li>
+    <li>The later contains un-normalized variables and all popularity DB metrics</li>
+    <li>We added transform script for data manipulation and convertion; feature
+        ranking, data splitting, etc.</li>
+</ul>
+    <pre style="width:1000px">
+        <code>
+# merge data
+merge_csv --fin=/Users/vk/CMS/DMWM/GIT/CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3/ --fout=2014.csv.gz
+
+# transform data into classification problem
+transform_csv --fin=2014.csv.gz --fout=2014_clf.csv.gz --target=naccess --target-thr=100 \
+              --drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+
+# train classification model
+model --learner=RandomForestClassifier --idcol=id --target=target --train-file=2014_clf.csv.gz --scorer=roc_auc
+RandomForestClassifier(bootstrap=True, compute_importances=None,
+            criterion='gini', max_depth=None, max_features='auto',
+            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+            min_samples_split=2, n_estimators=10, n_jobs=1,
+            oob_score=False, random_state=None, verbose=0)
+Split level: train 67.0%, validation 33.0%
+Feature ranking:
+1. importance 0.100621, feature nlumis
+2. importance 0.084576, feature procds
+3. importance 0.078207, feature rel2_11
+4. importance 0.075590, feature nevt
+5. importance 0.074162, feature nfiles
+6. importance 0.044071, feature rel3_3
+7. importance 0.041084, feature rel3_18
+8. importance 0.040147, feature proc_evts
+9. importance 0.039104, feature rel3_23
+Score metric (roc_auc): 0.990293730846
+        </code>
+    </pre>
+</small>
+</div>
 </section>
 
 <section>
