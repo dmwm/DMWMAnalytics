@@ -167,8 +167,11 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             for f in range(num):
                 print("%d. importance %f, feature %s" % (f + 1, importances[indices[f]], columns[indices[f]]))
         if  scorer:
-            res = metrics.SCORERS[scorer](clf, x_rest, y_rest)
-            print "Score metric (%s): %s" % (scorer, res)
+            for scr in scorer.split(','):
+                scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
+                method = scr_str.split(',')[0]
+                res = getattr(metrics, method)(y_rest, predictions)
+                print "Score metric (%s): %s" % (method, res)
         if  verbose:
             loss = 0
             tot = 0
