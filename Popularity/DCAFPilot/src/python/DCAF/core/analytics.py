@@ -250,8 +250,11 @@ class DCAF(object):
         # those who were presented in popdb
         all_dbs_datasets = self.dbs.datasets()
         dbsdatasets = [d for d in all_dbs_datasets if d not in popdb_datasets.keys()]
+        target = dict(naccess=0,nusers=0,totcpu=0,
+                rnaccess=0,rnusers=0,rtotcpu=0)
         for dataset in random.sample(dbsdatasets, dbs_extra):
-            rows = self.dataset_info(timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat)
+            rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
+                    rtypes, tiers, dformat, target)
             for row in rows:
                 yield row
                 dbs_datasets += 1
