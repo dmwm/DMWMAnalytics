@@ -11,5 +11,7 @@ build/
 install
 dist/
 *.egg-info
-*.csv
+*.csv*
 *.pdf
+*.vw*
+*.tar*
