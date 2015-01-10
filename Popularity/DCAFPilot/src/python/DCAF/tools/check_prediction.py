@@ -17,15 +17,19 @@ import optparse
 import pandas as pd
 
 # sklearn
-from sklearn.metrics import explained_variance_score
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn import metrics
+from sklearn.metrics.scorer import SCORERS
+#from sklearn.metrics import explained_variance_score
+#from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # package modules
 from DCAF.ml.utils import logloss
 
 class OptionParser():
-    def __init__(self):
+    def __init__(self, scorers=None):
         "User based option parser"
+        if  scorers:
+            scorers.sort()
         self.parser = optparse.OptionParser()
         self.parser.add_option("--fin", action="store", type="string",
             dest="fin", default="", help="Input file, default None")
@@ -39,6 +43,8 @@ class OptionParser():
             dest="fpred_target", default="prediction", help="Name of target column for prediction file, default prediction")
         self.parser.add_option("--fpred-sep", action="store", type="string",
             dest="fpred_sep", default=",", help="Separator for prediction file, default comma")
+        self.parser.add_option("--scorer", action="store", type="string",
+            dest="scorer", default="", help="model scorers: %s, default None" % scorers)
         self.parser.add_option("--verbose", action="store_true",
             dest="verbose", default=False, help="verbose mode")
     def get_opt(self):
@@ -55,7 +61,7 @@ def loader(ifile, target, sep=','):
     df = pd.read_csv(ifile, sep=sep, compression=comp, engine='python')
     return df[target]
 
-def checker(predictions, y_true, verbose=False):
+def checker(predictions, y_true, scorer, verbose=False):
     "Check our model prediction and dump logloss value"
     if  verbose:
         loss = 0
@@ -68,19 +74,23 @@ def checker(predictions, y_true, verbose=False):
         print "Final Logloss          :", loss/tot
 
     # sklearn metrics for regression
-    print "Explaied variance score:", explained_variance_score(y_true, predictions)
-    print "Mean absolute error    :", mean_absolute_error(y_true, predictions)
-    print "Mean squared error     :", mean_squared_error(y_true, predictions)
-    print "R2 score               :", r2_score(y_true, predictions)
+    if  not scorer:
+        print "ERROR: no scorer provided, please see --help for their list"
+        sys.exit(1)
+    for scr in scorer.split(','):
+        scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
+        method = scr_str.split(',')[0]
+        res = getattr(metrics, method)(y_true, predictions)
+        print "Score metric (%s): %s" % (method, res)
 
 def main():
     "Main function"
-    optmgr  = OptionParser()
+    optmgr  = OptionParser(SCORERS.keys())
     opts, _ = optmgr.get_opt()
 
     predictions = loader(opts.fpred, opts.fpred_target, opts.fpred_sep)
     real_values = loader(opts.fin, opts.fin_target, opts.fin_sep)
-    checker(predictions, real_values, opts.verbose)
+    checker(predictions, real_values, opts.scorer, opts.verbose)
 
 if __name__ == '__main__':
     main()
