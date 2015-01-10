@@ -677,6 +677,22 @@ print(table(yTest,dTest$target))
 </section>
 
 <section>
+<h2>Towards data analysis</h2>
+<div align="left">
+<ul>
+    <li>We generated two datasets, tagged as 0.0.2 and 0.0.3</li>
+    <li>The later contains un-normalized variables and all popularity DB metrics</li>
+    <li>We added transform script for data manipulation and convertion; feature
+        ranking, data splitting, etc.</li>
+    <li>Bug fixes</li>
+    <li>Data tagged 0.0.3 cover entire 2014 year</li>
+    <li>Split data into train and valid datasets, e.g. hold December data for validation</li>
+    <li>Run default algorithm to see the results</li>
+</ul>
+</div>
+</section>
+
+<section>
 <h2>From data to prediction</h2>
 <div align="left">
 <small>
@@ -684,130 +700,37 @@ print(table(yTest,dTest$target))
 <code>merge_csv, model, check_prediction, pred2dataset</code>
     <pre style="width:1000px">
         <code>
-# merge dataframes
-prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
+# merge dataframes, then split 2014.csv.gz into train/valid datasets
+prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 \
           --fout=2014.csv.gz --verbose
 
+# transform data to classification problem
+transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=100 --drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+
 # train the model
-prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123}'
-RandomForestRegressor(bootstrap=True, compute_importances=None,
-           criterion='mse', max_depth=None, max_features='auto',
-           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
-           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
-           random_state=123, verbose=0)
-Score metric (r2): -12.6244503822
+prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt
 
 # check prediction
-prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
-Explaied variance score: 0.82718229836
-Mean absolute error    : 0.000560324232394
-Mean squared error     : 4.2115601847e-06
-R2 score               : 0.819828832958
+prompt$ check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,roc_auc
+Score metric (precision_score): 0.79773214833
+Score metric (accuracy_score): 0.982348203499
+Score metric (recall_score): 0.952781844802
+Score metric (f1_score): 0.868390325271
+Precision=TP/(TP+FP), Accuracy=(TP+TN)/(TP+TN+FP+FN), Recall=TP/(TP+FN), F1=2*Precision*Recall/(Precision+Recall)
 
 # convert prediction into human/CMS data format
 prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
 
 # inspect prediction
 prompt$ head -3 pred.txt.out
-0.239,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
-0.007,/QCD_Pt-15to3000_Tune4C_14TeV_pythia8/SHCAL2023Upg14DR-PU140bx25_PH2_1K_FB_V4-v1/GEN-SIM-RECO
-0.025,/SingleMu/Run2012D-22Jan2013-v1/AOD
+1.000,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
+1.000,/SingleMu/Run2012D-22Jan2013-v1/AOD
+1.000,/powheg_vbfh_v3_4/mflechl-powheg_vbfh_v3_4-a09e65e190a7c44f9c7382190186ad7f/USER
         </code>
     </pre>
 </small>
 </div>
 
-</section>
-
-<section>
-<h2>New data and features</h2>
-<div align="left">
-<small>
-<ul>
-    <li>We generated two datasets, tagged as 0.0.2 and 0.0.3</li>
-    <li>The later contains un-normalized variables and all popularity DB metrics</li>
-    <li>We added transform script for data manipulation and convertion; feature
-        ranking, data splitting, etc.</li>
-</ul>
-    <pre style="width:1000px">
-        <code>
-# merge data
-merge_csv --fin=/Users/vk/CMS/DMWM/GIT/CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3/ --fout=2014.csv.gz
-
-# transform data into classification problem
-transform_csv --fin=2014.csv.gz --fout=2014_clf.csv.gz --target=naccess --target-thr=100 \
-              --drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
-
-# train classification model
-model --learner=RandomForestClassifier --idcol=id --target=target --train-file=2014_clf.csv.gz --scorer=precision,accuracy,f1
-RandomForestClassifier(bootstrap=True, compute_importances=None,
-            criterion='gini', max_depth=None, max_features='auto',
-            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
-            min_samples_split=2, n_estimators=10, n_jobs=1,
-            oob_score=False, random_state=None, verbose=0)
-Split level: train 67.0%, validation 33.0%
-Feature ranking:
-1. importance 0.188098, feature nlumis
-2. importance 0.120278, feature size
-3. importance 0.100305, feature nfiles
-4. importance 0.090498, feature rel3_8
-5. importance 0.062367, feature nevt
-6. importance 0.044238, feature rel3_18
-7. importance 0.042559, feature proc_evts
-8. importance 0.039234, feature rel1_1
-9. importance 0.021832, feature rel2_3
-Score metric (precision_score): 0.949993305663
-Score metric (accuracy_score): 0.957849506369
-Score metric (f1_score): 0.945121545122
-        </code>
-    </pre>
-</small>
-</div>
-</section>
-
-<section>
-<h2>Regression versus classification</h2>
-<div align="left">
-<small>
-<ul>
-    <li>Samples: 118K (1K extra) vs 573K (10K extra) DBS datasets</li>
-</ul>
-    <pre style="width:1000px">
-        <code>
-                        Classification problem (call RandomForestClassifiers)
-2014 small sample                                   2014 large sample
-1. importance 0.188098, feature nlumis              1. importance 0.104199, feature nevt
-2. importance 0.120278, feature size                2. importance 0.098317, feature nlumis
-3. importance 0.100305, feature nfiles              3. importance 0.076636, feature nfiles
-4. importance 0.090498, feature rel3_8              4. importance 0.063266, feature size
-5. importance 0.062367, feature nevt                5. importance 0.055817, feature rel3_8
-6. importance 0.044238, feature rel3_18             6. importance 0.055472, feature rel2_3
-7. importance 0.042559, feature proc_evts           7. importance 0.051285, feature relt_1
-8. importance 0.039234, feature rel1_1              8. importance 0.049851, feature rel2_9
-9. importance 0.021832, feature rel2_3              9. importance 0.049331, feature rel2_11
-Score metric (precision_score): 0.949993305663      Score metric (precision_score): 0.953751635474
-Score metric (accuracy_score): 0.957849506369       Score metric (accuracy_score): 0.987040888141
-Score metric (f1_score): 0.945121545122             Score metric (f1_score): 0.931936299714
-Precision=TP/(TP+FP), Accuracy=(TP+TN)/(TP+TN+FP+FN), Recall=TP/(TP+FN), F1=2*Precision*Recall/(Precision+Recall)
-
-                        Regression problem (call RandomForestRegressors)
-1. importance 0.969912, feature procds              1. importance 0.688633, feature relt_1
-2. importance 0.016207, feature relt_1              2. importance 0.146298, feature procds
-3. importance 0.003690, feature relt_2              3. importance 0.130334, feature relt_2
-4. importance 0.003170, feature rel2_9              4. importance 0.016545, feature rel3_18
-5. importance 0.001091, feature rel3_14             5. importance 0.002197, feature rel3_15
-6. importance 0.000901, feature rel3_12             6. importance 0.001408, feature rel3_17
-7. importance 0.000631, feature rel3_17             7. importance 0.001202, feature rel3_0
-8. importance 0.000564, feature rel3_19             8. importance 0.000984, feature rel3_13
-9. importance 0.000312, feature rel3_7              9. importance 0.000973, feature rel3_14
-Score metric (mean_squared_error): 24.0979075909    Score metric (mean_squared_error): 9.36329295342
-Score metric (mean_absolute_error): 0.400884685387  Score metric (mean_absolute_error): 0.731153281794
-Score metric (r2_score): 0.999975155713             Score metric (r2_score): 0.99999728645
-Stot=SUM_i(Y_i-Y_hat)^2, Sres=SUM_i(F_i-Y_hat)^2, R2=1-Sres/Stot
-        </code>
-    </pre>
-</small>
-</div>
 </section>
 
 <section>
