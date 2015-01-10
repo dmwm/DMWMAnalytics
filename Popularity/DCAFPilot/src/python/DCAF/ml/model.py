@@ -271,7 +271,7 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         dbses = [int(i) for i in list(tdf['dbs'])]
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
-        predictions = fit.predict(tdf)
+        predictions = fit.predict_proba(tdf)
         data = {'dataset':datasets, 'dbs': dbses, 'prediction':predictions}
         out = pd.DataFrame(data=data)
         if  ofile:
