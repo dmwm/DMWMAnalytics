@@ -149,7 +149,7 @@ We collect data via the following set of rules
     <li>Collection popular datasets from PopularityDB</li>
     <li>Get summary for datasets from DBS/Phedex/SiteDB/Dashboard data-services</li>
     <li>Complement dataframe with random set of DBS datasets which were not
-    visible in popularity for given time internval</li>
+    visible in popularity for given time interval</li>
     </ul>
 </small>
 </br>
@@ -211,7 +211,7 @@ popdb::fetch url=https://cms-popularity.cern.ch/popdb/popularity//DSStatInTimeWi
     <pre style="width:1000px">
 Queried 5 CMS data-services: DBS, Phedex, SiteDB, PopularityDB, Dashboard
     - used 10 APIs to get data content
-    - feed internal cache with ~217K datasets from 4 DBS istances,
+    - feed internal cache with ~217K datasets from 4 DBS instances,
       ~900 release names, 500+ site names, ~5k people DNs.
 
 Placed ~610K queries, ~345K went to data-services and the rest used internal cache
@@ -224,7 +224,7 @@ The average size of the object is 1KB, ~0.6GB of CMS data
 Elapsed time: ~2h to 25m per job, times fade out due to cache usage
     </pre>
 <small>
-We anonymised all data and performed factorization via internal cache
+We anonymized all data and performed factorization via internal cache
     <pre style="width:1000px">
         <code>
 id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,s_0,s_1,s_2,s_3,s_4,size,tier,wct,target
@@ -244,7 +244,7 @@ id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,
 <span class="highlight">id:</span> unique id constructed as long('%s%s%s'%(tstamp,dbsinst,dataset_id)) % 2**30
 <span class="highlight">cpu:</span> CPU time reported by Dashboard data-service for given dataset
 <span class="highlight">creator:</span> anonymized DN of the user who created given dataset, reported by DBS
-<span class="highlight">dataset:</span> DBS dataset id (comes from DBS APIs/database backend)
+<span class="highlight">dataset:</span> DBS dataset id (comes from DBS APIs/database back-end)
 <span class="highlight">dbs:</span> DBS instance id
 <span class="highlight">dtype:</span> anonymized DBS data type (e.g. data, mc)
 <span class="highlight">era:</span> anonymized DBS acquisition era name associated with given dataset
@@ -269,7 +269,9 @@ id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,
 </pre>
 <div align="left">
 Please check README.md for each dataset release, e.g. 0.0.2 release used specific metric, while
-0.0.3 release used un-normalized data and various metrics.
+0.0.3 release used un-normalized data and various metrics. For example, in 0.0.3 release we use
+raw metrics (r)naccess, (r)nusers, (r)totcpu instead of target and let end-user decide which is
+suitable for data-analysis.
 </div>
 </small>
 </section>
@@ -622,11 +624,11 @@ prompt$ vw_pred2csv --fin=preds.txt --fout=preds.csv
 # check VW prediction against data sample
 prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=preds.csv
         </code>
-                        RandomForestRegressor   VW regression
-Explaied variance score: 0.898592908177         0.341559976762
-Mean absolute error    : 0.000386050647644      0.000349310257493
-Mean squared error     : 2.42792029612e-06      1.54817975922e-05
-R2 score               : 0.896133210959         0.337686411265
+                         RandomForestRegressor   VW regression
+Explained variance score: 0.898592908177         0.341559976762
+Mean absolute error     : 0.000386050647644      0.000349310257493
+Mean squared error      : 2.42792029612e-06      1.54817975922e-05
+R2 score                : 0.896133210959         0.337686411265
     </pre>
 </small>
 </div>
@@ -636,7 +638,7 @@ R2 score               : 0.896133210959         0.337686411265
 <h2>Regression or classification</h2>
 <div align="left">
 <small>
-<span class="highlight">Expernal tools:</span>
+<span class="highlight">External tools:</span>
 <code>R-language, e1071 library (Support Vector Machine classification)</code>
     <pre style="width:1000px">
         <code>
@@ -682,7 +684,7 @@ print(table(yTest,dTest$target))
 <ul>
     <li>We generated two datasets, tagged as 0.0.2 and 0.0.3</li>
     <li>The later contains un-normalized variables and all popularity DB metrics</li>
-    <li>We added transform script for data manipulation and convertion; feature
+    <li>We added transform script for data manipulation and conversion; feature
         ranking, data splitting, etc.</li>
     <li>Bug fixes</li>
     <li>Data tagged 0.0.3 cover entire 2014 year</li>
@@ -700,9 +702,11 @@ print(table(yTest,dTest$target))
 <code>merge_csv, model, check_prediction, pred2dataset</code>
     <pre style="width:1000px">
         <code>
+# get the data, we keep it secure in separate CERN based repository
+prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
+
 # merge dataframes, then split 2014.csv.gz into train/valid datasets
-prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 \
-          --fout=2014.csv.gz --verbose
+prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 --fout=2014.csv.gz --verbose
 
 # transform data to classification problem
 transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=100 --drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
@@ -741,8 +745,8 @@ prompt$ head -3 pred.txt.out
     <li>We show the proof of concept how to predict dataset popularity based on existing CMS tools</li>
     <ul>
         <li>DCAFPilot package has main components to do the work</li>
-        <li>Initial dataframe shows some potential but should be throughfully studied to avoid
-        main ML obstucles, such as as data memorization, overfitting, etc.</li>
+        <li>Initial dataframe shows some potential but should be thoughtfully studied to avoid
+        main ML obstacles, such as as data memorization, over-fitting, etc.</li>
         <li>More data in terms of volume and attributes may be required for
         further analysis, e.g. find physicists clustering on certain topics</li>
         <li>Even though all work was done on a single node with existing APIs we may need
@@ -754,7 +758,7 @@ prompt$ head -3 pred.txt.out
     <li>Test predictions with real data, i.e. acquire new datasets and make prediction for them,
     then wait for data from popularity DB and compare prediction with actual data</li>
     <li>Try out online learners, they
-        may work better with time-dependent features or larger datasts</li>
+        may work better with time-dependent features or larger datasets</li>
     <li>Automate tools, e.g. weekly crontabs, generate model updates, verify model predictions</li>
 </ul>
 </small>
