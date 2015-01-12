@@ -158,14 +158,17 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         print "Train elapsed time", time.time()-time0
     if  split:
         predictions = fit.predict(x_rest)
-        importances = clf.feature_importances_
-        if  importances.any():
-            print "Feature ranking:"
-            columns = xdf.columns
-            indices = np.argsort(importances)[::-1]
-            num = 9 if len(columns)>9 else len(columns)
-            for f in range(num):
-                print("%d. importance %f, feature %s" % (f + 1, importances[indices[f]], columns[indices[f]]))
+        try:
+            importances = clf.feature_importances_
+            if  importances.any():
+                print "Feature ranking:"
+                columns = xdf.columns
+                indices = np.argsort(importances)[::-1]
+                num = 9 if len(columns)>9 else len(columns)
+                for f in range(num):
+                    print("%d. importance %f, feature %s" % (f + 1, importances[indices[f]], columns[indices[f]]))
+        except:
+            pass
         if  scorer:
             for scr in scorer.split(','):
                 scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
