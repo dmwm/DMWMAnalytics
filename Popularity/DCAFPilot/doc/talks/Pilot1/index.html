@@ -226,7 +226,7 @@ The final dataframe is constructed out of 71 variables and has 46 files and ~114
 
 The average size of the object is 1KB, ~0.6GB of CMS data
 
-Elapsed time: ~2h to 25m per job, times fade out due to cache usage
+Elapsed time: ~2h to 25m per job, times fade out due to cache usage (it depends on number of extra DBS datasets and cache content)
     </pre>
 <small>
 We anonymized all data and performed factorization via internal cache
@@ -515,10 +515,10 @@ Score metric (r2): -4.22807249175
 # check our prediction
 prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
 
-Explaied variance score: 0.898592908177
-Mean absolute error    : 0.000386050647644
-Mean squared error     : 2.42792029612e-06
-R2 score               : 0.896133210959
+Explained variance score: 0.898592908177
+Mean absolute error     : 0.000386050647644
+Mean squared error      : 2.42792029612e-06
+R2 score                : 0.896133210959
 
 Definition: R2=1-Sres/Stot, Stot=SUM_i(Y_i-Y_hat)^2, Sres=SUM_i(F_i-Y_hat)^2
         </code>
@@ -688,12 +688,15 @@ print(table(yTest,dTest$target))
 <div align="left">
 <ul>
     <li>We generated two datasets, tagged as 0.0.2 and 0.0.3</li>
-    <li>The later contains un-normalized variables and all popularity DB metrics</li>
+    <li>The former had fixed target from popularity DB, while
+        later contains un-normalized variables and all popularity DB metrics</li>
     <li>We added transform script for data manipulation and conversion; feature
-        ranking, data splitting, etc.</li>
-    <li>Bug fixes</li>
-    <li>Data tagged 0.0.3 cover entire 2014 year</li>
-    <li>Split data into train and valid datasets, e.g. hold December data for validation</li>
+        ranking, data splitting, etc., add choice of regression or
+        classification analysis</li>
+    <li>Data tag 0.0.3 covers entire 2014 year, but require user to choose
+        specific metric for data analysis</li>
+    <li>Data tag 0.0.3 has ~600k rows, therefore we may split data into train
+        and valid datasets, e.g. hold December data for validation</li>
     <li>Run default algorithm to see the results</li>
 </ul>
 </div>
@@ -713,7 +716,7 @@ prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
 # merge dataframes, then split 2014.csv.gz into train/valid datasets
 prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 --fout=2014.csv.gz --verbose
 
-# transform data to classification problem
+# transform data into classification problem
 transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=100 --drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 
 # train the model
@@ -770,9 +773,11 @@ prompt$ head -3 pred.txt.out
 </div>
 </section>
 
+<!--
 <section>
 <h1>Happy Data Mining</h1>
 </section>
+-->
 
 </div> <!-- end of reveal -->
 
