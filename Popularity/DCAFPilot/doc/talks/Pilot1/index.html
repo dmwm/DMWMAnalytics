@@ -152,10 +152,10 @@ We collect data via the following set of rules
     visible in popularity for given time interval</li>
     </ul>
 </small>
-</br>
+<br />
 
 List of used CMS data-service APIs used by DCAFPilot package
-</br>
+<br />
 <small>
     <ul>
         <li><a href="https://cmsweb.cern.ch/dbs/">DBS:</a> datasets, releases, filesummaries, releaseversions, datasetparents APIs</li>
@@ -307,10 +307,108 @@ Data transition through 2014 on weekly basis
 
 <section>
 <h2>What we're looking for</h2>
+<table border=1>
+<tr>
+<td>
 <p><img src="images/popularity.jpg" alt="Popularity" /></p>
+</td>
+<td>
+
 <small>
-Datasets behavior through 2014 (plot shows few random datasets)
+<table>
+    <thead>
+        <tr>
+            <th>DBS</th>
+            <th>datasets</th>
+            <th>nacc==0</th>
+            <th>nacc!=0</th>
+        </tr><tr><th colspan=4><hr/></th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>global</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr><tr>
+            <td>total</td>
+            <td>218777</td>
+            <td>204292</td>
+            <td>14485</td>
+        </tr><tr>
+            <td>unique</td>
+            <td>78734</td>
+            <td>78261</td>
+            <td>4749</td>
+        </tr>
+        <tr><th colspan=4><hr/></th></tr>
+        <tr>
+            <td>phys01</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr><tr>
+            <td>total</td>
+            <td>74842</td>
+            <td>67697</td>
+            <td>7145</td>
+        </tr><tr>
+            <td>unique</td>
+            <td>24909</td>
+            <td>24746</td>
+            <td>1456</td>
+        </tr>
+        <tr><th colspan=4><hr/></th></tr>
+        <tr>
+            <td>phys02</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr><tr>
+            <td>total</td>
+            <td>181790</td>
+            <td>169346</td>
+            <td>12444</td>
+        </tr><tr>
+            <td>unique</td>
+            <td>58023</td>
+            <td>57827</td>
+            <td>2329</td>
+        </tr>
+        <tr><th colspan=4><hr/></th></tr>
+        <tr>
+            <td>phys03</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr><tr>
+            <td>total</td>
+            <td>119774</td>
+            <td>78665</td>
+            <td>41109</td>
+        </tr><tr>
+            <td>unique</td>
+            <td>27923</td>
+            <td>26305</td>
+            <td>14563</td>
+        </tr>
+        <tr><th colspan=4><hr/></th></tr>
+    </tbody>
+</table>
 </small>
+
+</td></tr></table>
+<div align="left">
+<small>
+Datasets behavior through 2014, plot shows few random datasets, while table
+summarizes dataset access statistics through 2014.
+<br />
+<span class="highlight">Observation:</span>
+dataset access is like stock market on steroids, i.e. time series,
+N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
+</small>
+</div>
+
 </section>
 
 <section>
@@ -763,6 +861,8 @@ prompt$ head -3 pred.txt.out
     <li>Explore various ML algorithms both within python sklearn toolkit and R</li>
     <li>Try out different popularity metrics, e.g. naccess, ncpu, nusers or any
     combination of them</li>
+    <li>Explore different approaches: track individual datasets, dataset groups, etc.</li>
+    <li>Use other resources: user activity on HN, conference deadlines influence, etc.</li>
     <li>Test predictions with real data, i.e. acquire new datasets and make prediction for them,
     then wait for data from popularity DB and compare prediction with actual data</li>
     <li>Try out online learners, they
