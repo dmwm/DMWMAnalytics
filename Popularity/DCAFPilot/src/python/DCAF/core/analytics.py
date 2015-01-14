@@ -220,9 +220,10 @@ class DCAF(object):
             if  timeframe:
                 n_days = ndays(yyyymmdd(timeframe[0]), yyyymmdd(timeframe[1]))
             new_datasets = self.dbs.new_datasets(n_days)
+            target = dict(naccess=0,nusers=0,totcpu=0,
+                    rnaccess=0,rnusers=0,rtotcpu=0)
             for row in new_datasets:
                 dataset = row['dataset']
-                target = -1 # we will need to predict it
                 rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
                         rtypes, tiers, dformat, target)
                 for row in rows:
