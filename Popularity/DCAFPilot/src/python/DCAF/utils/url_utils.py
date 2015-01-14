@@ -9,6 +9,14 @@ import urllib
 import urllib2
 import httplib
 
+VER=sys.version_info
+if  VER[0] == 2 and VER[1] == 7 and VER[2] >= 9:
+    # disable SSL verification, since it is default in python 2.7.9
+    # and many CMS services do not verify SSL cert.
+    # https://www.python.org/dev/peps/pep-0476/
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context
+
 class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
     """
     Simple HTTPS client authentication class based on provided 
@@ -57,28 +65,3 @@ def getdata(url, params, headers=None, ckey=None, cert=None, debug=0):
     data = urllib2.urlopen(req)
     #print len(json.load(data))
     return data.read()
-
-def test():
-    # new SiteDB
-    api = 'people'
-    url = 'https://cmsweb.cern.ch/sitedb/data/prod/' + api
-    params = {}
-
-    # test dbs3
-    #dbs = "https://cmsweb.cern.ch/dbs/prod/global/DBSReader"
-    #url = dbs+"/datasets" + "?dataset=/ZMM*/*/GEN-SIM&detail=True"
-#    data = getdata(url, params)
-#    print data
-
-#    url = 'http://dashb-cms-job.cern.ch/dashboard/request.py/jobefficiencyapi?start=14-10-01&end=14-10-31&site=all&dataset=%2FQCD_Pt-1000to1400_Tune4C_13TeV_pythia8%2FSpring14dr-castor_PU20bx25_POSTLS170_V5-v1%2FAODSIM'
-#    data = getdata(url, params, debug=1)
-#    print data
-    url = 'http://dashb-cms-job.cern.ch/dashboard/request.py/jobefficiencyapi'
-    dataset='/QCD_Pt-1000to1400_Tune4C_13TeV_pythia8/Spring14dr-castor_PU20bx25_POSTLS170_V5-v1/AODSIM'
-    params = {'start':'14-10-01', 'end':'14-10-31', 'site':'all', 'dataset':dataset}
-    data = getdata(url, params)
-    print data
-
-if __name__ == '__main__':
-    test()
-
