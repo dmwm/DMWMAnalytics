@@ -15,26 +15,39 @@ import logging
 
 from os.path import expanduser, dirname, realpath
 
+VER=sys.version_info
+if  VER[0] == 2 and VER[1] == 7 and VER[2] >= 9:
+    # disable SSL verification, since it is default in python 2.7.9
+    # and many CMS services do not verify SSL cert.
+    # https://www.python.org/dev/peps/pep-0476/
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context
+
 DEFAULT_CERT_PATH="~/.globus/usercert.pem"
 DEFAULT_KEY_PATH="~/.globus/userkey.pem"
 
 def setDefaultCertificate(cert, key):
+    "Helper function to set default certificates"
     DEFAULT_CERT_PATH=cert
     DEFAULT_KEY_PATH=key
 
 class HTTPSClientAuthHandler(urllib2.HTTPSHandler):  
-    def __init__(self):  
+    def __init__(self):
+        "HTTPS client authentication handler to Establish HTTPS connection"
         urllib2.HTTPSHandler.__init__(self)  
         self.key = realpath(expanduser(DEFAULT_KEY_PATH))
         self.cert = realpath(expanduser(DEFAULT_CERT_PATH))
 
     def https_open(self, req):  
+        "Establish HTTPS connection"
         return self.do_open(self.getConnection, req)  
 
     def getConnection(self, host, timeout=300):  
+        "Establish HTTPS connection"
         return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert)
 
 def _getResponse(opener, url, data=None, method="GET", debug=0):
+    "Get response for given url opener and data"
     request = urllib2.Request(url)
     if data:
         request.add_data(data)
@@ -49,6 +62,7 @@ def _getResponse(opener, url, data=None, method="GET", debug=0):
     return response
 
 def getSSOCookie(opener, target_url, cookie, debug):
+    "Get SSO cookies"
     opener.addheaders = [('User-agent', 'curl-sso-certificate/0.0.2')] #in sync with cern-get-sso-cookie tool
     parentUrl = target_url
     url = urllib2.unquote(_getResponse(opener, parentUrl).url)
@@ -67,6 +81,7 @@ def getSSOCookie(opener, target_url, cookie, debug):
     _getResponse(opener, url, urllib.urlencode(post_data_local), debug=debug).read()
 
 def getContent(target_url, post_data=None, method="GET", debug=0):
+    "helper function to get data content from given url via CERN SSO authentication"
     cert_path = expanduser(DEFAULT_CERT_PATH)
     key_path = expanduser(DEFAULT_KEY_PATH)
     cookie = cookielib.CookieJar()
@@ -88,6 +103,7 @@ def getContent(target_url, post_data=None, method="GET", debug=0):
     return result
 
 def getdata(url, ckey, cert, method='GET', postdata=None, debug=0):
+    "Get data from SSO based data-service"
     setDefaultCertificate(cert, ckey)
     content = getContent(url, postdata, method, debug)
     return content
