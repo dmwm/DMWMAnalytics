@@ -41,16 +41,17 @@ def convert(fin, fout, uri, sep=','):
     client = MongoClient(uri)
     mgr = client['analytics']['datasets']
     headers = None
-    with open(fin, 'r') as istream, open(fout, 'w') as ostream:
-        for line in istream.readlines():
-            did, dbs, pred = line.replace('\n', '').split(sep)
-            if  not headers:
-                headers = '%s,%s,%s' % (did, dbs, pred)
-                continue
-            spec = {'dataset_id':int(did), 'dbs_instance':int(dbs)}
-            res = mgr.find_one(spec)
-            if  res:
-                ostream.write("%5.3f%s%s\n" % (float(pred),sep,res['dataset']))
+    with open(fin, 'r') as istream:
+        with open(fout, 'w') as ostream:
+            for line in istream.readlines():
+                did, dbs, pred = line.replace('\n', '').split(sep)
+                if  not headers:
+                    headers = '%s,%s,%s' % (did, dbs, pred)
+                    continue
+                spec = {'dataset_id':int(did), 'dbs_instance':int(dbs)}
+                res = mgr.find_one(spec)
+                if  res:
+                    ostream.write("%5.3f%s%s\n" % (float(pred),sep,res['dataset']))
 
 def main():
     "Main function"
