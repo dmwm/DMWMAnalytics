@@ -188,11 +188,11 @@ prompt$ bin/generate_scripts.sh 20140101 > run.sh
 prompt$ head run.sh
 #!/bin/bash
 dataframe --seed-cache
-nohup time dataframe --start=20140101 --stop=20140108 --dbs-extra=1000 --verbose=1 --fout=dataframe-20140101-20140108.csv  2>&1 1>& dataframe-20140101-20140108.log < /dev/null &
+dataframe --start=20140101 --stop=20140108 --dbs-extra=1000 --verbose=1 --fout=dataframe-20140101-20140108.csv
 ...
 
-# run dataframe generator
-prompt$ nohup time dataframe --start=20141126 --stop=20141203 --dbs-extra=1000 --verbose=1 --fout=dataframe-20141126-20141203.csv 2>&1 1>& dataframe-20141126-20141203.log < /dev/null &
+# run dataframe generator (you may need to run it in background)
+prompt$ dataframe --start=20141126 --stop=20141203 --dbs-extra=1000 --verbose=1 --fout=dataframe-20141126-20141203.csv
 
 # check log content
 prompt$ head dataframe-20141126-20141203.log
@@ -216,25 +216,24 @@ popdb::fetch url=https://cms-popularity.cern.ch/popdb/popularity//DSStatInTimeWi
     <pre style="width:1000px">
 Queried 5 CMS data-services: DBS, Phedex, SiteDB, PopularityDB, Dashboard
     - used 10 APIs to get data content
-    - feed internal cache with ~217K datasets from 4 DBS instances,
+    - feed internal cache with ~220K datasets from 4 DBS instances,
       ~900 release names, 500+ site names, ~5k people DNs.
+    - placed ~800K queries
 
-Placed ~610K queries, ~345K went to data-services and the rest used internal cache
+The final dataframe is constructed out of 78 variables and has 52 files and ~600K rows
+   - each file is worth of 1 week of CMS data, ~600KB zipped/file
+   - each file has about ~1K of popular datasets plus 10K random "un-popular" datasets
 
-The final dataframe is constructed out of 71 variables and has 46 files and ~114K rows
-   - each file is worth of 1 week of CMS data
-
-The average size of the object is 1KB, ~0.6GB of CMS data
-
-Elapsed time: ~2h to 25m per job, times fade out due to cache usage (it depends on number of extra DBS datasets and cache content)
+Elapsed time: ~4h to 1h per job, times fade out due to cache usage (MongoDB)
+All jobs run on two CERN VM w/ N jobs/core splitting
     </pre>
 <small>
 We anonymized all data and performed factorization via internal cache
     <pre style="width:1000px">
         <code>
-id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,s_0,s_1,s_2,s_3,s_4,size,tier,wct,target
-999669242,207737071,2179,20186,3,0,759090,6,21675970,2158,72274,1,10,5862538,335429,30667701,373256,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,3,8,0,0,8002,5,216946588,0.006
-332990665,114683734,2179,176521,3,1,759090,88,334493030,32621,86197,1,4,6086362,968016,123342232,1037052,0,0,0,0,1,2,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,0,1,0,2,0,6,9,0,0,96689,3,276683510,0.008
+id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites,nusers,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,size,tier,totcpu,wct
+999669242,207737071.0,2186,20186,3,0,759090,14251.0,6,21675970,2158,72274,1,10,11.0,5862538,335429,30667701,373256,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0.6,0.4,3.9,0,3,8,0,0,8002,5,64280.0,216946588.0
+332990665,114683734.0,2186,176521,3,1,759090,21311.0,88,334493030,32621,86197,1,4,8.0,6086362,968016,123342232,1037052,0,0,0,0,1,2,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,0,1,0,2,0.8,0.3,3.5,0,6,9,0,0,96689,3,58552.0,276683510.0
 ....
         </code>
     </pre>
@@ -270,13 +269,18 @@ id,cpu,creator,dataset,dbs,dtype,era,nblk,nevt,nfiles,nlumis,nrel,nsites,parent,
 <span class="highlight">size:</span> size of the dataset, reported by DBS and normalized to GB metric
 <span class="highlight">tier:</span> anonymized tier name, reported by DBS
 <span class="highlight">wct:</span> wall clock counter for given dataset, reported by Dashboard
-<span class="highlight">target:</span> target metric reported by PopularityDB, current default is normalized number of access to given dataset (other metrics can be normalized CPU and number of users associated with given dataset).
+<span class="highlight">naccess:</span> number of accesses to a dataset, reported by PopularityDB
+<span class="highlight">nusers:</span> number of users*days to a dataset, reported by PopularityDB
+<span class="highlight">totcpu:</span> number of cpu hours to accessed dataset, reported by PopularityDB
+<span class="highlight">rnaccess:</span> naccess(dataset)/SUM_i naccess(i), reported by PopularityDB
+<span class="highlight">rnusers:</span> nusers(dataset)/SUM_i nusers(i), reported by PopularityDB
+<span class="highlight">rtotcpu:</span> totcpu(dataset)/SUM_i totcpu(i), reported by PopularityDB
 </pre>
 <div align="left">
-Please check README.md for each dataset release, e.g. 0.0.2 release used specific metric, while
-0.0.3 release used un-normalized data and various metrics. For example, in 0.0.3 release we use
-raw metrics (r)naccess, (r)nusers, (r)totcpu instead of target and let end-user decide which is
-suitable for data-analysis.
+<span class="highlight">Hint:</span>
+Please check README.md for each dataframe release.
+The target variable can be chosen from (r)naccess/(r)nusers/(r)totcpu or
+any combination of them.
 </div>
 </small>
 </section>
@@ -412,6 +416,26 @@ N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
 </section>
 
 <section>
+<h2>How to proceed</h2>
+<div align="left">
+    <ul>
+        <li>Once we generated the data we want to learn from it and make prediction</li>
+        <li>Try to transform and pivot the data to gain as mush as possible</li>
+        <li>Try Machine Learning algorithms, e.g. regression, classification or online learning techniques to find best model</li>
+        <li>Use different tools and libraries (R, python, VW, etc.)</li>
+        <li>DCAFPilot project provides all necessary tools to do the job
+            <ul>
+                <li>transform data</li>
+                <li>build model and perform its validation</li>
+                <li>acquire new data</li>
+                <li>make predictions</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</section>
+
+<section>
 <h2>How to train your model</h2>
 <div align="left">
 <small>
@@ -525,7 +549,7 @@ Feature ranking:
 8. importance 0.029350, feature rel3_4
 9. importance 0.005171, feature relt_2
         </code>
-Do you think site variables are good predictors?
+<span class="highlight">Observation:</span> do site variables are good predictors?
     </pre>
 </div>
 </section>
@@ -667,6 +691,8 @@ used if we'll use different metrics.
 </div>
 </section>
 
+<!--
+
 <section>
 <h2>Online learning algorithm</h2>
 <div align="left">
@@ -736,6 +762,8 @@ R2 score                : 0.896133210959         0.337686411265
 </small>
 </div>
 </section>
+
+-->
 
 <section>
 <h2>Regression or classification</h2>
@@ -814,14 +842,14 @@ prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
 # merge dataframes, then split 2014.csv.gz into train/valid datasets
 prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 --fout=2014.csv.gz --verbose
 
-# transform data into classification problem
-transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=100 --drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+# transform data into classification problem and remove useless variables
+prompt$ transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
 
 # train the model
 prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt
 
 # check prediction
-prompt$ check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,roc_auc
+prompt$ check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1
 Score metric (precision_score): 0.79773214833
 Score metric (accuracy_score): 0.982348203499
 Score metric (recall_score): 0.952781844802
@@ -843,6 +871,47 @@ prompt$ head -3 pred.txt.out
 
 </section>
 
+<section>
+<h2>Making predictions</h2>
+<div align="left">
+<small>
+<span class="highlight">DCAFPilot tools:</span>
+<code>dataframe, transform_csv, model, pred2dataset, popular_datasets, verify_predictions</code>
+    <pre style="width:1000px">
+        <code>
+# seed dataset cache (w/ MongoDB back-end)
+prompt$ dataframe --seed-cache --verbose=1
+
+# get new data from DBS (you may need to run it in background)
+prompt$ dataframe --start=20150101 --stop=20150108 --newdata --verbose=1 --fout=new-20150101-20150108.csv
+
+# transform new data into classification problem similar to our train data
+prompt$ transform_csv --fin=new-20150101-20150108.csv.gz --fout=newdata-20150101-20150108.csv.gz --target=naccess --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
+
+# run the model with new data
+prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=newdata-20150101-20150108.csv.gz --predict=pred.txt
+
+# produce human readable format and inspect its output
+prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
+prompt$ head -3 pred.txt.out
+0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/GEN-SIM-DIGI-RAW
+0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/DQMIO
+0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/GEN-SIM-RECO
+
+# get popular datasets from popularity DB
+prompt$ popular_datasets --start=20150101 --stop=20150108 > popdb-20150101-20150108.txt
+
+# verify our prediction against similar period from popularity DB
+prompt$ verify_predictions --pred=pred.txt.out --popdb=popdb-20150101-20150108.txt
+Popular datasets   : 841
+Predicted datasets : 187
+Wrongly predicted  : 0
+        </code>
+    </pre>
+</small>
+</div>
+
+</section>
 <section>
 <h2>Conclusions & Future directions</h2>
 <div align="left">
