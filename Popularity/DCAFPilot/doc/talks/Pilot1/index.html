@@ -75,23 +75,38 @@
 <h2>There are too many numbers ...</h2>
 <ul>
 <li>
-DMWM analytics group would like to improve our understanding of CMS computing data
-</li>
-<li>
-<a href="https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot">DCAFPilot</a>
-(Data and Computing Analysis Framework) is a pilot project to get started.
+DMWM-Analytics
+(<a href="mailto:cms-dmwm-analytics@cern.ch">cms-dmwm-analytics@cern.ch</a>)
+group would like to improve our understanding of CMS computing data,
+full list of projects:
+<small>
+<a href="https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMSComputingAnalytics">
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMSComputingAnalytics
+</a>
+</small>
 </li>
 
 <li>
 Ultimately we'd like to learn from CMS data and make prediction to improve our resource utilization.
+<br />
+<br />
 </li>
 
 <li>
-Initial goal was to predict popularity of datasets on weekly basis.
+Initial goal is to predict popularity of datasets on weekly basis.
+<br />
+<br />
 </li>
 
 <li>
-Start with understanding metrics, analysis workflow, tools, etc.
+Start with understanding metrics, analysis workflow, tools:
+<ul>
+    <li>
+    <a href="https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot">DCAFPilot</a>
+    (Data and Computing Analysis Framework) is a pilot project to understand
+    machinery involved with this problem.
+    </li>
+</ul>
 </li>
 
 </ul>
@@ -109,15 +124,27 @@ The DCAFPilot consists of several components:
     <li>Dataframe generator toolkit: collect/transform data from
     CMS data-services (DBS/Phedex/SiteDB/PopularityDB/Dashboard)
     and extract necessary bits for datasets in questions
+    <br />
+    <br />
     </li>
-    <li>Machine Learning (ML) algorithms (python/R code) for data analysis</li>
-    <li>Scripts for data manipulation</li>
+    <li>Machine Learning (ML) algorithms (python/R code) for data analysis
+    <br />
+    <br />
+    </li>
+    <li>Data manipulation scripts: merge, transform, check predictions, etc.</li>
     </ul>
 </small>
 </p>
 
 <p>
-Setup and dependencies:
+Get the code:
+<pre style="width:1000px">
+git clone git@github.com:dmwm/DMWMAnalytics.git
+</pre>
+</p>
+
+<p>
+Dependencies:
 <small>
     <ul>
         <li><a href="https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot">DCAFPilot</a> project, available at github</li>
@@ -125,14 +152,15 @@ Setup and dependencies:
         <li>Python tools: <a href="http://pandas.pydata.org/">pandas</a>,
             <a href="http://www.numpy.org/">NumPy</a>, <a href="http://www.scipy.org/">SciPy</a>,
             <a href="http://scikit-learn.org/stable">sklearn</a> ML toolkit</li>
-        <li><a href="http://www.r-project.org">R language</a> (for data exploration, statistical computing and ML algorithms)</li>
-        <li>Optional: <a href="https://github.com/EducationalTestingService/skll">SKLL</a> toolkit to run/experiment with various ML algorithms, <a href="https://github.com/JohnLangford/vowpal_wabbit">Vowpal Wabbit</a> online-learning algorithm</li>
+        <li>
+        <span class="highlight">Optional:</span>
+        <a href="http://www.r-project.org">R language</a> for data exploration and ML algorithms,
+        <a href="https://github.com/EducationalTestingService/skll">SKLL</a>
+        toolkit to run/experiment with various ML algorithms, any other external
+        ML toolkits, e.g.
+        <a href="https://github.com/JohnLangford/vowpal_wabbit">Vowpal Wabbit</a> online-learning algorithm</li>
     </ul>
 </small>
-Get the code:
-<pre style="width:1000px">
-git clone git@github.com:dmwm/DMWMAnalytics.git
-</pre>
 </p>
 
 </div>
@@ -141,20 +169,24 @@ git clone git@github.com:dmwm/DMWMAnalytics.git
 <section>
 <h2>Data collection flow</h2>
 <div align="left">
-We collect data via the following set of rules
+<ul>
+<li>
+Collect data via the following set of rules
 <small>
     <ul>
-    <li>Divide workflow on weekly basis</li>
     <li>Collect all datasets (4 DBS instances) into internal cache</li>
-    <li>Collection popular datasets from PopularityDB</li>
+    <li>Collection popular datasets from PopularityDB on weekly basis</li>
     <li>Get summary for datasets from DBS/Phedex/SiteDB/Dashboard data-services</li>
     <li>Complement dataframe with random set of DBS datasets which were not
     visible in popularity for given time interval</li>
     </ul>
 </small>
 <br />
+<br />
+</li>
 
-List of used CMS data-service APIs used by DCAFPilot package
+<li>
+CMS data-service APIs used by DCAFPilot package
 <br />
 <small>
     <ul>
@@ -165,6 +197,10 @@ List of used CMS data-service APIs used by DCAFPilot package
         <li><a href="https://twiki.cern.ch/twiki/bin/view/ITAnalyticsWorkingGroup/ExperimentDashboard">Dashboard:</a> jobefficiencyapi API</li>
     </ul>
 </small>
+
+</li>
+</ul>
+
 </div>
 </section>
 
@@ -215,10 +251,10 @@ popdb::fetch url=https://cms-popularity.cern.ch/popdb/popularity//DSStatInTimeWi
 <div align="left">
     <pre style="width:1000px">
 Queried 5 CMS data-services: DBS, Phedex, SiteDB, PopularityDB, Dashboard
-    - used 10 APIs to get data content
-    - feed internal cache with ~220K datasets from 4 DBS instances,
-      ~900 release names, 500+ site names, ~5k people DNs.
-    - placed ~800K queries
+   - used 10 APIs to get data content
+   - feed internal cache with ~220K datasets from 4 DBS instances,
+     ~900 release names, 500+ site names, ~5k people DNs.
+   - placed ~800K queries
 
 The final dataframe is constructed out of 78 variables and has 52 files and ~600K rows
    - each file is worth of 1 week of CMS data, ~600KB zipped/file
@@ -527,17 +563,26 @@ A random forest regressor.
 </section>
 
 <section>
-<h2>Analyze and play with your model</h2>
+<h2>First results</h2>
 <div align="left">
-    <pre style="width:1000px">
-        <code>
-# we can pass additional parameters to the learner, e.g. find out rank of features
-prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --predict=pred.txt --scaler=StandardScaler --learner-params='{"random_state":123, "compute_importances":true}'
-RandomForestRegressor(bootstrap=True, compute_importances=True,
+<small>
+    <span class="highlight">DCAFPilot tools:</span>
+    <code>merge_csv, model</code>
+    <pre style="width:1000px"><code>
+# get the data, we keep it sequre in separate CERN based repository
+prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
+
+# merge all 2014 files into single file
+prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 --fout=2014.csv.gz --verbose
+
+# Train the model
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2
+
+RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
            min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
-           random_state=123, verbose=0)
+           random_state=None, verbose=0)
 Feature ranking:
 1. importance 0.558986, feature nsites
 2. importance 0.105061, feature s_2
@@ -548,40 +593,13 @@ Feature ranking:
 7. importance 0.034260, feature s_3
 8. importance 0.029350, feature rel3_4
 9. importance 0.005171, feature relt_2
-        </code>
-<span class="highlight">Observation:</span> do site variables are good predictors?
-    </pre>
-</div>
-</section>
-<section>
-<h2>First results</h2>
-<div align="left">
-<small>
-    <span class="highlight">DCAFPilot tools:</span>
-    <code>merge_csv, model</code>
-</small>
-    <pre style="width:1000px"><code>
-# get the data, we keep it sequre in separate CERN based repository
-prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
-
-# merge all 2014 files into single file
-prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.2 \
-          --fout=2014.csv.gz --verbose
-
-# Train the model
-prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2
-
-RandomForestRegressor(bootstrap=True, compute_importances=None,
-           criterion='mse', max_depth=None, max_features='auto',
-           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
-           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
-           random_state=None, verbose=0)
 Score metric (r2): 0.897606379597
     </code></pre>
-</div>
-<small>
 We should hold our breath with this though, too many things to test first ...
+<br />
+<span class="highlight">Observation:</span> do site variables are good predictors?
 </small>
+</div>
 </section>
 
 <section>
@@ -590,14 +608,14 @@ We should hold our breath with this though, too many things to test first ...
 <small>
     <pre style="width:1000px">
         <code>
-prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz \
+              --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scorer=r2
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
            min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
            random_state=None, verbose=0)
 Score metric (r2): 0.93623237727
-Final Logloss 0.000381044756446
 Traceback (most recent call last):
 ...
   File "/Users/vk/CMS/DMWM/GIT/DMWMAnalytics/Popularity/DCAFPilot/src/python/DCAF/ml/model.py", line 165, in model
@@ -626,18 +644,18 @@ Some data requires normalization/scaling, e.g. cpu/wct were generated as int's (
     <pre style="width:1000px">
         <code>
 # run model with scaler
-prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz --scorer=r2 --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
+prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz \
+              --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
 RandomForestRegressor(bootstrap=True, compute_importances=None,
            criterion='mse', max_depth=None, max_features='auto',
            max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
            min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
            random_state=None, verbose=0)
-Score metric (r2): -4.22807249175
 
 # check our prediction
 prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
+              --scorer=mean_absolute_error,mean_squared_error,r2
 
-Explained variance score: 0.898592908177
 Mean absolute error     : 0.000386050647644
 Mean squared error      : 2.42792029612e-06
 R2 score                : 0.896133210959
@@ -821,9 +839,9 @@ print(table(yTest,dTest$target))
         classification analysis</li>
     <li>Data tag 0.0.3 covers entire 2014 year, but require user to choose
         specific metric for data analysis</li>
-    <li>Data tag 0.0.3 has ~600k rows, therefore we may split data into train
+    <li>It has ~600k rows, therefore we may split data into train
         and valid datasets, e.g. hold December data for validation</li>
-    <li>Run default algorithm to see the results</li>
+    <li>Run ML algorithm to see the results</li>
 </ul>
 </div>
 </section>
@@ -927,15 +945,42 @@ Wrongly predicted  : 0
         <li>Even though all work was done on a single node with existing APIs we may need
         to pursue other approaches, e.g. ORACLE-Hadoop mapping, etc.</li>
     </ul>
-    <li>Explore various ML algorithms both within python sklearn toolkit and R</li>
-    <li>Try out different popularity metrics, e.g. naccess, ncpu, nusers or any
-    combination of them</li>
-    <li>Explore different approaches: track individual datasets, dataset groups, etc.</li>
-    <li>Use other resources: user activity on HN, conference deadlines influence, etc.</li>
-    <li>Test predictions with real data, i.e. acquire new datasets and make prediction for them,
-    then wait for data from popularity DB and compare prediction with actual data</li>
-    <li>Try out online learners, they
-        may work better with time-dependent features or larger datasets</li>
+    <br />
+    <br />
+    </li>
+
+    <li>
+    Explore various ML algorithms: python, R, online-learning
+    <br />
+    <br />
+    </li>
+
+    <li>
+    Try out different popularity metrics, e.g. naccess, ncpu, nusers or any
+    combination of them
+    <br />
+    <br />
+    </li>
+
+    <li>
+    Explore different approaches: track individual datasets, dataset groups, etc.
+    <br />
+    <br />
+    </li>
+
+    <li>
+    Use other resources: user activity on HN, conference deadlines influence, etc.
+    <br />
+    <br />
+    </li>
+
+    <li>
+    Test predictions with real data, i.e. acquire new datasets and make prediction for them,
+    then wait for data from popularity DB and compare prediction with actual data
+    <br />
+    <br />
+    </li>
+
     <li>Automate tools, e.g. weekly crontabs, generate model updates, verify model predictions</li>
 </ul>
 </small>
