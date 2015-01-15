@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 #pylint: disable=
+
 """
 File       : dates.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: This module generates series of days in specific
-             interval starting from given date.
+interval starting from given date.
 """
 
 # system modules
@@ -20,12 +21,12 @@ import calendar
 from DCAF.utils.utils import dates
 
 class OptionParser():
+    "User based option parser"
     def __init__(self):
-        "User based option parser"
         self.parser = optparse.OptionParser()
-        self.parser.add_option("--start", action="store", type="string",
+        self.parser.add_option("--start", action="store", type="string", \
             dest="start", default="", help="Input start date (YYYYMMDD)")
-        self.parser.add_option("--ndays", action="store", type="int",
+        self.parser.add_option("--ndays", action="store", type="int", \
             dest="ndays", default=7, help="Dates interval, default 7 days")
     def get_opt(self):
         "Return list of options"

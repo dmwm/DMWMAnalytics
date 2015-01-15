@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 #pylint: disable=
+
 """
 File       : csv_split.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: This script split given CSV file into two which
-             can be used for training and validation.
+can be used for training and validation.
 """
 
 # system modules
@@ -18,18 +19,15 @@ class OptionParser:
     """Option parser"""
     def __init__(self):
         self.parser = optparse.OptionParser()
-        self.parser.add_option("--in", action="store", type="string",
-                               default="", dest="fin",
-             help="specify input CSV file name")
-        self.parser.add_option("--out", action="store", type="string",
-                               default="", dest="fout",
-             help="specify output CSV file name")
-        self.parser.add_option("--split", action="store", type="int",
-                               default=30, dest="split",
+        self.parser.add_option("--in", action="store", type="string", \
+            default="", dest="fin", help="specify input CSV file name")
+        self.parser.add_option("--out", action="store", type="string", \
+             default="", dest="fout", help="specify output CSV file name")
+        self.parser.add_option("--split", action="store", type="int", \
+             default=30, dest="split", \
              help="Specify split level in percentage, e.g. 30 means 30%")
-        self.parser.add_option("--seed", action="store", type="int",
-                               default=0, dest="seed",
-             help="Specify seed for random module")
+        self.parser.add_option("--seed", action="store", type="int", \
+             default=0, dest="seed", help="Specify seed for random module")
     def get_opt(self):
         """Returns parse list of options"""
         return self.parser.parse_args()
