@@ -319,6 +319,10 @@ Target variables:
 </pre>
 <div align="left">
 Some variables are useful for online learning while other can be used in offline context.
+<br/>
+<span class="highlight">Remember:</span> check README.md file associated with data tag, e.g.
+for 0.0.2 tag used normalized naccess variable as a target, but 0.0.3 tag kept all
+target variables intact.
 </div>
 </small>
 </section>
@@ -867,6 +871,7 @@ print(table(yTest,dTest$target))
 <small>
 <span class="highlight">DCAFPilot tools:</span>
 <code>merge_csv, model, check_prediction, pred2dataset</code>
+</small>
     <pre>
         <code class="bash">
 # get the data, we keep it secure in separate CERN based repository
@@ -895,13 +900,11 @@ Precision=TP/(TP+FP), Accuracy=(TP+TN)/(TP+TN+FP+FN), Recall=TP/(TP+FN), F1=2*Pr
 prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
 
 # inspect prediction
-prompt$ head -3 pred.txt.out
+prompt$ head -2 pred.txt.out
 1.000,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
 1.000,/SingleMu/Run2012D-22Jan2013-v1/AOD
-1.000,/powheg_vbfh_v3_4/mflechl-powheg_vbfh_v3_4-a09e65e190a7c44f9c7382190186ad7f/USER
         </code>
     </pre>
-</small>
 </div>
 
 </section>
