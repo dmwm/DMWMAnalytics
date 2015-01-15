@@ -14,7 +14,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+<!--
     <link rel="stylesheet" href="css/reveal.min.css">
+-->
+    <link rel="stylesheet" href="css/reveal.css">
     <!-- beige.css,moon.css,serif.css,sky.css,default.css,night.css,simple.css,solarized.css -->
     <link rel="stylesheet" href="css/theme/default.css" id="theme">
 
@@ -93,7 +96,7 @@ Ultimately we'd like to learn from CMS data and make prediction to improve our r
 </li>
 
 <li>
-Initial goal is to predict popularity of datasets on weekly basis.
+Initial goal is to predict popularity of new datasets.
 <br />
 <br />
 </li>
@@ -122,7 +125,7 @@ The DCAFPilot consists of several components:
 <small>
     <ul>
     <li>Dataframe generator toolkit: collect/transform data from
-    CMS data-services (DBS/Phedex/SiteDB/PopularityDB/Dashboard)
+    CMS data-services (DBS/PhEDEx/SiteDB/PopularityDB/Dashboard)
     and extract necessary bits for datasets in questions
     <br />
     <br />
@@ -138,7 +141,7 @@ The DCAFPilot consists of several components:
 
 <p>
 Get the code:
-<pre style="width:1000px">
+<pre>
 git clone git@github.com:dmwm/DMWMAnalytics.git
 </pre>
 </p>
@@ -176,7 +179,7 @@ Collect data via the following set of rules
     <ul>
     <li>Collect all datasets (4 DBS instances) into internal cache</li>
     <li>Collection popular datasets from PopularityDB on weekly basis</li>
-    <li>Get summary for datasets from DBS/Phedex/SiteDB/Dashboard data-services</li>
+    <li>Get summary for datasets from DBS/PhEDEx/SiteDB/Dashboard data-services</li>
     <li>Complement dataframe with random set of DBS datasets which were not
     visible in popularity for given time interval</li>
     </ul>
@@ -191,7 +194,7 @@ CMS data-service APIs used by DCAFPilot package
 <small>
     <ul>
         <li><a href="https://cmsweb.cern.ch/dbs/">DBS:</a> datasets, releases, filesummaries, releaseversions, datasetparents APIs</li>
-        <li><a href="https://cmsweb.cern.ch/phedex">Phedex:</a> blockReplicas API</li>
+        <li><a href="https://cmsweb.cern.ch/phedex">PhEDEx:</a> blockReplicas API</li>
         <li><a href="https://cmsweb.cern.ch/sitedb">SiteDB:</a> site-names, people APIs</li>
         <li><a href="https://cms-popularity.cern.ch/popdb/popularity/apidoc">PopularityDB:</a> DSStatInTimeWindow API</li>
         <li><a href="https://twiki.cern.ch/twiki/bin/view/ITAnalyticsWorkingGroup/ExperimentDashboard">Dashboard:</a> jobefficiencyapi API</li>
@@ -215,8 +218,8 @@ CMS data-service APIs used by DCAFPilot package
 <small>
     <span class="highlight">DCAFPilot tools:</span>
     <code>generate_scripts.sh, dataframe</code>
-    <pre style="width:1000px">
-    <code>
+    <pre>
+    <code class="bash">
 # generate run-time scripts starting from given date
 prompt$ bin/generate_scripts.sh 20140101 > run.sh
 
@@ -249,8 +252,8 @@ popdb::fetch url=https://cms-popularity.cern.ch/popdb/popularity//DSStatInTimeWi
 <section>
 <h2>Dataframe preparation, cont'd</h2>
 <div align="left">
-    <pre style="width:1000px">
-Queried 5 CMS data-services: DBS, Phedex, SiteDB, PopularityDB, Dashboard
+    <pre>
+Queried 5 CMS data-services: DBS, PhEDEx, SiteDB, PopularityDB, Dashboard
    - used 10 APIs to get data content
    - feed internal cache with ~220K datasets from 4 DBS instances,
      ~900 release names, 500+ site names, ~5k people DNs.
@@ -265,7 +268,7 @@ All jobs run on two CERN VM w/ N jobs/core splitting
     </pre>
 <small>
 We anonymized all data and performed factorization via internal cache
-    <pre style="width:1000px">
+    <pre>
         <code>
 id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites,nusers,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,size,tier,totcpu,wct
 999669242,207737071.0,2186,20186,3,0,759090,14251.0,6,21675970,2158,72274,1,10,11.0,5862538,335429,30667701,373256,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0.6,0.4,3.9,0,3,8,0,0,8002,5,64280.0,216946588.0
@@ -280,7 +283,7 @@ id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites
 <section>
 <h2>Dataframe description</h2>
 <small>
-<pre style="width:1000px">
+<pre>
 <span class="highlight">id:</span> unique id constructed as long('%s%s%s'%(tstamp,dbsinst,dataset_id)) % 2**30
 <span class="highlight">cpu:</span> CPU time reported by Dashboard data-service for given dataset
 <span class="highlight">creator:</span> anonymized DN of the user who created given dataset, reported by DBS
@@ -293,7 +296,7 @@ id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites
 <span class="highlight">nfiles:</span> number of files in given dataset, reported by DBS
 <span class="highlight">nlumis:</span> number of lumi sections in given dataset, reported by DBS
 <span class="highlight">nrel:</span> number of releases associated with given dataset, reported by DBS
-<span class="highlight">nsites:</span> number of sites associated with given dataset, reported by Phedex
+<span class="highlight">nsites:</span> number of sites associated with given dataset, reported by PhEDEx
 <span class="highlight">parent:</span> parent id of given dataset, reported by DBS
 <span class="highlight">primds:</span> anonymized primary dataset name, reported by DBS
 <span class="highlight">proc_evts:</span> number of processed events, reported by Dashboard
@@ -301,10 +304,12 @@ id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites
 <span class="highlight">rel1_N:</span> DBS release counter defined as N-number of series releases associated with given dataset
 <span class="highlight">rel2_N:</span> DBS release counter defined as N-number of major releases associated with given dataset
 <span class="highlight">rel3_N:</span> DBS release counter defined as N-number of minor releases associated with given dataset
-<span class="highlight">s_X:</span> Phedex site counter, i.e. number of Tier sites holding this dataset replica
+<span class="highlight">s_X:</span> PhEDEx site counter, i.e. number of Tier sites holding this dataset replica
 <span class="highlight">size:</span> size of the dataset, reported by DBS and normalized to GB metric
 <span class="highlight">tier:</span> anonymized tier name, reported by DBS
 <span class="highlight">wct:</span> wall clock counter for given dataset, reported by Dashboard
+
+Target variables:
 <span class="highlight">naccess:</span> number of accesses to a dataset, reported by PopularityDB
 <span class="highlight">nusers:</span> number of users*days to a dataset, reported by PopularityDB
 <span class="highlight">totcpu:</span> number of cpu hours to accessed dataset, reported by PopularityDB
@@ -313,10 +318,7 @@ id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites
 <span class="highlight">rtotcpu:</span> totcpu(dataset)/SUM_i totcpu(i), reported by PopularityDB
 </pre>
 <div align="left">
-<span class="highlight">Hint:</span>
-Please check README.md for each dataframe release.
-The target variable can be chosen from (r)naccess/(r)nusers/(r)totcpu or
-any combination of them.
+Some variables are useful for online learning while other can be used in offline context.
 </div>
 </small>
 </section>
@@ -456,8 +458,8 @@ N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
 <div align="left">
     <ul>
         <li>Once we generated the data we want to learn from it and make prediction</li>
-        <li>Try to transform and pivot the data to gain as mush as possible</li>
-        <li>Try Machine Learning algorithms, e.g. regression, classification or online learning techniques to find best model</li>
+        <li>Transform and pivot the data to gain as mush as possible</li>
+        <li>Use Machine Learning algorithms, e.g. regression, classification or online learning techniques to find best model</li>
         <li>Use different tools and libraries (R, python, VW, etc.)</li>
         <li>DCAFPilot project provides all necessary tools to do the job
             <ul>
@@ -477,7 +479,7 @@ N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
 <small>
     <span class="highlight">DCAFPilot tools:</span>
     <code>model</code>
-    <pre style="width:1000px"><code>
+    <pre><code class="bash">
 # use model script to train your model
 prompt$ model --help
 
@@ -512,16 +514,17 @@ Options:
     </code></pre>
 <span class="highlight">Note:</span>
 model script offers 8 regressors and 18 classifiers from
-<a href="http://scikit-learn.org/stable/">sklearn</a> ML library
+<a href="http://scikit-learn.org/stable/">sklearn</a> ML library and it is
+easy to add new ones.
 </small>
 </div>
 </section>
 
 <section>
-<h2>Learn your learner</h2>
+<h2>Learner documentation</h2>
 <div align="left">
 <small>
-    <pre style="width:1000px"><code>
+    <pre><code class="bash">
 prompt$ model --learner-help=RandomForestRegressor
 
 RandomForestRegressor(bootstrap=True, compute_importances=None,
@@ -568,7 +571,7 @@ A random forest regressor.
 <small>
     <span class="highlight">DCAFPilot tools:</span>
     <code>merge_csv, model</code>
-    <pre style="width:1000px"><code>
+    <pre><code>
 # get the data, we keep it sequre in separate CERN based repository
 prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
 
@@ -597,7 +600,7 @@ Score metric (r2): 0.897606379597
     </code></pre>
 We should hold our breath with this though, too many things to test first ...
 <br />
-<span class="highlight">Observation:</span> do site variables are good predictors?
+<span class="highlight">Observation:</span> are site variables good predictors?
 </small>
 </div>
 </section>
@@ -606,7 +609,7 @@ We should hold our breath with this though, too many things to test first ...
 <h2>First results, prediction</h2>
 <div align="left">
 <small>
-    <pre style="width:1000px">
+    <pre>
         <code>
 prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz \
               --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scorer=r2
@@ -641,7 +644,7 @@ Some data requires normalization/scaling, e.g. cpu/wct were generated as int's (
 <small>
     <span class="highlight">DCAFPilot tools:</span>
     <code>model, check_prediction</code>
-    <pre style="width:1000px">
+    <pre>
         <code>
 # run model with scaler
 prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz \
@@ -677,7 +680,7 @@ Use random seed and no splitting to have consistent results
 <h2>Other learners</h2>
 <div align="left">
 <small>
-    <pre style="width:1000px">
+    <pre>
         <code>
 # run AdaBoost regressor model
 prompt$ model --learner=AdaBoostRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
@@ -703,8 +706,12 @@ Score metric (r2): -3.12784471837e+24
         </code>
     </pre>
 <span class="highlight">Hint:</span>
-DCAFPilot supports five regressors, and 15+ classifiers which may be
-used if we'll use different metrics.
+For full list of regressors or classifiers use <code>model --help</code> option
+
+<br />
+<br />
+<span class="highlight">Observation:</span>
+Should we restrict ourselves by regression model and specific package/language?
 </small>
 </div>
 </section>
@@ -725,7 +732,7 @@ interface when doing linear learning, a first amongst learning algorithms.
 <br />
 <span class="highlight">DCAFPilot tools:</span>
 <code>csv2vw</code>
-    <pre style="width:1000px">
+    <pre>
 prompt$ csv2vw --csv=2014.csv.gz --vw=2014.vw
 prompt$ head -2 2014.vw
 
@@ -746,7 +753,7 @@ and how to use it. The <b>csv2vw</b> script is provided by DCAFPilot package.
 <small>
     <span class="highlight">External tools:</span>
     <code>vw</code>
-    <pre style="width:1000px">
+    <pre>
         <code>
 # train our model
 prompt$ vw -d 2014.vw -c -k -f model.vw
@@ -784,13 +791,13 @@ R2 score                : 0.896133210959         0.337686411265
 -->
 
 <section>
-<h2>Regression or classification</h2>
+<h2>Switch to R and do classification</h2>
 <div align="left">
 <small>
 <span class="highlight">External tools:</span>
 <code>R-language, e1071 library (Support Vector Machine classification)</code>
-    <pre style="width:1000px">
-        <code>
+    <pre>
+        <code class="python">
 library(e1071)
 
 csv_files <- list.files(path="./", full.names=TRUE, pattern="dataframe-.*.csv.gz")
@@ -824,36 +831,44 @@ print(table(yTest,dTest$target))
     </pre>
 </small>
 </div>
-
-</section>
-
-<section>
-<h2>Towards data analysis</h2>
-<div align="left">
-<ul>
-    <li>We generated two datasets, tagged as 0.0.2 and 0.0.3</li>
-    <li>The former had fixed target from popularity DB, while
-        later contains un-normalized variables and all popularity DB metrics</li>
-    <li>We added transform script for data manipulation and conversion; feature
-        ranking, data splitting, etc., add choice of regression or
-        classification analysis</li>
-    <li>Data tag 0.0.3 covers entire 2014 year, but require user to choose
-        specific metric for data analysis</li>
-    <li>It has ~600k rows, therefore we may split data into train
-        and valid datasets, e.g. hold December data for validation</li>
-    <li>Run ML algorithm to see the results</li>
-</ul>
-</div>
 </section>
 
 <section>
 <h2>From data to prediction</h2>
 <div align="left">
+<ol>
+    <li>Generate dataframe or get it from existing repository</li>
+    <li>Transform data into suitable format for ML</li>
+    <li>Build ML model
+        <ul>
+            <li>use classification or regression techniques</li>
+            <li>train and validate your model
+                <ul>
+                    <li>split data into train and validation sets
+                    <br/>
+                    we have ~600K rows in 2014 dataset
+                    <br/>
+                    train set (Jan-Nov), test set (Dec)
+                    <li>estimate your predictive power on validation set</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li>Generate new data and transform it similar to step #2.</li>
+    <li>Apply your best model to new data to make prediction</li>
+    <li>Verify prediction with popularity DB once data metrics become available</li>
+</ol>
+</div>
+</section>
+
+<section data-background="#999999" data-background-transition="zoom">
+<h2>From data to prediction, step 1-3</h2>
+<div align="left">
 <small>
 <span class="highlight">DCAFPilot tools:</span>
 <code>merge_csv, model, check_prediction, pred2dataset</code>
-    <pre style="width:1000px">
-        <code>
+    <pre>
+        <code class="bash">
 # get the data, we keep it secure in separate CERN based repository
 prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
 
@@ -861,10 +876,12 @@ prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
 prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 --fout=2014.csv.gz --verbose
 
 # transform data into classification problem and remove useless variables
-prompt$ transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
+prompt$ transform_csv --fin=2014.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=100 \
+        --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
 
 # train the model
-prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt
+prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz \
+        --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt
 
 # check prediction
 prompt$ check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1
@@ -889,14 +906,16 @@ prompt$ head -3 pred.txt.out
 
 </section>
 
-<section>
-<h2>Making predictions</h2>
+<section data-background="#B3B3B3" data-background-transition="zoom">
+<h2>Making predictions, steps 4-6</h2>
 <div align="left">
 <small>
 <span class="highlight">DCAFPilot tools:</span>
 <code>dataframe, transform_csv, model, pred2dataset, popular_datasets, verify_predictions</code>
-    <pre style="width:1000px">
-        <code>
+</small>
+<div>
+    <pre>
+        <code class="bash">
 # seed dataset cache (w/ MongoDB back-end)
 prompt$ dataframe --seed-cache --verbose=1
 
@@ -904,17 +923,18 @@ prompt$ dataframe --seed-cache --verbose=1
 prompt$ dataframe --start=20150101 --stop=20150108 --newdata --verbose=1 --fout=new-20150101-20150108.csv
 
 # transform new data into classification problem similar to our train data
-prompt$ transform_csv --fin=new-20150101-20150108.csv.gz --fout=newdata-20150101-20150108.csv.gz --target=naccess --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
+prompt$ transform_csv --fin=new-20150101-20150108.csv.gz --fout=newdata-20150101-20150108.csv.gz --target=naccess \
+        --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
 
 # run the model with new data
-prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=newdata-20150101-20150108.csv.gz --predict=pred.txt
+prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz \
+        --scaler=StandardScaler --newdata=newdata-20150101-20150108.csv.gz --predict=pred.txt
 
 # produce human readable format and inspect its output
 prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
-prompt$ head -3 pred.txt.out
+prompt$ head -2 pred.txt.out
 0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/GEN-SIM-DIGI-RAW
 0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/DQMIO
-0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/GEN-SIM-RECO
 
 # get popular datasets from popularity DB
 prompt$ popular_datasets --start=20150101 --stop=20150108 > popdb-20150101-20150108.txt
@@ -926,7 +946,7 @@ Predicted datasets : 187
 Wrongly predicted  : 0
         </code>
     </pre>
-</small>
+</div>
 </div>
 
 </section>
@@ -935,17 +955,27 @@ Wrongly predicted  : 0
 <div align="left">
 <small>
 <ul>
-    <li>We show the proof of concept how to predict dataset popularity based on existing CMS tools</li>
+    <li>We show the proof of concept how to predict dataset popularity based on existing CMS tools
     <ul>
-        <li>DCAFPilot package has main components to do the work</li>
-        <li>Initial dataframe shows some potential but should be thoughtfully studied to avoid
-        main ML obstacles, such as as data memorization, over-fitting, etc.</li>
+        <li>DCAFPilot package has main components to do the work:
+        <span class="highlight">dataframe, transform_csv, merge_csv, model,
+            pred2dataset, popular_datasets, check_prediction, verify_predictions</span> 
+        </li>
+    </ul>
+    <br />
+    </li>
+    <li>We succeed making sensible prediction with simple RF model
+    <ul>
+        <li>Even though initial dataframe/model shows <span style="color:#FF6666">some potential</span>
+        it should be <span style="color:#FF6666">thoughtfully studied</span> to avoid
+        main ML obstacles, e.g. data memorization, over-fitting, etc., and
+        <span style="color:#FF6666">checked with new data</span>
+        </li>
         <li>More data in terms of volume and attributes may be required for
         further analysis, e.g. find physicists clustering on certain topics</li>
         <li>Even though all work was done on a single node with existing APIs we may need
         to pursue other approaches, e.g. ORACLE-Hadoop mapping, etc.</li>
     </ul>
-    <br />
     <br />
     </li>
 
