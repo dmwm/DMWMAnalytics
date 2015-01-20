@@ -30,7 +30,7 @@ def verify_prediction(pred, popdb):
     for line in open(pred, 'r').readlines():
         prob, dataset = line.replace('\n', '').split(',')
         total += 1
-        if  dataset in pop_data and float(prod)>0:
+        if  dataset in pop_data and float(prob)>0:
             print '%s,%s' % (prob, dataset)
             count += 1
     print "Popular datasets  :", len(pop_data.keys())
