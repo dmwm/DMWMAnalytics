@@ -15,6 +15,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   data.rst
    dataframe.rst
    model.rst
    code.rst
