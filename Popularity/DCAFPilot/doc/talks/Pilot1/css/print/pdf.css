@@ -16,6 +16,7 @@
 }
 
 body {
+    background: #666666;
 	font-size: 18pt;
 	width: 297mm;
 	height: 229mm;
@@ -24,6 +25,9 @@ body {
 	padding: 0;
 	float: none !important;
 	overflow: visible;
+}
+.slide-number {
+    visibility: hidden;
 }
 
 html {
