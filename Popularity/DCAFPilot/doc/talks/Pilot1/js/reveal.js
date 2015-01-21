@@ -1872,7 +1872,7 @@ var Reveal = (function(){
 		if( config.slideNumber && dom.slideNumber) {
 
 			// Display the number of the page using 'indexh - indexv' format
-			var indexString = indexh;
+			var indexString = indexh+1;
 			if( indexv > 0 ) {
 				indexString += ' - ' + indexv;
 			}
