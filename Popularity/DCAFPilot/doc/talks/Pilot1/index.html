@@ -276,6 +276,9 @@ id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites
 ....
         </code>
     </pre>
+2014 dataset is available at
+<a href="https://git.cern.ch/web/CMS-DMWM-Analytics-data.git">
+    https://git.cern.ch/web/CMS-DMWM-Analytics-data.git</a>
 </small>
 
 </section>
@@ -317,38 +320,29 @@ Target variables:
 <span class="highlight">rnusers:</span> nusers(dataset)/SUM_i nusers(i), reported by PopularityDB
 <span class="highlight">rtotcpu:</span> totcpu(dataset)/SUM_i totcpu(i), reported by PopularityDB
 </pre>
+<br />
 <div align="left">
 Some variables are useful for online learning while other can be used in offline context.
-<br/>
-<span class="highlight">Remember:</span> check README.md file associated with data tag, e.g.
-for 0.0.2 tag used normalized naccess variable as a target, but 0.0.3 tag kept all
-target variables intact.
 </div>
 </small>
 </section>
 
 <section>
 <h2>Live Data plots</h2>
-<p><img src="images/dbs1.gif" alt="DBS plots" /></p>
-Data transition through 2014 on weekly basis
-</section>
-
-<section>
-<h2>Live Data plots, cont'd</h2>
-<p><img src="images/dbs2.gif" alt="DBS plots" /></p>
-Data transition through 2014 on weekly basis
-</section>
-
-<section>
-<h2>Live Data plots, cont'd</h2>
-<p><img src="images/dbs3.gif" alt="DBS plots" /></p>
+<table><tr><td>
+<img src="images/dbs1.gif" alt="DBS plots" />
+    </td><td>
+<img src="images/dbs3.gif" alt="DBS plots" />
+</td></tr></table>
 Data transition through 2014 on weekly basis
 </section>
 
 <section>
 <h2>Correlations</h2>
 <p><img src="images/corr.gif" alt="Correlations" /></p>
-Data transition through 2014 on weekly basis
+<small>
+Subset of variables, showing all of them in single plot can hard to swallow.
+</small>
 </section>
 
 <section>
@@ -446,11 +440,11 @@ Data transition through 2014 on weekly basis
 </td></tr></table>
 <div align="left">
 <small>
-Datasets behavior through 2014, plot shows few random datasets, while table
+Plot shows few random datasets, while table
 summarizes dataset access statistics through 2014.
 <br />
 <span class="highlight">Observation:</span>
-dataset access is like stock market on steroids, i.e. time series,
+dataset access is like stock market, i.e. time series, but
 N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
 </small>
 </div>
@@ -467,6 +461,7 @@ N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
         <li>Use different tools and libraries (R, python, VW, etc.)</li>
         <li>DCAFPilot project provides all necessary tools to do the job
             <ul>
+                <li>generate data</li>
                 <li>transform data</li>
                 <li>build model and perform its validation</li>
                 <li>acquire new data</li>
@@ -512,8 +507,6 @@ Options:
   --idx=IDX             initial index counter, default 0
   --limit=LIMIT         number of rows to process, default -1 (everything)
   --verbose=VERBOSE     verbose output, default=0
-  --crossval            Perform cross-validation for given model and quit
-  --gsearch=GSEARCH     perform grid search, gsearch=<parameters>
   --predict=PREDICT     Prediction file name, default None
     </code></pre>
 <span class="highlight">Note:</span>
@@ -604,80 +597,11 @@ Score metric (r2): 0.897606379597
 
 Definition: r2=1-Sres/Stot, Stot=SUM_i(Y_i-Y_hat)^2, Sres=SUM_i(F_i-Y_hat)^2
     </code></pre>
-We should hold our breath with this though, too many things to test first ...
+Does this good results? Are site variables good predictors? Should we use regressor or classification
+model? ...
 <br />
-<span class="highlight">Observation:</span> are site variables good predictors?
-</small>
-</div>
-</section>
-
-<section>
-<h2>First results, prediction</h2>
-<div align="left">
-<small>
-    <pre>
-        <code>
-prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz \
-              --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scorer=r2
-RandomForestRegressor(bootstrap=True, compute_importances=None,
-           criterion='mse', max_depth=None, max_features='auto',
-           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
-           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
-           random_state=None, verbose=0)
-Score metric (r2): 0.93623237727
-Traceback (most recent call last):
-...
-  File "/Users/vk/CMS/DMWM/GIT/DMWMAnalytics/Popularity/DCAFPilot/src/python/DCAF/ml/model.py", line 165, in model
-    predictions = fit.predict(tdf)
-  File "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/sklearn/ensemble/forest.py", line 564, in predict
-    if getattr(X, "dtype", None) != DTYPE or X.ndim != 2:
-  File "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/pandas/core/ops.py", line 600, in wrapper
-    res = na_op(values, other)
-  File "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/pandas/core/ops.py", line 564, in na_op
-    raise TypeError("invalid type comparison")
-TypeError: invalid type comparison
-        </code>
-    </pre>
-<span class="highlight">Hint:</span>
-Some data requires normalization/scaling, e.g. cpu/wct were generated as int's (to save output file space), while they should be floats (fixed in 0.0.3 release).
-</small>
-</div>
-</section>
-
-<section>
-<h2>First results, prediction w/ scaling</h2>
-<div align="left">
-<small>
-    <span class="highlight">DCAFPilot tools:</span>
-    <code>model, check_prediction</code>
-    <pre>
-        <code>
-# run model with scaler
-prompt$ model --learner=RandomForestRegressor --train-file=2014.csv.gz \
-              --newdata=dataframe-20141119-20141126.csv.gz --predict=pred.txt --scaler=StandardScaler
-RandomForestRegressor(bootstrap=True, compute_importances=None,
-           criterion='mse', max_depth=None, max_features='auto',
-           max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
-           min_samples_split=2, n_estimators=10, n_jobs=1, oob_score=False,
-           random_state=None, verbose=0)
-
-# check our prediction
-prompt$ check_prediction --fin=dataframe-20141119-20141126.csv.gz --fpred=pred.txt
-              --scorer=mean_absolute_error,mean_squared_error,r2
-
-Mean absolute error     : 0.000386050647644
-Mean squared error      : 2.42792029612e-06
-R2 score                : 0.896133210959
-
-Definition: R2=1-Sres/Stot, Stot=SUM_i(Y_i-Y_hat)^2, Sres=SUM_i(F_i-Y_hat)^2
-        </code>
-    </pre>
-<span class="highlight">Observation:</span>
-You may see different results if re-run your model
-(random splitting for train/validation sets).
-<br />
-<span class="highlight">Hint:</span>
-Use random seed and no splitting to have consistent results
+Too many things to test first, e.g. scaling, feature selection, model choice,
+cross-validation, etc.
 </small>
 </div>
 </section>
@@ -686,6 +610,9 @@ Use random seed and no splitting to have consistent results
 <h2>Other learners</h2>
 <div align="left">
 <small>
+<span class="highlight">model</span> tool provides easy way to run
+different classifiers. For full list see
+<span class="highlight">model --help</span> option
     <pre>
         <code>
 # run AdaBoost regressor model
@@ -702,19 +629,9 @@ BaggingRegressor(base_estimator=None, bootstrap=True,
          verbose=0)
 Score metric (r2): -2.11591876017
 
-# run SGD regressor model
-prompt$ model --learner=SGDRegressor --train-file=2014.csv.gz --scorer=r2 --scaler=StandardScaler
-SGDRegressor(alpha=0.0001, epsilon=0.1, eta0=0.01, fit_intercept=True,
-       l1_ratio=0.15, learning_rate='invscaling', loss='squared_loss',
-       n_iter=5, penalty='l2', power_t=0.25, random_state=None,
-       shuffle=False, verbose=0, warm_start=False)
-Score metric (r2): -3.12784471837e+24
         </code>
     </pre>
-<span class="highlight">Hint:</span>
-For full list of regressors or classifiers use <code>model --help</code> option
 
-<br />
 <br />
 <span class="highlight">Observation:</span>
 Should we restrict ourselves by regression model and specific package/language?
@@ -797,7 +714,7 @@ R2 score                : 0.896133210959         0.337686411265
 -->
 
 <section>
-<h2>Switch to R and do classification</h2>
+<h2>Use R and do classification</h2>
 <div align="left">
 <small>
 <span class="highlight">External tools:</span>
