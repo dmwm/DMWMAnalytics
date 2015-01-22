@@ -719,21 +719,21 @@ print(table(yTest,dTest$target))
     <pre>
         <code class="bash">
 # get the data, we keep it secure in separate CERN based repository
-prompt$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
+prompt_1$ git clone https://:@git.cern.ch/kerberos/CMS-DMWM-Analytics-data
 
 # merge dataframes, then split 2014.csv.gz into train/valid datasets
-prompt$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 --fout=2014.csv.gz --verbose
+prompt_2$ merge_csv --fin=CMS-DMWM-Analytics-data/Popularity/DCAFPilot/data/0.0.3 --fout=2014.csv.gz --verbose
 
 # transform data into classification problem and remove useless variables
-prompt$ transform_csv --fin=2014.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=100 \
-        --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
+prompt_3$ transform_csv --fin=2014.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=100 \
+          --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
 
 # train the model
-prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz \
-        --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt
+prompt_4$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz \
+          --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt
 
 # check prediction
-prompt$ check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1
+prompt_5$ check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1
 Score metric (precision_score): 0.79773214833
 Score metric (accuracy_score): 0.982348203499
 Score metric (recall_score): 0.952781844802
@@ -741,10 +741,10 @@ Score metric (f1_score): 0.868390325271
 Precision=TP/(TP+FP), Accuracy=(TP+TN)/(TP+TN+FP+FN), Recall=TP/(TP+FN), F1=2*Precision*Recall/(Precision+Recall)
 
 # convert prediction into human/CMS data format
-prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
+prompt_6$ pred2dataset --fin=pred.txt --fout=pred.txt.out
 
 # inspect prediction
-prompt$ head -2 pred.txt.out
+prompt_7$ head -2 pred.txt.out
 1.000,/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO
 1.000,/SingleMu/Run2012D-22Jan2013-v1/AOD
         </code>
@@ -764,30 +764,30 @@ prompt$ head -2 pred.txt.out
     <pre>
         <code class="bash">
 # seed dataset cache (w/ MongoDB back-end)
-prompt$ dataframe --seed-cache --verbose=1
+prompt_1$ dataframe --seed-cache --verbose=1
 
 # get new data from DBS (you may need to run it in background)
-prompt$ dataframe --start=20150101 --stop=20150108 --newdata --verbose=1 --fout=new-20150101-20150108.csv
+prompt_2$ dataframe --start=20150101 --stop=20150108 --newdata --verbose=1 --fout=new-20150101-20150108.csv
 
 # transform new data into classification problem similar to our train data
-prompt$ transform_csv --fin=new-20150101-20150108.csv.gz --fout=newdata-20150101-20150108.csv.gz --target=naccess \
-        --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
+prompt_3$ transform_csv --fin=new-20150101-20150108.csv.gz --fout=newdata-20150101-20150108.csv.gz --target=naccess \
+          --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct
 
 # run the model with new data
-prompt$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz \
+prompt_4$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=train_clf.csv.gz \
         --scaler=StandardScaler --newdata=newdata-20150101-20150108.csv.gz --predict=pred.txt
 
 # produce human readable format and inspect its output
-prompt$ pred2dataset --fin=pred.txt --fout=pred.txt.out
-prompt$ head -2 pred.txt.out
+prompt_5$ pred2dataset --fin=pred.txt --fout=pred.txt.out
+prompt_6$ head -2 pred.txt.out
 0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/GEN-SIM-DIGI-RAW
 0.000,/RelValQCDForPF_14TeV/CMSSW_6_2_0_SLHC22_patch1-PH2_1K_FB_V6_UPG23SHNoTaper-v1/DQMIO
 
 # get popular datasets from popularity DB
-prompt$ popular_datasets --start=20150101 --stop=20150108 > popdb-20150101-20150108.txt
+prompt_7$ popular_datasets --start=20150101 --stop=20150108 > popdb-20150101-20150108.txt
 
 # verify our prediction against similar period from popularity DB
-prompt$ verify_predictions --pred=pred.txt.out --popdb=popdb-20150101-20150108.txt
+prompt_8$ verify_predictions --pred=pred.txt.out --popdb=popdb-20150101-20150108.txt
 Popular datasets   : 841
 Predicted datasets : 187
 Wrongly predicted  : 0
