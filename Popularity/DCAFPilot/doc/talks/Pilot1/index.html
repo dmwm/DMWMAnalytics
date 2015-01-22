@@ -227,11 +227,11 @@ prompt$ bin/generate_scripts.sh 20140101 > run.sh
 prompt$ head run.sh
 #!/bin/bash
 dataframe --seed-cache
-dataframe --start=20140101 --stop=20140108 --dbs-extra=1000 --verbose=1 --fout=dataframe-20140101-20140108.csv
+dataframe --start=20140101 --stop=20140108 --dbs-extra=10000 --verbose=1 --fout=dataframe-20140101-20140108.csv
 ...
 
 # run dataframe generator (you may need to run it in background)
-prompt$ dataframe --start=20141126 --stop=20141203 --dbs-extra=1000 --verbose=1 --fout=dataframe-20141126-20141203.csv
+prompt$ dataframe --start=20141126 --stop=20141203 --dbs-extra=10000 --verbose=1 --fout=dataframe-20141126-20141203.csv
 
 # check log content
 prompt$ head dataframe-20141126-20141203.log
