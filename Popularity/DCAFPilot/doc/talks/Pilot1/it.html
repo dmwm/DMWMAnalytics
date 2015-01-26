@@ -357,6 +357,69 @@ For the rest of slides I'll stick with <span style="color:#BAFFE9"><u>naccess</u
 </section>
 
 <section>
+<h2>How to attack this problem</h2>
+<div align="left">
+<small>
+This seems to be time series problem, i.e. dataset popularity change over time
+<br />
+<br />
+
+We can use rolling approach, like weather forecast, but for new datasets
+we do not have historical information.
+<br />
+<br />
+
+We can use either regression or classification approach. The former will allow to predict
+real values of metrics, e.g. naccess, while later can only classify between categories, i.e.
+popular or not. The classification will give us maximum gain with minimal inefficiency.
+<br />
+<br />
+
+We can use any tools, e.g. python, R, online-learners, custom algorithm.
+<br />
+<br />
+
+We'll show how to address this problem via DCAFPilot tools and discuss all steps
+from getting information to making prediction. We'll conclude about
+usefulness of the model by using a few statistical variables: accuracy, precision, recall and F1 scorers.
+
+
+</small>
+</div>
+</section>
+
+<section>
+<h2>Accuracy, Precision, Recall and F1</h2>
+<table border="0">
+<tr>
+    <td>
+<img src="http://cdn.antarcticglaciers.org/wp-content/uploads/2013/11/precision_accuracy.png" alt="Accuracy" width=400 />
+    </td>
+    <td>
+<img src="http://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Accuracy_and_precision.svg/520px-Accuracy_and_precision.svg.png" alt="Accuracy" width=480 />
+    </td>
+</tr>
+</table>
+<div align="left">
+<small>
+    TP: true positive, TN: true negative, FP: false positive (false alarm), FN: false negative (miss)
+    <br />
+    <br />
+    $Accuracy=\frac{TP+TN}{TP+TN+FP+FN}$,
+    $Precision=\frac{TP}{TP+FP}$,
+    <br />
+    <br />
+    $Recall=\frac{TP}{TP+FN}$,
+    a.k.a sensitivity, fraction of relevant instances that are retrieved
+    <br />
+    <br />
+    $F1=\frac{2*Precision*Recall}{Precision+Recall}=\frac{2TP}{2TP+FP+FN}$,
+    a.k.a weighted average of the precision and recall
+</small>
+</div>
+</section>
+
+<section>
 <h2>From data to prediction</h2>
 <div align="left">
 <ol>
@@ -413,7 +476,6 @@ Score metric (precision_score): 0.79773214833
 Score metric (accuracy_score): 0.982348203499
 Score metric (recall_score): 0.952781844802
 Score metric (f1_score): 0.868390325271
-Precision=TP/(TP+FP), Accuracy=(TP+TN)/(TP+TN+FP+FN), Recall=TP/(TP+FN), F1=2*Precision*Recall/(Precision+Recall)
 
 # convert prediction into human/CMS data format
 prompt_6$ pred2dataset --fin=pred.txt --fout=pred.txt.out
@@ -597,7 +659,73 @@ re: 0.48 <br />
 f1: 0.11 <br />
             </td>
         </tr>
+
+        <tr style="background-color: #7f7f7f;">
+            <td>Vowpal Wabbit</td>
+            <td>
+pr: 0.95 <br />
+ac: 0.61 <br />
+re: 0.69 <br />
+f1: 0.65 <br />
+            </td>
+
+            <td>
+pr: 0.99 <br />
+ac: 0.91 <br />
+re: 1.0  <br />
+f1: 0.95 <br />
+            </td>
+
+            <td>
+pr: 0.94 <br />
+ac: 0.65 <br />
+re: 0.61 <br />
+f1: 0.63 <br />
+            </td>
+        </tr>
     </table>
+</small>
+</div>
+</section>
+
+<section>
+<h2>Online learning algorithm</h2>
+<div align="left">
+<small>
+The <a href="http://hunch.net/~vw/">Vowpal wabbit</a> is online learning
+algorithm started at Yahoo! Research and continuing at Microsoft Research to
+design a fast, scalable, useful learning algorithm. VW is the essence of speed
+in machine learning, able to learn from <u>terafeature</u> datasets with ease. Via
+parallel learning, it can exceed the throughput of any single machine network
+interface when doing linear learning, a first amongst learning algorithms.
+<br />
+<span class="highlight">Note:</span>
+VW should be installed externally.
+<br />
+<br />
+<span class="highlight">DCAFPilot tools:</span>
+<code>csv2vw, vw_pred2csv, check_prediction</code>
+    <pre>
+        <code>
+# convert CSV to VW format
+csv2vw --csv=file.csv.gz --vw=file.vw --rid=id --target=target
+
+# build your model
+vw -d file.vw -c -k -f model.vw
+
+# convert validation CSV to VW format
+csv2vw --csv=valid.csv.gz --vw=valid.vw --rid=id --target=target --prediction=0
+
+# make prediction
+vw -d valid.vw -t -i model.vw -p vwpreds.txt
+
+# convert VW prediction into CSV format
+vw_pred2csv --fin=vwpreds.txt --fvw=valid.vw --fout=vwpreds.csv --thr=0.5
+
+# Check prediction against validation file
+check_prediction --fin=valid.csv.gz --fpred=vwpreds.csv --scorer=accuracy,precision,recall,f1
+        </code>
+    </pre>
 </small>
 </div>
 </section>
@@ -609,14 +737,13 @@ f1: 0.11 <br />
 <ul>
     <li>We show the proof of concept how to predict dataset popularity based on existing CMS tools
     <ul>
-        <li>DCAFPilot package has main components to do the work:
-        <span class="highlight">dataframe, transform_csv, merge_csv, model,
-            pred2dataset, popular_datasets, check_prediction, verify_predictions</span>
+        <li>DCAFPilot package has main components to do the work, but does not limit you to use other tools
         </li>
     </ul>
     <br />
     </li>
-    <li>We succeed making sensible prediction with simple RF model
+    <li>We succeed making sensible prediction with simple RF model for highly accessible datasets,
+        but low-to-medium popular dataset prediction is far from ideal
     <ul>
         <li>Even though initial dataframe/model shows <span style="color:#FF6666">some potential</span>
         it should be <span style="color:#FF6666">thoughtfully studied</span> to avoid
@@ -695,9 +822,14 @@ Reveal.initialize({
 
     theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
     transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+    math: {
+        mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+        config: 'TeX-AMS_HTML-full' // See http://docs.mathjax.org/en/latest/config-files.html
+    },
 
     // Optional libraries used to extend on reveal.js
     dependencies: [
+        { src: 'plugin/math/math.js', async: true },
         { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
         { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
         { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
