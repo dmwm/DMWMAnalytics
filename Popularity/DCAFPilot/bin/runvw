@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+    echo "Usage: runvw <file.csv.gz> <valid.csv.gz>"
+    exit 1
+fi
+
+fin=$1
+fvalid=$2
+finvw=`ls $fin | awk '{split($1,a,"."); print ""a[1]".vw"}'`
+fvalidvw=`ls $fvalid | awk '{split($1,a,"."); print ""a[1]".vw"}'`
+
+if [ -f $finvw ]; then
+    echo "Found $finvw"
+else
+    echo "### convert CSV ($fin) to VW ($finvw) format"
+    csv2vw --csv=$fin --vw=$finvw --rid=id --target=target
+fi
+
+echo "### build your model"
+vw -d $finvw -c -k -f model.vw
+
+if [ -f $fvalidvw ]; then
+    echo "Found $fvalidvw"
+else
+    echo "### convert validation CSV ($fvalid) to VW ($fvalidvw) format"
+    csv2vw --csv=$fvalid --vw=$fvalidvw --rid=id --target=target --prediction=0
+fi
+
+echo "### make prediction"
+vw -d $fvalidvw -t -i model.vw -p vwpreds.txt
+
+echo "### convert VW prediction into CSV format"
+vw_pred2csv --fin=vwpreds.txt --fvw=$fvalidvw --fout=vwpreds.csv --thr=0.5
+
+echo "### Check prediction against validation file"
+check_prediction --fin=$fvalid --fpred=vwpreds.csv --scorer=accuracy,precision,recall,f1
