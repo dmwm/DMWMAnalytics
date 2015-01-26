@@ -1,0 +1,14 @@
+# convert CSV to VW format
+csv2vw --csv=train_clf_cond.csv.gz --vw=train_clf_cond.vw --rid=id --target=target
+
+# build your model
+vw -d train_clf_cond.vw -c -k -f model.vw
+
+# convert validation set into VW format
+csv2vw --csv=valid_clf_cond.csv.gz --vw=valid_clf_cond.vw --rid=id --target=target --prediction=0
+
+# make prediction
+vw -d valid_clf_cond.vw -t -i model.vw -p preds.txt
+
+# convert VW prediction into CSV format
+vw_pred2csv --fin=preds.txt --fout=preds.csv
