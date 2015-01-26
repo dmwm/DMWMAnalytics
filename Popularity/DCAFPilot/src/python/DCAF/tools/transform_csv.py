@@ -11,10 +11,13 @@ column.
 
 # system modules
 import os
+import re
 import sys
 import gzip
 import bz2
 import optparse
+
+from DCAF.utils.regex import INT_PAT, FLOAT_PAT
 
 class OptionParser():
     def __init__(self):
@@ -26,8 +29,11 @@ class OptionParser():
             dest="fout", default="", help="Output file")
         self.parser.add_option("--target", action="store", type="string",
             dest="target", default="", help="Target column name")
-        self.parser.add_option("--target-thr", action="store", type="float",
-            dest="thr", default=0, help="Target threshold, default 0 (use -1 to keep the value intact)")
+        msg  = 'Target threshold, default 0 (use -1 to keep the value intact) or '
+        msg += 'supply valid python expression using the _row_ as a dict of parameters, e.g. '
+        msg += 'row["naccess"]>10 and row["nusers"]>5'
+        self.parser.add_option("--target-thr", action="store", type="string",
+            dest="thr", default="0", help=msg)
         self.parser.add_option("--drops", action="store", type="string",
             dest="drops", default="", help="drops column names (comma separated)")
         self.parser.add_option("--verbose", action="store_true",
@@ -62,17 +68,28 @@ def transform(fin, fout, target, thr, drops, verbose=0):
                     new_headers.append(val)
                 ostream.write(','.join(new_headers)+',target\n')
             continue
-        vals = line.replace('\n', '').split(',')
-        rdict = dict(zip(headers, vals))
+        vals = [eval(v) for v in line.replace('\n', '').split(',')]
+        row = dict(zip(headers, vals))
         if  thr==-1: # keep regression
-            tval = rdict[target]
+            tval = row[target]
         else: # do classification
-            tval = 1 if float(rdict[target])>=float(thr) else 0
+            if  INT_PAT.match(thr) or FLOAT_PAT.match(thr):
+                tval = 1 if float(row[target])>float(thr) else 0
+            else:
+                try:
+                    cond = eval(thr)
+                    if  cond:
+                        tval = 1
+                    else:
+                        tval = 0
+                except:
+                    print "Please supply valid python condition, e.g. row['naccess']>10 and row['nusers']>5"
+                    sys.exit(1)
         new_vals = []
         for key in new_headers:
             if  key in drops or key == target:
                 continue
-            new_vals.append(str(rdict[key]))
+            new_vals.append(str(row[key]))
         new_vals.append(str(tval))
         ostream.write(','.join(new_vals)+'\n')
     istream.close()
