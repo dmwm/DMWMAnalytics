@@ -556,22 +556,32 @@ Wrongly predicted  : 0
 </section>
 
 <section>
-<h2>Results</h2>
+<h2>Preliminary Results</h2>
 <div align="left">
 <small>
 Following table shows result from model trained on Jan-Nov data
 and validated with Dec dataset (a la rolling approach).
+The RF, SGD, LinearSVC are
+<a href="http://scikit-learn.org">scikit-learn</a>
+classifiers (python),
+the <a href="http://hunch.net/~vw/">Vowpal wabbit</a> is online-learning
+algorithm by Yahoo, while
+<a href="https://github.com/tqchen/xgboost/wiki">eXtreme Gradient Boosting</a>
+is parallel gradient boosting tree solution which won Kaggle Higgs competition.
+<br />
 <br />
     <table style="font-size:small; font-family:monospace;">
         <tr>
+            <td></td>
             <td></td>
             <td>naccess&gt;100</td>
             <td>naccess&gt;0</td>
             <td>naccess&gt;10 and naccess&lt;10000 and nsites&lt;50</td>
         </tr>
 
-        <tr style="background-color: #999999;">
+        <tr style="background-color: #402E1E;">
             <td>Classifier</td>
+            <td>Data</td>
             <td style="width:200px">
                 accu prec reca f1
                 <br />
@@ -586,106 +596,122 @@ and validated with Dec dataset (a la rolling approach).
             </td>
         </tr>
 
-        <tr style="background-color: #7f7f7f;">
-            <td>Random Forest (python)</td>
-            <td style="width:200px">
+        <tr style="background-color: #732432;">
+            <td>Random Forest</td>
+            <td>all<br/>new</td>
+            <td>
                 0.98 0.90 0.79 0.84
                 <br />
+                0.83 1.00 0.83 0.90
             </td>
 
-            <td style="width:200px">
+            <td>
                 0.98 0.96 0.88 0.92
                 <br />
+                0.86 1.00 0.86 0.92
             </td>
 
-            <td style="width:200px">
+            <td>
                 0.97 0.83 0.84 0.84
                 <br />
+                0.90 1.00 0.90 0.94
             </td>
         </tr>
 
-        <tr style="background-color:#999999;">
-            <td>SGDClassifier (python)</td>
+        <tr style="background-color:#402E1E;">
+            <td>SGDClassifier</td>
+            <td>all<br/>new</td>
             <td>
                 0.95 0.58 0.93 0.71
                 <br />
+                0.85 1.00 0.85 0.92
             </td>
 
             <td>
                 0.98 0.88 0.98 0.93
                 <br />
+                0.98 1.00 0.98 0.99
             </td>
 
             <td>
                 0.95 0.66 0.85 0.75
                 <br />
+                0.80 1.00 0.80 0.89
             </td>
         </tr>
 
-        <tr style="background-color: #7f7f7f;">
-            <td>Linear SVC (python)</td>
+        <tr style="background-color: #732432;">
+            <td>Linear SVC</td>
+            <td>all<br/>new</td>
             <td>
                 0.94 0.54 0.97 0.69
                 <br />
+                0.96 1.00 0.96 0.98
             </td>
 
             <td>
                 0.97 0.83 0.94 0.88
                 <br />
+                0.96 1.00 0.96 0.98
             </td>
 
             <td>
                 0.94 0.61 0.86 0.71
                 <br />
+                0.83 1.00 0.83 0.90
             </td>
         </tr>
 
-        <tr style="background-color: #999999;">
-            <td>Vowpal Wabbit (online-learning alg)</td>
+        <tr style="background-color: #402E1E;">
+            <td>Vowpal Wabbit</td>
+            <td>all<br/>new</td>
             <td>
                 0.95 0.61 0.69 0.65
                 <br />
+                0.54 1.00 0.54 0.70
             </td>
 
             <td>
                 0.99 0.91 1.00 0.95
                 <br />
+                1.00 1.00 1.00 1.00
             </td>
 
             <td>
                 0.94 0.65 0.61 0.63
                 <br />
+                0.49 1.00 0.49 0.65
             </td>
         </tr>
 
-        <tr style="background-color: #7f7f7f;">
-            <td>xgboost (online-learning alg)</td>
+        <tr style="background-color: #008000;">
+            <td>xgboost</td>
+            <td>all<br/>new</td>
             <td>
                 0.98 0.88 0.95 0.92
                 <br />
+                0.92 1.00 0.92 0.95
             </td>
 
             <td>
                 0.99 0.97 1.00 0.98
                 <br />
+                1.00 1.00 1.00 1.00
             </td>
 
             <td>
                 0.96 0.71 0.97 0.82
                 <br />
+                0.98 1.00 0.98 0.99
             </td>
         </tr>
     </table>
 <br />
 
-As we can see different algorithms may be sensitive to metric choice.
-<br />
-<br />
-
-<span class="highlight">Note:</span>
-shown results do not show how sensitive given alrogithm would be
-for new datasets. This can be analyzed by dataset selection from
-validation sample which were not present in a training set.
+<span class="highlight">Data selection:</span>
+rows with <u>all</u> values are data from train (Jan-Nov)/validation (Dec) sets,
+rows with <u>new</u> values are selected new datasets in Dec dataset, i.e. they
+were not present in train set.
 
 </small>
 </div>
