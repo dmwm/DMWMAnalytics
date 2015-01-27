@@ -100,6 +100,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             raise Exception('Invalid data type for lparams="%s", type: %s' % (lparams, type(lparams)))
         for key, val in lparams.items():
             setattr(clf, key, val)
+    setattr(clf, "random_state", 123)
     print clf
     if  split:
         if  isinstance(split, int):
