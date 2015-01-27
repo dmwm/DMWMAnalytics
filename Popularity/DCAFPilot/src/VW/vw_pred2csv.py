@@ -37,6 +37,13 @@ def get_dbs(vwrow):
             return item.split(':')[-1]
     return 0
 
+def get_dataset(vwrow):
+    "Extract dbs id from given VW row"
+    for item in vwrow.split():
+        if  item.startswith('dataset'):
+            return item.split(':')[-1]
+    return 0
+
 def convert(fin, fvw, fout, headers, thr):
     "Function which convert VW input file into CSV output one"
     with open(fin, 'r') as istream, open(fvw, 'r') as wstream, open(fout, 'w') as ostream:
@@ -51,7 +58,7 @@ def convert(fin, fvw, fout, headers, thr):
                     popular = row[0]
                 else:
                     popular = 1 if float(row[0])>thr else 0
-                ostream.write("%s,%s,%s\n" % (row[-1], get_dbs(vwrow), popular))
+                ostream.write("%s,%s,%s\n" % (get_dataset(vwrow), get_dbs(vwrow), popular))
             except:
                 break
 
