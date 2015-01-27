@@ -472,8 +472,8 @@ prompt_4$ model --learner=RandomForestClassifier --idcol=id --target=target --tr
 
 # check prediction
 prompt_5$ check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1
-Score metric (precision_score): 0.79773214833
 Score metric (accuracy_score): 0.982348203499
+Score metric (precision_score): 0.79773214833
 Score metric (recall_score): 0.952781844802
 Score metric (f1_score): 0.868390325271
 
@@ -537,157 +537,161 @@ Wrongly predicted  : 0
 <section>
 <h2>Discussion</h2>
 <div align="left">
+<small>
     <ul>
-        <li>Shown steps demonstrate ability of DCAFPilot project</li>
-        <li>The results should be take with caution
+        <li>Shown steps demonstrate ability of DCAFPilot project<br/><br/></li>
+        <li>The results should be taken with caution
         <ul>
             <li>New data corresponded to first week of the year when there were no "real" activity among physicists</li>
             <li>Chosen naccess metric may have bias towards test datasets which should be discarded</li>
-            <li>We may need to scan metric space for suitable definition of dataset "popularity"</li>
+            <li>We may need to scan metric space for suitable definition of dataset "popularity"<br/><br/></li>
         </ul>
         </li>
-        <li>Use rolling approach: get new data &#8594; adjust model &#8594; make prediction and repeat the cycle</li>
+        <li>Use rolling approach: get new data &#8594; adjust model &#8594; make prediction
+        and repeat the cycle<br/><br/></li>
         <li>We may need to extend existing dataframe to new dimensions: cluster users activity via HN analysis, conference dates; analysis of release quality, etc.</li>
     </ul>
+</small>
 </div>
 </section>
 
 <section>
-<h2>Conclusions & Future directions</h2>
-<div>
+<h2>Results</h2>
+<div align="left">
 <small>
+Following table shows result from model trained on Jan-Nov data
+and validated with Dec dataset (a la rolling approach).
+<br />
     <table style="font-size:small; font-family:monospace;">
         <tr>
-            <td>Classifier</td>
+            <td></td>
             <td>naccess&gt;100</td>
             <td>naccess&gt;0</td>
             <td>naccess&gt;10 and naccess&lt;10000 and nsites&lt;50</td>
         </tr>
 
+        <tr style="background-color: #999999;">
+            <td>Classifier</td>
+            <td style="width:200px">
+                accu prec reca f1
+                <br />
+            </td>
+            <td style="width:200px">
+                accu prec reca f1
+                <br />
+            </td>
+            <td style="width:200px">
+                accu prec reca f1
+                <br />
+            </td>
+        </tr>
+
         <tr style="background-color: #7f7f7f;">
-            <td>RF</td>
-            <td>
-pr: 0.79 <br />
-ac: 0.98 <br />
-re: 0.95 <br />
-f1: 0.86 <br />
+            <td>Random Forest (python)</td>
+            <td style="width:200px">
+                0.98 0.90 0.79 0.84
+                <br />
             </td>
 
-            <td>
-pr: 0.87 <br />
-ac: 0    <br />
-re: 0    <br />
-f1: 0    <br />
+            <td style="width:200px">
+                0.98 0.96 0.88 0.92
+                <br />
             </td>
 
-            <td>
-pr: 0.89 <br />
-ac: 0    <br />
-re: 0    <br />
-f1: 0    <br />
+            <td style="width:200px">
+                0.97 0.83 0.84 0.84
+                <br />
             </td>
         </tr>
 
         <tr style="background-color:#999999;">
-            <td>SGD</td>
+            <td>SGDClassifier (python)</td>
             <td>
-pr: 0.64 <br />
-ac: 0.15 <br />
-re: 0.76 <br />
-f1: 0.26 <br />
+                0.95 0.58 0.93 0.71
+                <br />
             </td>
 
             <td>
-pr: 0.20 <br />
-ac: 0.13 <br />
-re: 0.97 <br />
-f1: 0.23 <br />
+                0.98 0.88 0.98 0.93
+                <br />
             </td>
 
             <td>
-pr: 0.18 <br />
-ac: 0.06 <br />
-re: 0.49 <br />
-f1: 0.11 <br />
+                0.95 0.66 0.85 0.75
+                <br />
             </td>
         </tr>
 
         <tr style="background-color: #7f7f7f;">
-            <td>Gaussian Naive Bayes</td>
+            <td>Linear SVC (python)</td>
             <td>
-pr: 0.88 <br />
-ac: 0.39 <br />
-re: 0.81 <br />
-f1: 0.53 <br />
+                0.94 0.54 0.97 0.69
+                <br />
             </td>
 
             <td>
-pr: 0.81 <br />
-ac: 0.38 <br />
-re: 0.71 <br />
-f1: 0.50 <br />
+                0.97 0.83 0.94 0.88
+                <br />
             </td>
 
             <td>
-pr: 0.89 <br />
-ac: 0.53 <br />
-re: 0.43 <br />
-f1: 0.47 <br />
+                0.94 0.61 0.86 0.71
+                <br />
             </td>
         </tr>
 
         <tr style="background-color: #999999;">
-            <td>Linear SVC</td>
+            <td>Vowpal Wabbit (online-learning alg)</td>
             <td>
-pr: 0.87 <br />
-ac: 0.35 <br />
-re: 0.61 <br />
-f1: 0.44 <br />
+                0.95 0.61 0.69 0.65
+                <br />
             </td>
 
             <td>
-pr: 0.24 <br />
-ac: 0.14 <br />
-re: 0.96 <br />
-f1: 0.24 <br />
+                0.99 0.91 1.00 0.95
+                <br />
             </td>
 
             <td>
-pr: 0.18 <br />
-ac: 0.06 <br />
-re: 0.48 <br />
-f1: 0.11 <br />
+                0.94 0.65 0.61 0.63
+                <br />
             </td>
         </tr>
 
         <tr style="background-color: #7f7f7f;">
-            <td>Vowpal Wabbit</td>
+            <td>xgboost (online-learning alg)</td>
             <td>
-pr: 0.95 <br />
-ac: 0.61 <br />
-re: 0.69 <br />
-f1: 0.65 <br />
+                0.98 0.88 0.95 0.92
+                <br />
             </td>
 
             <td>
-pr: 0.99 <br />
-ac: 0.91 <br />
-re: 1.0  <br />
-f1: 0.95 <br />
+                0.99 0.97 1.00 0.98
+                <br />
             </td>
 
             <td>
-pr: 0.94 <br />
-ac: 0.65 <br />
-re: 0.61 <br />
-f1: 0.63 <br />
+                0.96 0.71 0.97 0.82
+                <br />
             </td>
         </tr>
     </table>
+<br />
+
+As we can see different algorithms may be sensitive to metric choice.
+<br />
+<br />
+
+<span class="highlight">Note:</span>
+shown results do not show how sensitive given alrogithm would be
+for new datasets. This can be analyzed by dataset selection from
+validation sample which were not present in a training set.
+
 </small>
 </div>
 </section>
 
+<!--
 <section>
 <h2>Online learning algorithm</h2>
 <div align="left">
@@ -730,6 +734,8 @@ check_prediction --fin=valid.csv.gz --fpred=vwpreds.csv --scorer=accuracy,precis
 </div>
 </section>
 
+-->
+
 <section>
 <h2>Conclusions & Future directions</h2>
 <div align="left">
@@ -742,8 +748,7 @@ check_prediction --fin=valid.csv.gz --fpred=vwpreds.csv --scorer=accuracy,precis
     </ul>
     <br />
     </li>
-    <li>We succeed making sensible prediction with simple RF model for highly accessible datasets,
-        but low-to-medium popular dataset prediction is far from ideal
+    <li>We succeed making sensible prediction with different ML models
     <ul>
         <li>Even though initial dataframe/model shows <span style="color:#FF6666">some potential</span>
         it should be <span style="color:#FF6666">thoughtfully studied</span> to avoid
