@@ -33,7 +33,7 @@ class OptionManager:
         self.parser.add_option("--drops", action="store", type="string",
             default='', dest="drops", help="comma separated list of drop attributes, e.g. a,b")
         self.parser.add_option("--prediction", action="store", type="string",
-            default='', dest="preds", help="prediction value to assign")
+            default='', dest="preds", help="prediction value to assign, use -1 for 1/-1 classification")
 
     def get_opt(self):
         """Returns parse list of options"""
@@ -58,7 +58,11 @@ def csv2vw(fname, oname, sep=',', rid='id', target='target', drops='', preds=Non
                 continue
             fdict = dict(zip(headers, line.split(sep)))
             if  preds:
-                tval = float(preds)
+                if  preds == '-1':
+                    val = int(fdict[target])
+                    tval = 1 if val else -1
+                else:
+                    tval = float(preds)
             else:
                 tval = fdict.get(target, 1)
             rval = fdict.get(rid, idx)
