@@ -1,0 +1,57 @@
+#!/bin/bash
+
+if [ $# -ne 3 ]; then
+    echo "Usage: runxgboost <file.csv.gz> <valid.csv.gz> <xgboost.conf>"
+    exit 1
+fi
+
+input=$1
+valid=$2
+xgbconf=$3
+inputxgb=`ls $input | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
+validxgb=`ls $valid | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
+validvw=`ls $valid | awk '{split($1,a,"."); print ""a[1]".vw"}'`
+validids=`ls $valid | awk '{split($1,a,"."); print ""a[1]".ids"}'`
+
+if [ -f $inputxgb ]; then
+    echo "Found $inputxgb"
+else
+    echo "### convert CSV ($input) to libSVM ($inputxgb) format"
+    csv2libsvm --fin=$input --fout=$inputxgb --idcol=id --target=target
+fi
+
+echo "### build your model"
+xgboost $xgbconf
+
+if [ -f $validxgb ]; then
+    echo "Found $validxgb"
+else
+    echo "### convert validation CSV ($valid) to libSVM ($validxgb) format"
+    csv2libsvm --fin=$valid--fout=$validxgb --idcol=id --target=target --prediction=0
+fi
+if [ -f $validvw ]; then
+    echo "Found $validvw"
+else
+    echo "### convert validation CSV ($valid) to VW ($validvw) format"
+    csv2vw --fin=$valid--fout=$validvw --idcol=id --target=target --prediction=0
+fi
+
+echo "### make prediction"
+model=`ls *.model | tail -1`
+xgboost $xgbconf task=pred model_in=$model
+
+echo "### extract ids"
+if [ -f $validids ]; then
+    echo "Found $validids"
+else
+    zcat $valid | awk '{split($1,a,","); print a[1]}' | grep -v id > $validids
+fi
+
+echo "### merge prediction with ids"
+paste -d ' ' pred.txt $validids > xgpreds.txt
+
+echo "### convert xgboost prediction into CSV format"
+vw_pred2csv --fin=xgpreds.txt --fvw=$validvw --fout=xgpreds.csv --thr=0.5
+
+echo "### Check prediction against validation file"
+check_prediction --fin=$valid --fpred=xgpreds.csv --scorer=accuracy,precision,recall,f1
