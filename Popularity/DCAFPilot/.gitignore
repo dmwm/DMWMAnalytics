@@ -15,3 +15,7 @@ dist/
 *.pdf
 *.vw*
 *.tar*
+*.libsvm*
+*.txt*
+*.ids
+*.json
