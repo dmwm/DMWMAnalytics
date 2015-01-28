@@ -15,6 +15,9 @@ import sys
 import random
 import optparse
 
+# local modules
+from DCAF.utils.utils import fopen
+
 class OptionParser:
     """Option parser"""
     def __init__(self):
@@ -36,7 +39,7 @@ def line_offsets(fname):
     """Read in the file once and return a list of line offsets"""
     line_offset = []
     offset = 0
-    for _, line in enumerate( open(fname) ):
+    for _, line in enumerate( fopen(fname) ):
         line_offset.append(offset)
         offset += len(line)
     return line_offset
@@ -51,8 +54,8 @@ def run(fin, fout, split=30, seed=0):
     nlines = len(offsets)
     indices = range(1, nlines)
     random.shuffle(indices)
-    with open(fin, 'r') as istream, open(fout, 'wb') as ostream, \
-        open(ftest, 'wb') as tstream:
+    with fopen(fin, 'r') as istream, fopen(fout, 'wb') as ostream, \
+        fopen(ftest, 'wb') as tstream:
         headers = istream.readline()
         ostream.write(headers)
         tstream.write(headers)
