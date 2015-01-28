@@ -10,6 +10,9 @@ Description: Verify prediction file against popular datasets
 # system modules
 import optparse
 
+# local modules
+from DCAF.utils.utils import fopen
+
 class OptionParser():
     def __init__(self):
         "User based option parser"
@@ -24,10 +27,10 @@ class OptionParser():
 
 def verify_prediction(pred, popdb):
     "Verify prediction file against popdb one"
-    pop_data = dict([(r.replace('\n',''),1) for r in open(popdb, 'r').readlines()])
+    pop_data = dict([(r.replace('\n',''),1) for r in fopen(popdb, 'r').readlines()])
     count = 0
     total = 0
-    for line in open(pred, 'r').readlines():
+    for line in fopen(pred, 'r').readlines():
         prob, dataset = line.replace('\n', '').split(',')
         total += 1
         if  dataset in pop_data and float(prob)>0:
