@@ -12,10 +12,22 @@ __author__ = "Valentin Kuznetsov"
 import os
 import re
 import sys
+import bz2
+import gzip
 import time
 import hashlib
 import calendar
 import datetime
+
+def fopen(fin, mode='r'):
+    "Return file descriptor for given file"
+    if  fin.endswith('.gz'):
+        stream = gzip.open(fin, mode)
+    elif  fin.endswith('.bz2'):
+        stream = bz2.BZ2File(fin, mode)
+    else:
+        stream = open(fin, mode)
+    return stream
 
 def dates_from_today(ndays=7):
     "Return unix timestamps for provided ndays from today"
