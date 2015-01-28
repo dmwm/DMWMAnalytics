@@ -14,6 +14,9 @@ import scipy as sp
 
 import optparse
 
+# local modules
+from DCAF.utils.utils import fopen
+
 class OptionParser:
     """Option parser"""
     def __init__(self):
@@ -41,9 +44,9 @@ def logloss(obs, pred):
 
 def calc_logloss(fpred, fobs):
     "Calculate logloss value for input prediction/actual value files"
-    obs = [float(r.replace('\n','').split(',')[-1]) for r in open(fobs) if not
+    obs = [float(r.replace('\n','').split(',')[-1]) for r in fopen(fobs) if not
             r.lower().startswith('id')]
-    pred = [int(r.replace('\n','').split(',')[-1]) for r in open(fpred) if not
+    pred = [int(r.replace('\n','').split(',')[-1]) for r in fopen(fpred) if not
             r.lower().startswith('id')]
     print "obs", obs[:5]
     print "pred", pred[:5]
