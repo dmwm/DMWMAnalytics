@@ -46,18 +46,23 @@ class OptionParser():
         "Return list of options"
         return self.parser.parse_args()
 
+def fopen(fin, mode='r'):
+    "Return file descriptor for given file"
+    if  fin.endswith('.gz'):
+        stream = gzip.open(fin, mode)
+    elif  fin.endswith('.bz2'):
+        stream = bz2.BZ2File(fin, mode)
+    else:
+        stream = open(fin, mode)
+    return stream
+
 def convert(fin, fout, target='target', idcol='id', preds=''):
     "Convert from CSV to libSVM data format"
-    if  fin.endswith('.gz'):
-        istream = gzip.open(fin, 'rb')
-    elif  fin.endswith('.bz2'):
-        istream = bz2.BZ2File(fin, 'r')
-    else:
-        istream = open(fin, 'r')
+    istream = fopen(fin, 'r')
     headers = []
     tidx = -1 # target column is usually last
     ridx = 0 # index column is usually first
-    with open(fout, 'wb') as ostream:
+    with fopen(fout, 'wb') as ostream:
         while True:
             if  not headers:
                 headers = istream.readline().replace('\n', '').split(',')
