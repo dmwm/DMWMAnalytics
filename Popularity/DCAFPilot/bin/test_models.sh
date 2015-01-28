@@ -4,6 +4,19 @@
 # as well as VW/xgboost ones. It runs over provided train/validation
 # files
 
+if [ $# -eq 2 ]; then
+    train=$1
+    valid=$2
+    xgconf=""
+elif [ $# -eq 3 ]; then
+    train=$1
+    valid=$2
+    xgconf=$3
+else
+    echo "Usage: test_models.sh <train> <valid> <xgconf>"
+    exit 1
+fi
+
 scorers="accuracy,precision,recall,f1"
 run_alg()
 {
@@ -45,14 +58,6 @@ run_xgb()
     check_prediction --fin=new_data.txt --fpred=new_pred.txt --scorer=accuracy,precision,recall,f1
 }
 
-run_alg train_clf.csv.gz valid_clf.csv.gz
-run_alg train_clf_na.csv.gz valid_clf_na.csv.gz
-run_alg train_clf_cond.csv.gz valid_clf_cond.csv.gz
-
-run_vw train_clf.csv.gz valid_clf.csv.gz
-run_vw train_clf_na.csv.gz valid_clf_na.csv.gz
-run_vw train_clf_cond.csv.gz valid_clf_cond.csv.gz
-
-run_xgb train_clf.csv.gz valid_clf.csv.gz xgboost.conf
-run_xgb train_clf_na.csv.gz valid_clf_na.csv.gz xgboost_na.conf
-run_xgb train_clf_cond.csv.gz valid_clf_cond.csv.gz xgboost_cond.conf
+run_alg $train $valid
+run_vw $train $valid
+run_xgb $train $valid $xgconf
