@@ -66,7 +66,10 @@ def convert(fin, fout, target='target', idcol='id', preds=''):
         while True:
             if  not headers:
                 headers = istream.readline().replace('\n', '').split(',')
-                tidx = headers.index(target)
+                try:
+                    tidx = headers.index(target)
+                except ValueError:
+                    tidx = None
                 ridx = headers.index(idcol)
                 continue
             try:
@@ -79,11 +82,11 @@ def convert(fin, fout, target='target', idcol='id', preds=''):
 
 def row_svm(vals, tidx, ridx, preds):
     "Yield libSVM row"
-    label = vals[tidx]
     new_line = []
     if  preds:
         label = preds
     else:
+        label = vals[tidx]
         if float( label ) == 0.0:
             label = "0"
     new_line.append( label )
