@@ -116,10 +116,22 @@ class DCAF(object):
                 if  not cmssw_test(rserie, rmajor, rminor):
                     continue
                 rtype = rel_type(rel)
-                series['rel1_%s'%rserie] += 1
-                majors['rel2_%s'%rmajor] += 1
-                minors['rel3_%s'%rminor] += 1
-                relclf['relt_%s'%rtype] += 1
+                try:
+                    series['rel1_%s'%rserie] += 1
+                except:
+                    pass
+                try:
+                    majors['rel2_%s'%rmajor] += 1
+                except:
+                    pass
+                try:
+                    minors['rel3_%s'%rminor] += 1
+                except:
+                    pass
+                try:
+                    relclf['relt_%s'%rtype] += 1
+                except:
+                    pass
             sites = [sname for sname in self.phedex.sites(dataset)]
             nsites = len(sites)
             for site in sites:
