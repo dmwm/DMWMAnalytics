@@ -21,6 +21,9 @@ import optparse
 from datetime import datetime
 from math import log, exp, sqrt, tanh, pi, atan
 
+# local modeuls
+from DCAF.utils.utils import fopen
+
 #try:
 #    import pyhash
 #    hash = pyhash.fnv1_64()
@@ -86,14 +89,14 @@ class OptionParser():
 #     x: a list of indices that its value is 1
 #     y: (if label_path is present) label value of y1 to y33
 def data(path, D, ndim, extra_dim, label_path=None, hcols=[], misses=[]):
-    for t, line in enumerate(open(path)):
+    for t, line in enumerate(fopen(path)):
         # initialize our generator
         if t == 0:
             # create a static x,
             # so we don't have to construct a new x for every instance
             x = [0] * (ndim + extra_dim)
             if label_path:
-                label = open(label_path)
+                label = fopen(label_path)
                 label.readline()  # we don't need the headers
             continue
         # parse x
@@ -270,7 +273,7 @@ def run(train, test, label, bits, alpha, hcols, no_out, misses, glf):
         oname = 'b%s_a%s.csv' % (bits, alpha)
         print "Yield %s" % oname
         sys.__stdout__.flush()
-        with open(oname, 'w') as outfile:
+        with fopen(oname, 'w') as outfile:
             outfile.write('id_label,pred\n')
             for ID, x in data(test, D, ndim, extra_dim, hcols=hcols, misses=misses):
                 predSum = 1.0
