@@ -1,6 +1,6 @@
 #!/bin/bash
 start=$1
-dbsextra=1000
+dbsextra=10000
 if [ -z $start ]; then
     echo "Please specify input date"
     exit
