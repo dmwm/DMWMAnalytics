@@ -7,6 +7,15 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.5
+
+  - add fopen and convert code to use it
+  - add support for VW, xgboost algorithms
+  - add CSV to libSVM data format converter
+  - add Pilot1 talks, CMS and CERN IT
+    - https://indico.cern.ch/event/365073/
+    - https://indico.cern.ch/event/368319/
+
 - 0.0.4
 
   - Fine-tuned release which allows to perform data analysis. It includes
