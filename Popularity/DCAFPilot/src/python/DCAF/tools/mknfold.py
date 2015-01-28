@@ -38,12 +38,14 @@ class OptionParser():
 def mknfold(fin, match=1, nfold=5):
     "Split input file into few"
     random.seed(123)
-    with fopen(fin, 'r') as istream, fopen(fin+'.train', 'w') as otrain, fopen(fin+'.test', 'w') as otest:
-        for line in istream:
-            if  random.randint( 1 , nfold ) == match:
-                otest.write(line)
-            else:
-                otrain.write(line)
+    with fopen(fin, 'r') as istream:
+        with fopen(fin+'.train', 'w') as otrain:
+            with fopen(fin+'.test', 'w') as otest:
+                for line in istream:
+                    if  random.randint( 1 , nfold ) == match:
+                        otest.write(line)
+                    else:
+                        otrain.write(line)
 
 def main():
     "Main function"
