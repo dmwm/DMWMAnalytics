@@ -17,7 +17,9 @@ import gzip
 import bz2
 import optparse
 
+# local modules
 from DCAF.utils.regex import INT_PAT, FLOAT_PAT
+from DCAF.utils.utils import fopen
 
 class OptionParser():
     def __init__(self):
@@ -44,18 +46,8 @@ class OptionParser():
 
 def transform(fin, fout, target, thr, drops, verbose=0):
     "Perform transformation on given CSV file"
-    if  fin.endswith('.gz'):
-        istream = gzip.open(fin, 'rb')
-    elif  fin.endswith('.bz2'):
-        istream = bz2.BZ2File(fname, 'r')
-    else:
-        istream = open(fin, 'r')
-    if  fout.endswith('.gz'):
-        ostream = gzip.open(fout, 'wb')
-    elif  fout.endswith('.bz2'):
-        ostream = bz2.BZ2File(fname, 'r')
-    else:
-        ostream = open(fout, 'w')
+    istream = fopen(fin, 'r')
+    ostream = fopen(fout, 'wb')
     headers = False
     for line in istream.readlines():
         if  not headers:
