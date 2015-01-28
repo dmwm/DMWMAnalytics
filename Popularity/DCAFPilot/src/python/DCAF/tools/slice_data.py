@@ -18,6 +18,9 @@ import sys
 import gzip
 import optparse
 
+# local modules
+from DCAF.utils.utils import fopen
+
 class OptionParser():
     def __init__(self):
         "User based option parser"
@@ -32,20 +35,15 @@ class OptionParser():
         "Return list of options"
         return self.parser.parse_args()
 
-def myopen(fname):
-    if  fname.endswith('gz'):
-        return gzip.open(fname, 'r')
-    return open(fname, 'r')
-
 def select(pred, data, ids):
     "Select prediction and data based on provided ids"
     sids = set([str(i.replace('\n','')) for i in myopen(ids).readlines() if not i.startswith('id')])
-    ipred = myopen(pred)
-    idata = myopen(data)
+    ipred = fopen(pred, 'r')
+    idata = fopen(data, 'r')
     pheaders = []
     dheaders = []
     didx = 0
-    with open('new_pred.txt', 'wb') as opred, open('new_data.txt', 'wb') as odata:
+    with fopen('new_pred.txt', 'wb') as opred, fopen('new_data.txt', 'wb') as odata:
         while True:
             pline = ipred.readline().replace('\n', '').split(',')
             dline = idata.readline().replace('\n', '').split(',')
