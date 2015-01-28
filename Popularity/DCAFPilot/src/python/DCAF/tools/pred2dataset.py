@@ -15,6 +15,9 @@ import optparse
 # mongodb modules
 from pymongo import MongoClient
 
+# local modules
+from DCAF.utils.utils import fopen
+
 class OptionParser():
     "User based option parser"
     def __init__(self):
@@ -40,8 +43,8 @@ def convert(fin, fout, uri, sep=','):
     client = MongoClient(uri)
     mgr = client['analytics']['datasets']
     headers = None
-    with open(fin, 'r') as istream:
-        with open(fout, 'w') as ostream:
+    with fopen(fin, 'r') as istream:
+        with fopen(fout, 'w') as ostream:
             for line in istream.readlines():
                 did, dbs, pred = line.replace('\n', '').split(sep)
                 if  not headers:
