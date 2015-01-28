@@ -16,6 +16,9 @@ import optparse
 
 import pandas as pd
 
+# local modules
+from DCAF.utils.utils import fopen
+
 class OptionParser():
     def __init__(self):
         "User based option parser"
@@ -50,20 +53,15 @@ def merger(fin, fout, verbose=False):
         print "ERROR; unable to create filelist from %s" % fin
         sys.exit(1)
 
-    if  fout.endswith('.gz'):
-        fdsc = gzip.open(fout, 'wb')
-    elif  fout.endswith('.bz2'):
-        fdsc = bz2.BZ2File(fname, 'r')
-    else:
-        fdsc = open(fout, 'w')
+    fdsc = fopen(fout, 'wb')
     first = True
     for fname in filelist:
         if  verbose:
             print "Read", fname
         comp = None
-        if  fname.endswith('csv.gz'):
+        if  fname.endswith('gz'):
             comp = 'gzip'
-        elif fname.endswith('.csv.bz2'):
+        elif fname.endswith('bz2'):
             comp = 'bz2'
         df = pd.read_csv(fname, compression=comp)
         df.to_csv(fdsc, header=first, index=False)
