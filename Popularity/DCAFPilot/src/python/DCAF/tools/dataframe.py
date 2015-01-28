@@ -14,7 +14,7 @@ import optparse
 
 # package modules
 from DCAF.core.analytics import DCAF
-from DCAF.utils.utils import popdb_date
+from DCAF.utils.utils import popdb_date, fopen
 
 class OptionParser():
     def __init__(self):
@@ -76,7 +76,7 @@ def main():
     dformat = opts.dformat
     dbsextra = opts.dbs_extra
     newdata = opts.newdata
-    with open(opts.fout, 'w') as ostream:
+    with fopen(opts.fout, 'w') as ostream:
         for row in mgr.dataframe(tframe, seed, dformat, dbsextra, newdata):
             ostream.write(row+'\n')
 
