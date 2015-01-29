@@ -19,10 +19,25 @@ import hashlib
 import calendar
 import datetime
 
+class myGzipFile(gzip.GzipFile):
+    def __enter__(self):
+        "Context manager enter method"
+        if self.fileobj is None:
+            raise ValueError("I/O operation on closed GzipFile object")
+        return self
+
+    def __exit__(self, *args):
+        "Context manager exit method"
+        self.close()
+
 def fopen(fin, mode='r'):
     "Return file descriptor for given file"
     if  fin.endswith('.gz'):
         stream = gzip.open(fin, mode)
+        # if we use old python we switch to custom gzip class to support
+        # context manager and with statements
+        if  not hasattr(stream, "__exit__"):
+            stream = myGzipFile(fin, mode)
     elif  fin.endswith('.bz2'):
         stream = bz2.BZ2File(fin, mode)
     else:
