@@ -10,8 +10,7 @@ Description:
 # system modules
 import os
 import sys
-import gzip
-import bz2
+import glob
 import optparse
 
 import pandas as pd
@@ -44,6 +43,8 @@ def merger(fin, fout, verbose=False):
     filelist = []
     if  fin.find(',') != -1: # list of files
         filelist = fin.split(',')
+    elif fin.find('*') != -1: # pattern
+        filelist = glob.glob(fin)
     elif os.path.isdir(fin): # we got directory name
         for ext in ['.csv.gz', '.csv', 'csv.bz2']:
             filelist = [f for f in files(fin, ext)]
