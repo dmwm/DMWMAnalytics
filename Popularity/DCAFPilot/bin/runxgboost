@@ -27,13 +27,13 @@ if [ -f $validxgb ]; then
     echo "Found $validxgb"
 else
     echo "### convert validation CSV ($valid) to libSVM ($validxgb) format"
-    csv2libsvm --fin=$valid--fout=$validxgb --idcol=id --target=target --prediction=0
+    csv2libsvm --fin=$valid --fout=$validxgb --idcol=id --target=target --prediction=0
 fi
 if [ -f $validvw ]; then
     echo "Found $validvw"
 else
     echo "### convert validation CSV ($valid) to VW ($validvw) format"
-    csv2vw --fin=$valid--fout=$validvw --idcol=id --target=target --prediction=0
+    csv2vw --fin=$valid --fout=$validvw --idcol=id --target=target --prediction=0
 fi
 
 echo "### make prediction"
@@ -53,5 +53,5 @@ paste -d ' ' pred.txt $validids > xgpreds.txt
 echo "### convert xgboost prediction into CSV format"
 vw_pred2csv --fin=xgpreds.txt --fvw=$validvw --fout=xgpreds.csv --thr=0.5
 
-echo "### Check prediction against validation file"
-check_prediction --fin=$valid --fpred=xgpreds.csv --scorer=accuracy,precision,recall,f1
+#echo "### Check prediction against validation file"
+#check_prediction --fin=$valid --fpred=xgpreds.csv --scorer=accuracy,precision,recall,f1

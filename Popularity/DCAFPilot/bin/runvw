@@ -33,5 +33,5 @@ vw -d $validvw -t -i model.vw -p vwpreds.txt
 echo "### convert VW prediction into CSV format"
 vw_pred2csv --fin=vwpreds.txt --fvw=$validvw --fout=vwpreds.csv --thr=0.5
 
-echo "### Check prediction against validation file"
-check_prediction --fin=$valid --fpred=vwpreds.csv --scorer=accuracy,precision,recall,f1
+#echo "### Check prediction against validation file"
+#check_prediction --fin=$valid --fpred=vwpreds.csv --scorer=accuracy,precision,recall,f1
