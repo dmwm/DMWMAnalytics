@@ -38,8 +38,13 @@ def popdb_datasets(tstart, tstop):
     url = '%s/%s?%s' % (url, api, urllib.urlencode(params, doseq=True))
     data = getdata(url, ckey, cert, debug=0)
     data = json.loads(data)
+    headers = []
     for row in data['DATA']:
-        print row['COLLNAME']
+        if  not headers:
+            headers = row.keys()
+            print ','.join(headers)
+        out = [str(row[k]) for k in headers]
+        print ','.join(out)
 
 def main():
     optmgr  = OptionParser()
