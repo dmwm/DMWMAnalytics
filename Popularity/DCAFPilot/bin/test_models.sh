@@ -31,6 +31,7 @@ for alg in "RandomForestClassifier" "SGDClassifier" "LinearSVC"; do
     echo "All data scorers"
     check_prediction --fin=$2 --fpred=pred.txt --scorer=$scorers
     echo "New data scorers"
+    new_datasets --fine=$1 --fnew=$2 --fout=ndd.csv.gz
     slice_data --pred=pred.txt --data=$2 --ids=ndd.csv.gz
     check_prediction --fin=new_data.txt --fpred=new_pred.txt --scorer=$scorers
 done
@@ -42,6 +43,7 @@ run_vw()
         rm pred.txt
     fi
     runvw $1 $2
+    new_datasets --fin=$1 --fnew=$2 --fout=ndd.csv.gz
     slice_data --pred=vwpreds.csv --data=$2 --ids=ndd.csv.gz
     echo "New data scorers"
     check_prediction --fin=new_data.txt --fpred=new_pred.txt --scorer=accuracy,precision,recall,f1
@@ -53,6 +55,7 @@ run_xgb()
         rm pred.txt
     fi
     runxgboost $1 $2 $3
+    new_datasets --fin=$1 --fnew=$2 --fout=ndd.csv.gz
     slice_data --pred=xgpreds.csv --data=$2 --ids=ndd.csv.gz
     echo "New data scorers"
     check_prediction --fin=new_data.txt --fpred=new_pred.txt --scorer=accuracy,precision,recall,f1
