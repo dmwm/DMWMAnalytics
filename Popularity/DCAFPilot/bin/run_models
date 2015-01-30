@@ -1,0 +1,95 @@
+#!/bin/bash
+# Author: V. Kuznetsov
+# script to run several models from DCAFPilot learners
+# as well as VW/xgboost ones.
+# Input: train and new_data file as well as action
+# based on action (predict|validate) the new_data file can be
+# either actual new data or validation file
+
+if [ $# -eq 3 ]; then
+    train=$1
+    ndata=$2
+    action=$3
+else
+    echo "Usage: run_models.sh <train_file> <new_data_file> <predict|validate>"
+    exit 1
+fi
+# convert train/ndata files into VW/libSVM formats
+trainxgb=`ls $train | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
+ndataxgb=`ls $ndata | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
+ndatavw=`ls $ndata | awk '{split($1,a,"."); print ""a[1]".vw"}'`
+ndataids=`ls $ndata | awk '{split($1,a,"."); print ""a[1]".ids"}'`
+scorers="accuracy,precision,recall,f1"
+
+# create xgboost config file based on input train/ndata parameters
+# This template may be adjusted if we'll find better model parameters
+cat > /tmp/xgboost.conf << EOF
+# General Parameters, see comment for each definition
+# for more info: https://github.com/tqchen/xgboost/wiki/Parameters
+#
+# choose the booster, can be gbtree or gblinear
+booster = gbtree
+# choose logistic regression loss function for binary classification
+objective = binary:logistic
+
+# Tree Booster Parameters
+# step size shrinkage
+eta = 0.1
+# minimum loss reduction required to make a further partition
+gamma = 1.0
+# minimum sum of instance weight(hessian) needed in a child
+min_child_weight = 1
+# maximum depth of a tree
+max_depth = 6
+
+# Task Parameters
+# the number of round to do boosting
+num_round = 2
+# 0 means do not save any model except the final round model
+save_period = 0
+# The path of training data
+data = "$trainxgb"
+# evaluate on training data as well each round
+eval_train = 1
+# The path of test data
+test:data = "$ndataxgb"
+EOF
+
+run_alg()
+{
+for alg in "RandomForestClassifier" "SGDClassifier" "LinearSVC" "vw" "xgboost"; do
+    echo ""
+    echo "##### Run $alg for $1/$2 #####"
+    if [ -f pred.txt ]; then
+        rm pred.txt
+    fi
+    if  [ "$alg" == "vw" ]; then
+        if [ -f "`command -v vw`" ]; then
+            runvw $1 $2
+            cp vwpreds.csv pred.txt
+        else
+            echo "Unable to locate $alg executable, skip $alg algorithm"
+        fi
+    elif  [ "$alg" == "xgboost" ]; then
+        if [ -f "`command -v xgboost`" ]; then
+            runxgboost $1 $2 /tmp/xgboost.conf
+            cp xgpreds.csv pred.txt
+        else
+            echo "Unable to locate $alg executable, skip $alg algorithm"
+        fi
+    else
+        model --learner=$alg --idcol=id --target=target --scaler=StandardScaler \
+            --predict=pred.txt --train-file=$1 --newdata=$2 --split=0
+    fi
+    if [ "$action" == "validate" ]; then
+        echo "Prediction of $alg"
+        check_prediction --fin=$2 --fpred=pred.txt --scorer=$scorers
+    else
+        echo "Predicted datasets: $alg.predicted"
+        pred2dataset --fin=pred.txt --fout=$alg.predicted
+    fi
+done
+}
+
+# finally, run the modeler
+run_alg $train $ndata
