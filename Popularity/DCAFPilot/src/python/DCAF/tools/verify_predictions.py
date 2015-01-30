@@ -27,29 +27,96 @@ class OptionParser():
         "Return list of options"
         return self.parser.parse_args()
 
+def read_popdb(popdb):
+    "Read popdb data"
+    headers = []
+    pdict = {}
+    with fopen(popdb, 'r') as istream:
+        while True:
+            if  not headers:
+                for row in istream.readline().replace('\n', '').split(','):
+                    if  row == 'COLLNAME':
+                        headers.append('dataset')
+                    elif row == 'NACC':
+                        headers.append('naccess')
+                    elif row == 'RNACC':
+                        headers.append('rnaccess')
+                    else:
+                        headers.append(row.lower())
+                continue
+            vals = istream.readline().replace('\n', '').split(',')
+            if  len(vals) < 2:
+                break
+            row = dict(zip(headers, vals))
+            dataset = row.pop('dataset')
+            pdict[dataset] = row
+    return pdict
+
+def metrics(tpos, tneg, fpos, fneg):
+    "Return accuracy, precision, recall, f1score"
+    try:
+        accuracy = float(tpos+tneg)/float(tpos+tneg+fpos+fneg)
+    except:
+        accuracy = 0
+    try:
+        precision = float(tpos)/float(tpos+fpos)
+    except:
+        precision = 0
+    try:
+        recall = float(tpos)/float(tpos+fneg)
+    except:
+        recall = 0
+    try:
+        f1score = 2*precition*recall/(precition+recall)
+    except:
+        f1score = 0
+    return accuracy, precision, recall, f1score
+
 def verify_prediction(pred, popdb, verbose=False):
     "Verify prediction file against popdb one"
-    pop_data = dict([(r.replace('\n',''),1) for r in fopen(popdb, 'r').readlines()])
-    count = 0
+    pdict = read_popdb(popdb)
     total = 0
     popular = 0
     totpop = 0
+    tpos = 0
+    tneg = 0
+    fpos = 0
+    fneg = 0
     for line in fopen(pred, 'r').readlines():
         prob, dataset = line.replace('\n', '').split(',')
         total += 1
         if  float(prob)>0:
             popular += 1
-        if  dataset in pop_data:
+        if  dataset in pdict:
             totpop += 1
+            if  verbose:
+                naccess = pdict[dataset]['naccess']
+                nusers = pdict[dataset]['nusers']
+                print 'prob=%s nacc=%s nusers=%s %s' % (prob, naccess, nusers, dataset)
             if  float(prob)>0:
-                if  verbose:
-                    print '%s,%s' % (prob, dataset)
-                count += 1
-    print "Popular datasets             :", len(pop_data.keys())
-    print "Total # of datasets          :", total
-    print "# of datasets in popular set :", totpop
-    print "Wrongly predicted            :", count
-    print "Predicted as popular         :", popular
+                tpos += 1
+            else:
+                fneg += 1
+        else:
+            if  float(prob)>0:
+                fpos += 1
+            else:
+                tneg += 1
+    accuracy, precision, recall, f1score = metrics(fpos, tneg, fpos, fneg)
+    print "# dataset in popdb sample :", len(pdict.keys())
+    print "# datasets we predict     :", total
+    print "# datasets in popular set :", totpop
+    print "Predicted as popular      :", popular
+    print
+    print "True positive             :", tpos
+    print "True negative             :", tneg
+    print "False positive            :", fpos
+    print "False negative            :", fneg
+    print
+    print "Accuracy                  :", accuracy
+    print "Precision                 :", precision
+    print "Recall                    :", recall
+    print "F1-score                  :", f1score
 
 def main():
     optmgr  = OptionParser()
