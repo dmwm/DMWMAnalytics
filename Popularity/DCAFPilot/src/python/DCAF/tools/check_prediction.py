@@ -9,12 +9,10 @@ Description:
 
 # system modules
 import os
+import re
 import sys
 import gzip
 import optparse
-
-# pandas
-import pandas as pd
 
 # sklearn
 from sklearn import metrics
@@ -24,6 +22,7 @@ from sklearn.metrics.scorer import SCORERS
 
 # package modules
 from DCAF.ml.utils import logloss
+from DCAF.utils.utils import fopen
 
 class OptionParser():
     def __init__(self, scorers=None):
@@ -54,15 +53,32 @@ class OptionParser():
         "Return list of options"
         return self.parser.parse_args()
 
+FLT_PAT = re.compile(r'(^[-]?\d+\.\d*$|^\d*\.{1,1}\d+$)')
+INT_PAT = re.compile(r'(^[0-9-]$|^[0-9-][0-9]*$)')
+
 def loader(ifile, target, sep=','):
     "Load prediction from given file"
-    comp = None
-    if  ifile.endswith('.gz'):
-        comp = 'gzip'
-    elif  ifile.endswith('.bz2'):
-        comp = 'bz2'
-    df = pd.read_csv(ifile, sep=sep, compression=comp, engine='python')
-    return df[target]
+    headers = None
+    tidx = None
+    arr = []
+    with fopen(ifile, 'r') as istream:
+        while True:
+            row = istream.readline().replace('\n', '').split(sep)
+            if  not headers:
+                headers = row
+                tidx = headers.index(target)
+                continue
+            if  len(row) < 2:
+                break
+            val = row[tidx]
+            if  INT_PAT.match(val):
+                val = int(val)
+            elif FLT_PAT.match(val):
+                val = float(val)
+            else:
+                raise Exception("Parsed value '%s' has unknown data-type" % val)
+            arr.append(val)
+    return arr
 
 def checker(predictions, y_true, scorer, verbose=False):
     "Check our model prediction and dump logloss value"
