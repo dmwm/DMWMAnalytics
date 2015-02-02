@@ -13,8 +13,6 @@ import sys
 import glob
 import optparse
 
-import pandas as pd
-
 # local modules
 from DCAF.utils.utils import fopen
 
@@ -57,21 +55,23 @@ def merger(fin, fout, verbose=False):
         print "ERROR; unable to create filelist from %s" % fin
         sys.exit(1)
 
-    fdsc = fopen(fout, 'wb')
-    first = True
-    for fname in filelist:
-        if  verbose:
-            print "Read", fname
-        comp = None
-        if  fname.endswith('gz'):
-            comp = 'gzip'
-        elif fname.endswith('bz2'):
-            comp = 'bz2'
-        df = pd.read_csv(fname, compression=comp)
-        df.to_csv(fdsc, header=first, index=False)
-        if  first:
-            first = False
-    fdsc.close()
+    headers = None
+    with fopen(fout, 'wb') as ostream:
+        for fname in filelist:
+            if  verbose:
+                print "Read", fname
+            with fopen(fname, 'r') as istream:
+                while True:
+                    line = istream.readline()
+                    if  not headers:
+                        headers = line
+                        ostream.write(headers)
+                        continue
+                    if  line == headers:
+                        continue
+                    if  not line:
+                        break
+                    ostream.write(line)
 
 def main():
     "Main function"
