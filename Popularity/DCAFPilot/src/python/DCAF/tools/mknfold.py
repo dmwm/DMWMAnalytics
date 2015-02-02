@@ -22,7 +22,10 @@ from DCAF.utils.utils import fopen
 class OptionParser():
     def __init__(self):
         "User based option parser"
-        self.parser = optparse.OptionParser()
+        usage  = 'Usage: %prog [options]\n'
+        usage += 'Description: split fiven file into train/test ones\n'
+        usage += 'Example: %prog --fin=file.csv'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--fin", action="store", type="string",
             dest="fin", default="", help="Input file")
         self.parser.add_option("--match", action="store", type="int",

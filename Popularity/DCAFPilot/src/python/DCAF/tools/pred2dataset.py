@@ -21,7 +21,10 @@ from DCAF.utils.utils import fopen
 class OptionParser():
     "User based option parser"
     def __init__(self):
-        self.parser = optparse.OptionParser()
+        usage  = 'Usage: %prog [options]\n'
+        usage += 'Description: convert prediction file into human readable form\n'
+        usage += 'Example: %prog --fin=pred.txt --fout=pred.txt.out'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--fin", action="store", type="string", \
             dest="fin", default="", help="Input file")
         self.parser.add_option("--fout", action="store", type="string", \

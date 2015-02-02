@@ -23,7 +23,10 @@ from DCAF.utils.utils import dates
 class OptionParser():
     "User based option parser"
     def __init__(self):
-        self.parser = optparse.OptionParser()
+        usage  = 'Usage: %prog [options]\n'
+        usage += 'Description: prints weekly dates from given start date\n'
+        usage += 'Example: %prog --start=20140101'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--start", action="store", type="string", \
             dest="start", default="", help="Input start date (YYYYMMDD)")
         self.parser.add_option("--ndays", action="store", type="int", \

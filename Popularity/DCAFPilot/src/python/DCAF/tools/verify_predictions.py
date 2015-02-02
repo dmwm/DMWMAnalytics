@@ -16,7 +16,10 @@ from DCAF.utils.utils import fopen
 class OptionParser():
     def __init__(self):
         "User based option parser"
-        self.parser = optparse.OptionParser()
+        usage  = 'Usage: %prog [options]\n'
+        usage += 'Description: verify prediction file against popular dataset one retrieved from popularity DB\n'
+        usage += 'Example: %prog --pred=pred.txt.out --popdb=popdb-20150101-20150108.txt'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--pred", action="store", type="string",
             dest="pred", default="", help="Input prediction file")
         self.parser.add_option("--popdb", action="store", type="string",

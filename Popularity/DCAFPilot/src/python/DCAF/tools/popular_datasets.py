@@ -20,7 +20,10 @@ from DCAF.utils.utils import get_key_cert, genkey, popdb_date
 class OptionParser():
     def __init__(self):
         "User based option parser"
-        self.parser = optparse.OptionParser()
+        usage  = 'Usage: %prog [options]\n'
+        usage += 'Description: fetch data from popularity DB for given time frame\n'
+        usage += 'Example: %prog --start=20150101 --stop=20150108'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--start", action="store", type="string",
             dest="tstart", default="", help="start date, format YYYYMMDD")
         self.parser.add_option("--stop", action="store", type="string",

@@ -30,7 +30,10 @@ class OptionParser():
         "User based option parser"
         if  scorers:
             scorers.sort()
-        self.parser = optparse.OptionParser()
+        usage  = "Usage: %prog [options]\n"
+        usage += 'Description: check prediction against data file\n'
+        usage += 'Example: check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--fin", action="store", type="string",
             dest="fin", default="", help="Input file, default None")
         self.parser.add_option("--fin-target", action="store", type="string",

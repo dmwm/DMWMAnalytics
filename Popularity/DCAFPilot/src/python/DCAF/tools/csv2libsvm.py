@@ -29,7 +29,10 @@ import optparse
 class OptionParser():
     def __init__(self):
         "User based option parser"
-        self.parser = optparse.OptionParser()
+        usage = 'Usage: %prog [options]\n'
+        usage += 'Description: convert input CSV file into libSVM data-format\n'
+        usage += 'Example: %prog --fin=file.csv.gz --fout=file.libsvm'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--fin", action="store", type="string",
             dest="fin", default="", help="Input file")
         self.parser.add_option("--fout", action="store", type="string",

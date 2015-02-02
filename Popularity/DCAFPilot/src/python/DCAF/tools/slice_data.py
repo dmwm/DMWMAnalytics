@@ -25,7 +25,8 @@ class OptionParser():
     def __init__(self):
         "User based option parser"
         usage  = "Usage: %prog [options]\n"
-        usage += "Description: slice train/newdata files with respect to prodived dataset/dbs set"
+        usage += "Description: slice train/newdata files with respect to prodived dataset/dbs set\n"
+        usage += 'Example: %prog --pred=pred.txt --data=file.csv.gz --ids=file_ids.txt'
         self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--pred", action="store", type="string",
             dest="pred", default="", help="prediction file")

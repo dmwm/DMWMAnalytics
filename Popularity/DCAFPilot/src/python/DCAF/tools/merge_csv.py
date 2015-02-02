@@ -21,7 +21,10 @@ from DCAF.utils.utils import fopen
 class OptionParser():
     def __init__(self):
         "User based option parser"
-        self.parser = optparse.OptionParser()
+        usage  = "Usage: %prog [options]\n"
+        usage += 'Description: merge input files into single one. User may either provide directory or pattern of files\n'
+        usage += 'Example: merge_csv --fin=my_data_dir --fout=file.csv.gz --verbose'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--fin", action="store", type="string",
             dest="fin", default="", help="Input files or input directory")
         self.parser.add_option("--fout", action="store", type="string",

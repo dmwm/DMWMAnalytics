@@ -19,7 +19,10 @@ from DCAF.utils.utils import popdb_date, fopen
 class OptionParser():
     def __init__(self):
         "User based option parser"
-        self.parser = optparse.OptionParser()
+        usage  = 'Usage: %prog [options]\n'
+        usage += 'Description: create CMS data frame\n'
+        usage += 'Example: %prog --start=20140101 --stop=20140108 --dbs-extra=10000 --fout=dataframe.csv\n'
+        self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--fout", action="store", type="string",
             dest="fout", default="cmscomp.csv", help="Output file")
         seed = '/ZMM/Summer11-DESIGN42_V11_428_SLHC1-v1/GEN-SIM'
