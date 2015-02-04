@@ -111,10 +111,14 @@ def verify_prediction(pred, popdb, verbose=False):
     print "# datasets in popular set :", totpop
     print "Predicted as popular      :", popular
     print
-    print "True positive             :", tpos
-    print "True negative             :", tneg
-    print "False positive            :", fpos
-    print "False negative            :", fneg
+    def perc(vvv):
+        return '%s%%' % round(vvv*100./total, 1)
+    def space(vvv):
+        return '%s%s' % (vvv, ' '*(len(str(total))-len(str(vvv))))
+    print "True positive             : %s, %s" % (space(tpos), perc(tpos))
+    print "True negative             : %s, %s" % (space(tneg), perc(tneg))
+    print "False positive            : %s, %s" % (space(fpos), perc(fpos))
+    print "False negative            : %s, %s" % (space(fneg), perc(fneg))
     print
     print "Accuracy                  :", accuracy
     print "Precision                 :", precision
