@@ -62,7 +62,7 @@ def read_data(fname, drops=[], idx=0, limit=-1, scaler=None):
     if  drops:
         xdf = xdf.drop(drops, axis=1)
     # drop duplicates
-    xdf = xdf.drop_duplicates(take_last=True, inplace=False)
+#    xdf = xdf.drop_duplicates(take_last=True, inplace=False)
     if  limit > -1:
         xdf = xdf[idx:limit]
     return xdf
@@ -279,7 +279,7 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         data = {'dataset':datasets, 'dbs': dbses, 'prediction':predictions}
         out = pd.DataFrame(data=data)
         if  ofile:
-            out.to_csv(ofile, header=['dataset','prediction'], index=False)
+            out.to_csv(ofile, header=True, index=False)
 
 def main():
     "Main function"
