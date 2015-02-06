@@ -24,7 +24,7 @@ class OptionParser():
             dest="pred", default="", help="Input prediction file")
         self.parser.add_option("--popdb", action="store", type="string",
             dest="popdb", default="", help="Input popular datasets file")
-        self.parser.add_option("--verbose", action="store_true",
+        self.parser.add_option("--verbose", action="store", type="int",
             dest="verbose", default=False, help="verbose mode")
     def get_opt(self):
         "Return list of options"
@@ -75,7 +75,25 @@ def metrics(tpos, tneg, fpos, fneg):
         f1score = 0
     return accuracy, precision, recall, f1score
 
-def verify_prediction(pred, popdb, verbose=False):
+def classify(datasets):
+    "Classify datasets"
+    tiers = {}
+    for dataset in datasets:
+        _, prim, proc, tier = dataset.split('/')
+        if  tier in tiers:
+            tiers[tier] += 1
+        else:
+            tiers[tier] = 1
+    pairs = [(v, k) for k, v in tiers.items()]
+    width = ''
+    pairs.sort()
+    pairs.reverse()
+    for key, val in pairs:
+        if  not width:
+            width = len(str(key))+1
+        print '%s %s %s'  % (key, ' '*(width-len(str(key))), val)
+
+def verify_prediction(pred, popdb, verbose=0):
     "Verify prediction file against popdb one"
     pdict = read_popdb(popdb)
     total = 0
@@ -85,6 +103,8 @@ def verify_prediction(pred, popdb, verbose=False):
     tneg = 0
     fpos = 0
     fneg = 0
+    fp_list = []
+    fn_list = []
     for line in fopen(pred, 'r').readlines():
         prob, dataset = line.replace('\n', '').split(',')
         total += 1
@@ -92,7 +112,7 @@ def verify_prediction(pred, popdb, verbose=False):
             popular += 1
         if  dataset in pdict:
             totpop += 1
-            if  verbose:
+            if  verbose>1:
                 naccess = pdict[dataset]['naccess']
                 nusers = pdict[dataset]['nusers']
                 print 'prob=%s nacc=%s nusers=%s %s' % (prob, naccess, nusers, dataset)
@@ -103,8 +123,10 @@ def verify_prediction(pred, popdb, verbose=False):
         else:
             if  float(prob)>0:
                 fpos += 1
+                fp_list.append(dataset)
             else:
                 tneg += 1
+                fn_list.append(dataset)
     accuracy, precision, recall, f1score = metrics(fpos, tneg, fpos, fneg)
     print "# dataset in popdb sample :", len(pdict.keys())
     print "# datasets we predict     :", total
@@ -120,6 +142,11 @@ def verify_prediction(pred, popdb, verbose=False):
     print "False positive            : %s, %s" % (space(fpos), perc(fpos))
     print "False negative            : %s, %s" % (space(fneg), perc(fneg))
     print
+    if  verbose:
+        print "Classification of FP sample"
+        classify(fp_list)
+        print "Classification of FN sample"
+        classify(fn_list)
     print "Accuracy                  :", accuracy
     print "Precision                 :", precision
     print "Recall                    :", recall
