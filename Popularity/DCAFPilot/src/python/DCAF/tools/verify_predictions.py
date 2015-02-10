@@ -75,8 +75,8 @@ def metrics(tpos, tneg, fpos, fneg):
         f1score = 0
     return accuracy, precision, recall, f1score
 
-def classify(datasets):
-    "Classify datasets"
+def datasets2tiers(datasets):
+    "Convert list of datasets to dict of tier counters"
     tiers = {}
     for dataset in datasets:
         _, prim, proc, tier = dataset.split('/')
@@ -84,6 +84,11 @@ def classify(datasets):
             tiers[tier] += 1
         else:
             tiers[tier] = 1
+    return tiers
+
+def classify(datasets):
+    "Classify datasets"
+    tiers = datasets2tiers(datasets)
     pairs = [(v, k) for k, v in tiers.items()]
     width = ''
     pairs.sort()
@@ -92,6 +97,31 @@ def classify(datasets):
         if  not width:
             width = len(str(key))+1
         print '%s %s %s'  % (key, ' '*(width-len(str(key))), val)
+
+def percentage(tp, tn, fp, fn):
+    "Return percentage of TP/TN/FP/FN"
+    tot = float(tp+tn+fp+fn)
+    return 100*tp/tot, 100*tn/tot, 100*fp/tot, 100*fn/tot
+
+def classify_all(tplist, tnlist, fplist, fnlist):
+    "Classify datasets"
+    tptiers = datasets2tiers(tplist)
+    tntiers = datasets2tiers(tnlist)
+    fptiers = datasets2tiers(fplist)
+    fntiers = datasets2tiers(fnlist)
+    alltiers = set(tptiers.keys()+tntiers.keys()+fptiers.keys()+fntiers.keys())
+    width = max([len(t) for t in alltiers])
+    title = 'TIER ' + ' '*(width-len('TIER')) + '  TP(%)  TN(%)  FP(%)  FN(%)'
+    print title
+    print '-'*len(title)
+    for tier in sorted(alltiers):
+        pad = ' '*(width-len(tier))
+        tp, tn, fp, fn = percentage(tptiers.get(tier, 0),
+                                    tntiers.get(tier, 0),
+                                    fptiers.get(tier, 0),
+                                    fntiers.get(tier, 0))
+        print '%s %s %6.2f %6.2f %6.2f %6.2f' % (tier, pad, tp, tn, fp, fn)
+    print
 
 def verify_prediction(pred, popdb, verbose=0):
     "Verify prediction file against popdb one"
@@ -103,6 +133,8 @@ def verify_prediction(pred, popdb, verbose=0):
     tneg = 0
     fpos = 0
     fneg = 0
+    tp_list = []
+    tn_list = []
     fp_list = []
     fn_list = []
     for line in fopen(pred, 'r').readlines():
@@ -118,15 +150,17 @@ def verify_prediction(pred, popdb, verbose=0):
                 print 'prob=%s nacc=%s nusers=%s %s' % (prob, naccess, nusers, dataset)
             if  float(prob)>0:
                 tpos += 1
+                tp_list.append(dataset)
             else:
                 fneg += 1
+                fn_list.append(dataset)
         else:
             if  float(prob)>0:
                 fpos += 1
                 fp_list.append(dataset)
             else:
                 tneg += 1
-                fn_list.append(dataset)
+                tn_list.append(dataset)
     accuracy, precision, recall, f1score = metrics(fpos, tneg, fpos, fneg)
     print "# dataset in popdb sample :", len(pdict.keys())
     print "# datasets we predict     :", total
@@ -142,7 +176,13 @@ def verify_prediction(pred, popdb, verbose=0):
     print "False positive            : %s, %s" % (space(fpos), perc(fpos))
     print "False negative            : %s, %s" % (space(fneg), perc(fneg))
     print
+    print "Tier classification"
+    classify_all(tp_list, tn_list, fp_list, fn_list)
     if  verbose:
+        print "Classification of TP sample"
+        classify(tp_list)
+        print "Classification of TN sample"
+        classify(tn_list)
         print "Classification of FP sample"
         classify(fp_list)
         print "Classification of FN sample"
