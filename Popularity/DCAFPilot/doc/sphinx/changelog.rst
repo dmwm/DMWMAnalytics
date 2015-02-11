@@ -7,6 +7,11 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.6
+
+  - add tier lookup
+  - add tier classification during verification step
+
 - 0.0.5
 
   - add fopen and convert code to use it
