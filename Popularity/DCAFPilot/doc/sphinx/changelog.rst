@@ -7,6 +7,10 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.7
+
+  - use get_key_cert in getdata, this will allow to use X509 certificates
+
 - 0.0.6
 
   - add tier lookup
