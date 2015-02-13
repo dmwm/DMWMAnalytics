@@ -9,6 +9,9 @@ import urllib
 import urllib2
 import httplib
 
+# package modules
+from DCAF.utils.utils import get_key_cert
+
 VER=sys.version_info
 if  VER[0] == 2 and VER[1] == 7 and VER[2] >= 9:
     # disable SSL verification, since it is default in python 2.7.9
@@ -54,11 +57,7 @@ def getdata(url, params, headers=None, ckey=None, cert=None, debug=0):
         for key, val in headers.items():
             req.add_header(key, val)
 
-    if  not ckey:
-        ckey = os.path.join(os.environ['HOME'], '.globus/userkey.pem')
-    if  not cert:
-        cert = os.path.join(os.environ['HOME'], '.globus/usercert.pem')
-
+    ckey, cert = get_key_cert()
     handler = HTTPSClientAuthHandler(ckey, cert, debug)
     opener  = urllib2.build_opener(handler)
     urllib2.install_opener(opener)
