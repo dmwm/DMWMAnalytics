@@ -7,6 +7,12 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.9
+
+  - re-factor sso_reader to support cern-get-sso-cookie tool which allows
+    usage of proxy file when accessing the site. This is required to run
+    DCAFPilot as service on CERN VM where we use proxies
+
 - 0.0.8
 
   - use get_key_cert in sso_reader
