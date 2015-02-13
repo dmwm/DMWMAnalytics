@@ -23,20 +23,12 @@ if  VER[0] == 2 and VER[1] == 7 and VER[2] >= 9:
     import ssl
     ssl._create_default_https_context = ssl._create_unverified_context
 
-DEFAULT_CERT_PATH="~/.globus/usercert.pem"
-DEFAULT_KEY_PATH="~/.globus/userkey.pem"
-
-def setDefaultCertificate(cert, key):
-    "Helper function to set default certificates"
-    DEFAULT_CERT_PATH=cert
-    DEFAULT_KEY_PATH=key
-
 class HTTPSClientAuthHandler(urllib2.HTTPSHandler):  
-    def __init__(self):
+    def __init__(self, ckey, cert):
         "HTTPS client authentication handler to Establish HTTPS connection"
         urllib2.HTTPSHandler.__init__(self)  
-        self.key = realpath(expanduser(DEFAULT_KEY_PATH))
-        self.cert = realpath(expanduser(DEFAULT_CERT_PATH))
+        self.key = ckey
+        self.cert = cert
 
     def https_open(self, req):  
         "Establish HTTPS connection"
@@ -80,12 +72,11 @@ def getSSOCookie(opener, target_url, cookie, debug):
         raise Exception("error: The page doesn't have the form with security attributes, check 'User-agent' header")
     _getResponse(opener, url, urllib.urlencode(post_data_local), debug=debug).read()
 
-def getContent(target_url, post_data=None, method="GET", debug=0):
+def getContent(target_url, ckey, cert, post_data=None, method="GET", debug=0):
     "helper function to get data content from given url via CERN SSO authentication"
-    cert_path = expanduser(DEFAULT_CERT_PATH)
-    key_path = expanduser(DEFAULT_KEY_PATH)
     cookie = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie), HTTPSClientAuthHandler())
+    httshandler = HTTPSClientAuthHandler(ckey, cert)
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie), httshandler)
     if  debug:
         print("The return page is sso login page, will request cookie.")
     hasCookie = False
@@ -102,8 +93,10 @@ def getContent(target_url, post_data=None, method="GET", debug=0):
                 print("Error, could not logout correctly from server") 
     return result
 
-def getdata(url, ckey, cert, method='GET', postdata=None, debug=0):
+def getdata(url, ckey=None, cert=None, method='GET', postdata=None, debug=0):
     "Get data from SSO based data-service"
-    setDefaultCertificate(cert, ckey)
-    content = getContent(url, postdata, method, debug)
+    if  not ckey and not cert:
+        from DCAF.utils.utils import get_key_cert
+        ckey, cert = get_key_cert()
+    content = getContent(url, ckey, cert, postdata, method, debug)
     return content

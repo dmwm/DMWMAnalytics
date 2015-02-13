@@ -41,7 +41,7 @@ class PopDBService(GenericService):
         else:
             if  self.verbose:
                 print "%s::fetch url=%s, params=%s" % (self.name, url, params)
-            data = getdata(url, self.ckey, self.cert, debug=self.verbose)
+            data = getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
             self.storage.insert('cache', {'_id':docid, 'data': data, 'url': url, 'params': params})
         data = json.loads(data)
         for row in data['DATA']:
