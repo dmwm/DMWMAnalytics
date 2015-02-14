@@ -149,7 +149,7 @@ def getdata_new(url, params, headers=None, ckey=None, cert=None, debug=0):
     data = urllib2.urlopen(req)
     return data.read()
 
-def getdata(url, ckey=None, cert=None, method='GET', postdata=None, debug=0):
+def getdata(url, params=None, headers=None, ckey=None, cert=None, debug=0, method='GET', postdata=None):
     """
     Wrapper around old/new implementation of getdata.
     The original implementation is pure python based, but it does not
@@ -157,6 +157,6 @@ def getdata(url, ckey=None, cert=None, method='GET', postdata=None, debug=0):
     tool to get cookie and then pass it into python library for processing.
     """
     if  check_tool('cern-get-sso-cookie'):
-        return getdata_new(url, {}, ckey=ckey, cert=cert, debug=debug)
+        return getdata_new(url, params, ckey=ckey, cert=cert, debug=debug)
     else:
         return getdata_old(url, ckey, cert, method, postdata, debug)

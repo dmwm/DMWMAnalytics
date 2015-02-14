@@ -44,7 +44,7 @@ class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
                                                 cert_file=self.cert)
         return httplib.HTTPSConnection(host)
 
-def getdata(url, params, headers=None, ckey=None, cert=None, debug=0):
+def getdata(url, params=None, headers=None, ckey=None, cert=None, debug=0):
     "Fetch data for given url and set of parameters"
     if  params:
         url += '?%s' % urllib.urlencode(params, doseq=True)

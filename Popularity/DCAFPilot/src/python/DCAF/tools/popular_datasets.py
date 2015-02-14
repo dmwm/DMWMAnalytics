@@ -14,7 +14,8 @@ import optparse
 
 # package modules
 import DCAF.utils.jsonwrapper as json
-from DCAF.utils.sso_reader import getdata
+from DCAF.utils.sso_reader import sso_getdata
+from DCAF.utils.url_utils import getdata
 from DCAF.utils.utils import get_key_cert, genkey, popdb_date
 
 class OptionParser():
@@ -28,18 +29,28 @@ class OptionParser():
             dest="tstart", default="", help="start date, format YYYYMMDD")
         self.parser.add_option("--stop", action="store", type="string",
             dest="tstop", default="", help="end date, format YYYYMMDD")
+        url = 'https://cms-popularity.cern.ch/popdb/popularity/'
+        self.parser.add_option("--url", action="store", type="string",
+            dest="url", default=url, help="Popularity DB URL:, %s" % url)
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
 
-def popdb_datasets(tstart, tstop):
+def popdb_datasets(tstart, tstop, url):
     "Fetch data from popDB for given time frame and print out datasets"
-    url = 'https://cms-popularity.cern.ch/popdb/popularity/'
     api = 'DSStatInTimeWindow'
     ckey, cert = get_key_cert()
     params = {'tstart':tstart, 'tstop':tstop}
     url = '%s/%s?%s' % (url, api, urllib.urlencode(params, doseq=True))
-    data = getdata(url, ckey=ckey, cert=cert, debug=0)
+    # NOTE: popularity DB has two different access points, one
+    # within CERN network and out outside. The former does not require
+    # authentication, while later passes through CERN SSO.
+    # The following block reflects this, in a future, when popularity DB
+    # will move into cmsweb domain we'll no longer need it
+    if  self.url.find('cms-popularity-prod.cern.ch') != -1:
+        data = getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
+    else:
+        data = sso_getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
     data = json.loads(data)
     headers = []
     for row in data['DATA']:
@@ -52,7 +63,7 @@ def popdb_datasets(tstart, tstop):
 def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
-    popdb_datasets(popdb_date(opts.tstart), popdb_date(opts.tstop))
+    popdb_datasets(popdb_date(opts.tstart), popdb_date(opts.tstop), opts.url)
 
 if __name__ == '__main__':
     main()

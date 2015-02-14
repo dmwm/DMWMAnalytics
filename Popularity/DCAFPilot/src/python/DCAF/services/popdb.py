@@ -14,7 +14,8 @@ from   types import InstanceType
 
 # package modules
 import DCAF.utils.jsonwrapper as json
-from DCAF.utils.sso_reader import getdata
+from DCAF.utils.sso_reader import sso_getdata
+from DCAF.utils.url_utils import getdata
 from DCAF.utils.utils import get_key_cert, genkey
 from DCAF.services.generic import GenericService
 
@@ -41,7 +42,15 @@ class PopDBService(GenericService):
         else:
             if  self.verbose:
                 print "%s::fetch url=%s, params=%s" % (self.name, url, params)
-            data = getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
+            # NOTE: popularity DB has two different access points, one
+            # within CERN network and out outside. The former does not require
+            # authentication, while later passes through CERN SSO.
+            # The following block reflects this, in a future, when popularity DB
+            # will move into cmsweb domain we'll no longer need it
+            if  self.url.find('cms-popularity-prod.cern.ch') != -1:
+                data = getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
+            else:
+                data = sso_getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
             self.storage.insert('cache', {'_id':docid, 'data': data, 'url': url, 'params': params})
         data = json.loads(data)
         for row in data['DATA']:
