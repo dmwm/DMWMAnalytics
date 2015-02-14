@@ -7,6 +7,13 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.10
+
+  - add code to use different access point for popularity DB, one within CERN
+    network does not require authentication while another goes through CERN SSO
+    for clients outside CERN network. In later case used must supply his/her
+    credentials. Please note, that CERN SSO does not work with proxy files.
+
 - 0.0.9
 
   - re-factor sso_reader to support cern-get-sso-cookie tool which allows
