@@ -62,7 +62,7 @@ class SiteDBService(GenericService):
     def __init__(self, config=None, verbose=0):
         GenericService.__init__(self, config, verbose)
         self.name = 'sitedb'
-        self.url = 'https://cmsweb.cern.ch/sitedb/data/prod'
+        self.url = config['services'][self.name]
 
     def fetch(self, api, params=None):
         "Fetch data for given api"

@@ -24,7 +24,7 @@ class DashboardService(GenericService):
     def __init__(self, config=None, verbose=0):
         GenericService.__init__(self, config, verbose)
         self.name = 'dashboard'
-        self.url = "http://dashb-cms-job.cern.ch/dashboard/request.py"
+        self.url = config['services'][self.name]
         self.ckey, self.cert = get_key_cert()
         self.sitedb = SiteDBService(config)
 

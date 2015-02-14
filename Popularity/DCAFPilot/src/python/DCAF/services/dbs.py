@@ -27,7 +27,7 @@ class DBSService(GenericService):
     def __init__(self, config=None, verbose=0):
         GenericService.__init__(self, config, verbose)
         self.name = 'dbs'
-        self.url = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader/'
+        self.url = config['services'][self.name]
         self.instances = ["prod/phys01", "prod/phys02", "prod/phys03"]
         self.all_dbs = ['prod/global']+self.instances
 

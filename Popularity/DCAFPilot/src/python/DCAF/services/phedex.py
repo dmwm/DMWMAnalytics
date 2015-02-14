@@ -25,7 +25,7 @@ class PhedexService(GenericService):
             config = {}
         GenericService.__init__(self, config, verbose)
         self.name = 'phedex'
-        self.url = 'https://cmsweb.cern.ch/phedex/datasvc/json/prod'
+        self.url = config['services'][self.name]
 
     def fetch(self, api, params=None):
         "Fetch data for given api"

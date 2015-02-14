@@ -24,7 +24,7 @@ class mcmService(GenericService):
     def __init__(self, config=None, verbose=0):
         GenericService.__init__(self, config, verbose)
         self.name = 'mcm'
-        self.url = 'https://cms-pdmv.cern.ch/mcm/public/restapi/requests'
+        self.url = config['services'][self.name]
         self.ckey, self.cert = get_key_cert()
 
     def fetch(self, api, params=None):

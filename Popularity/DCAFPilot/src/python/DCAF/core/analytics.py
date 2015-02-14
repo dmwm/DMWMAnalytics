@@ -33,7 +33,10 @@ def parse_config(filename):
     cdict = {}
     for section in config.sections():
         for pair in config.items(section):
-            cdict[section] = dict([pair])
+            if  section in cdict:
+                cdict[section].update(dict([pair]))
+            else:
+                cdict[section] = dict([pair])
     return cdict
 
 class DCAF(object):
