@@ -14,7 +14,7 @@ from   types import InstanceType
 
 # package modules
 import DCAF.utils.jsonwrapper as json
-from DCAF.utils.sso_reader import sso_getdata
+from DCAF.utils.sso_reader import getdata as sso_getdata
 from DCAF.utils.url_utils import getdata
 from DCAF.utils.utils import get_key_cert, genkey
 from DCAF.services.generic import GenericService
