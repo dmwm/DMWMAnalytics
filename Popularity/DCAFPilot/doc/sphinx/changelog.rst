@@ -7,6 +7,11 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.12
+
+  - add multiprocess functionality to fetch information about dataset from
+    various data-services
+
 - 0.0.10
 
   - add code to use different access point for popularity DB, one within CERN
