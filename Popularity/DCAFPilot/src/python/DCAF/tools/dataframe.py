@@ -10,6 +10,8 @@ Description: Script to yield dataframe
 # system modules
 import os
 import sys
+import time
+import datetime
 import optparse
 
 # package modules
@@ -61,6 +63,7 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
 
+    time0 = time.time()
     mgr = DCAF(opts.config, opts.verbose)
     if  opts.clean:
         mgr.cleanup('cache')
@@ -83,6 +86,8 @@ def main():
     with fopen(opts.fout, 'w') as ostream:
         for row in mgr.dataframe(tframe, seed, dformat, dbsextra, newdata):
             ostream.write(row+'\n')
+    if  opts.verbose:
+        print "Elapsed time:", datetime.timedelta(time.time()-time0)
 
 if __name__ == '__main__':
     main()
