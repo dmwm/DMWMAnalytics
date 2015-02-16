@@ -12,6 +12,7 @@ import os
 import sys
 import random
 import ConfigParser
+import multiprocessing as mp
 
 # package modules
 from DCAF.core.storage import StorageManager
@@ -104,11 +105,63 @@ class DCAF(object):
         rtypes = {'series': serdict, 'majors': majdict, 'minors': mindict, 'rtypes': typdict}
         return dtypes, stypes, rtypes, tiers
 
+    def dataset_info_all(self, dataset, timeframe):
+        "Concurrently obtain information about dataset."
+        # NOTE: this function may need expansion if we'll need to obtain more information
+        #       about given dataset/timeframe. To extend, please add new local
+        #       function similar to procN
+        # Each procN function should have (pos, out, args) input arguments
+        # the pos is a position in queue, out is an output queue and args
+        # are arguments required to pass to internal function
+
+        # output Queue
+        output = mp.Queue()
+        # local functions to fetch info about dataset from different subsystems
+        def proc1(pos, out, dataset):
+            res = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+            out.put((pos, res))
+        def proc2(pos, out, dataset):
+            res = [sname for sname in self.phedex.sites(dataset)]
+            out.put((pos, res))
+        def proc3(pos, out, dataset):
+            res = [r for r in self.dbs.dataset_parents(dataset)]
+            out.put((pos, res))
+        def proc4(pos, out, dataset):
+            res = self.dbs.dataset_summary(dataset)
+            out.put((pos, res))
+        def proc5(pos, out, dataset, tframe):
+            res = self.dashboard.dataset_info(dataset, tframe[0], tframe[1])
+            out.put((pos, res))
+        # concurrent processes to run, each args contains
+        # a position value, output queue and args for internal function call
+        processes = [
+            mp.Process(target=proc1, args=(1, output, dataset)),
+            mp.Process(target=proc2, args=(2, output, dataset)),
+            mp.Process(target=proc3, args=(3, output, dataset)),
+            mp.Process(target=proc4, args=(4, output, dataset)),
+            mp.Process(target=proc5, args=(5, output, dataset, timeframe))
+        ]
+        # Run processes
+        for proc in processes:
+            proc.start()
+
+        # Exit the completed processes
+        for proc in processes:
+            proc.join()
+
+        # Get process results from the output queue
+        results = [output.get() for _ in processes]
+        results.sort() # sort by position
+        results = [v for _, v in results] # extract values
+        return results
+
     def dataset_info(self, timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat, target=0):
         "Return common dataset info in specified data format"
         row = self.dbs.dataset_info(dataset)
         if  row:
-            releases = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+            releases, sites, parents, summary, dashboard = \
+                    self.dataset_info_all(dataset, timeframe)
+#            releases = [rname for rname in self.dbs.dataset_release_versions(dataset)]
             nrels = len(releases)
             series = rtypes['series']
             majors = rtypes['majors']
@@ -135,7 +188,7 @@ class DCAF(object):
                     relclf['relt_%s'%rtype] += 1
                 except:
                     pass
-            sites = [sname for sname in self.phedex.sites(dataset)]
+#            sites = [sname for sname in self.phedex.sites(dataset)]
             nsites = len(sites)
             for site in sites:
                 stier = site_tier(site)
@@ -156,10 +209,10 @@ class DCAF(object):
             if  tier not in tiers:
                 tiers.append(tier)
             tier = tiers.index(tier)
-            parents = [r for r in self.dbs.dataset_parents(dataset)]
+#            parents = [r for r in self.dbs.dataset_parents(dataset)]
             parent = parents[0] if len(parents) else 0
-            summary = self.dbs.dataset_summary(dataset)
-            dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
+#            summary = self.dbs.dataset_summary(dataset)
+#            dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
             uid = genuid(yyyymmdd(timeframe[0]), dbsinst, dataset_id)
             rec = dict(id=uid, dataset=dataset_id, primds=prim, procds=proc, tier=tier,
                     dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
