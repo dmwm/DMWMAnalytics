@@ -81,6 +81,15 @@ def dates(start_date, ndays=7, overlap=False):
             date2 = rows[idx+1]-24*60*60
         yield date4unixtstamp(date1), date4unixtstamp(date2)
 
+def newdate(start_date, step=1):
+    "Generate new date from given date using given step"
+    today = calendar.timegm(datetime.date.today().timetuple())
+    year = int(start_date[:4])
+    month = int(start_date[4:6])
+    date = int(start_date[6:8])
+    past_date = calendar.timegm(datetime.date(year, month, date).timetuple())
+    return date4unixtstamp(past_date+24*60*60)
+
 def popdb_date(tstamp):
     "Return date in popDB format YYYY-M-D"
     if  tstamp.find('-') != -1:
