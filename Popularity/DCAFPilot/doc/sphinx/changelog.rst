@@ -7,6 +7,12 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.15
+
+  - add cron4dataframe and cron4model scripts to generate dataframes
+    and run models via cronjobs
+  - add new tool newdata, required by cron4model
+
 - 0.0.14
 
   - add overlap option and turn it off by default in all generator
