@@ -63,6 +63,8 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
 
+    if  opts.verbose:
+        print time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
     time0 = time.time()
     mgr = DCAF(opts.config, opts.verbose)
     if  opts.clean:
@@ -87,7 +89,8 @@ def main():
         for row in mgr.dataframe(tframe, seed, dformat, dbsextra, newdata):
             ostream.write(row+'\n')
     if  opts.verbose:
-        print "Elapsed time:", datetime.timedelta(time.time()-time0)
+        print "Elapsed time:", datetime.timedelta(seconds=(time.time()-time0))
+        print time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
 
 if __name__ == '__main__':
     main()
