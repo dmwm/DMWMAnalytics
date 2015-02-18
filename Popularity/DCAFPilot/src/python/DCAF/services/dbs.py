@@ -145,7 +145,6 @@ class DBSService(GenericService):
         "Return dataset id of the parent"
         api = 'datasetparents'
         spec = {'dataset': dataset}
-        res = [r for r in self.fetch(api, spec)]
         for row in self.fetch(api, spec):
             yield row['parent_dataset_id']
 
