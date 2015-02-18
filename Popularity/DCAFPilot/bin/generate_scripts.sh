@@ -13,5 +13,5 @@ fi
 root=`python -c "import DCAF; print '/'.join(DCAF.__file__.split('/')[:-1])"`
 echo "#!/bin/bash"
 echo "dataframe --seed-cache"
-$root/src/python/DCAF/tools/dates.py --start=$start $overlap \
+$root/tools/dates.py --start=$start $overlap \
     | awk '{print "nohup time dataframe --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --verbose=1 --fout=dataframe-"$1"-"$2".csv 2>&1 1>& dataframe-"$1"-"$2".log < /dev/null &"}' DBSEXTRA=$dbsextra
