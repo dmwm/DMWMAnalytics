@@ -7,6 +7,12 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+- 0.0.14
+
+  - add overlap option and turn it off by default in all generator
+    scripts. This will allow to use dataframe (popDB) with dates which
+    will not overlap
+
 - 0.0.12
 
   - add multiprocess functionality to fetch information about dataset from
