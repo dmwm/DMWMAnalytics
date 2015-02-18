@@ -10,12 +10,8 @@ interval starting from given date.
 """
 
 # system modules
-import os
 import sys
-import time
-import datetime
 import optparse
-import calendar
 
 # package modules
 from DCAF.utils.utils import dates
