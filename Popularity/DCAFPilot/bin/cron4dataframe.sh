@@ -5,16 +5,16 @@
 
 if [ $# -eq 3 ]; then
     cfg=$1
-    idir=$2
-    data_dir=$3
+    wdir=$2
+    ddir=$3
 else
-    echo "Usage: cron4dataframe.sh <DCAFPilot config file> <location to run/write files> <location of data/train area>"
+    echo "Usage: cron4dataframe.sh <DCAFPilot config file> <workdir> <data train area>"
     exit 1
 fi
 gfile=/tmp/gen_dataframes.sh
-cd $idir
+cd $wdir
 dbsextra=10000
-last_file=`ls $data_dir/*.csv.gz | sort -n | tail -1`
+last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
 last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
 today=`date +%Y%m%d`
 
@@ -31,7 +31,9 @@ echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
 dates --start=$start_day | awk \
 '{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout=dataframe-"$1"-"$2".csv.gz 2>&1 1>& dataframe-"$1"-"$2".log < /dev/null &"}' \
 CFG=$cfg DBSEXTRA=$dbsextra >> $gfile
+
 # change generator script permissions
 chmod +x $gfile
+
 # run generator script
 $gfile
