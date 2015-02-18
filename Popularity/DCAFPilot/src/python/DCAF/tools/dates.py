@@ -31,6 +31,8 @@ class OptionParser():
             dest="start", default="", help="Input start date (YYYYMMDD)")
         self.parser.add_option("--ndays", action="store", type="int", \
             dest="ndays", default=7, help="Dates interval, default 7 days")
+        self.parser.add_option("--overlap", action="store_true", \
+            dest="overlap", default=False, help="Overlap dates boundaries")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
@@ -44,7 +46,7 @@ def main():
     if  not start_date:
         print "Please specify start date, see --help for more options"
         sys.exit(1)
-    for pair in dates(start_date, ndays):
+    for pair in dates(start_date, ndays, opts.overlap):
         print '%s %s' % (pair[0], pair[1])
 
 if __name__ == '__main__':

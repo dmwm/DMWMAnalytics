@@ -64,7 +64,7 @@ def date4unixtstamp(unixtime):
     "Return date in format YYYYMMDD for given unix timestamp"
     return time.strftime("%Y%m%d", time.gmtime(unixtime))
 
-def dates(start_date, ndays=7):
+def dates(start_date, ndays=7, overlap=False):
     "Generate dates intervals starting from given date and using given step"
     today = calendar.timegm(datetime.date.today().timetuple())
     year = int(start_date[:4])
@@ -73,7 +73,13 @@ def dates(start_date, ndays=7):
     past_date = calendar.timegm(datetime.date(year, month, date).timetuple())
     rows = [r for r in xrange(past_date, today, ndays*24*60*60)]
     for idx in xrange(0, len(rows)-1):
-        yield date4unixtstamp(rows[idx]), date4unixtstamp(rows[idx+1])
+        if  overlap:
+            date1 = rows[idx]
+            date2 = rows[idx+1]
+        else:
+            date1 = rows[idx]
+            date2 = rows[idx+1]-24*60*60
+        yield date4unixtstamp(date1), date4unixtstamp(date2)
 
 def popdb_date(tstamp):
     "Return date in popDB format YYYY-M-D"
