@@ -9,9 +9,15 @@ to identify necessary metrics for such analysis.
 
 0.0.X releases are preliminary implementation of all components
 
+- 0.0.17
+  
+  - switch to use capped collection analytics cache, it is configurable via
+    etc/dcaf.cfg file and default size is 5GB
+
 - 0.0.16
   
   - add static web service
+
 - 0.0.15
 
   - add cron4dataframe and cron4model scripts to generate dataframes
