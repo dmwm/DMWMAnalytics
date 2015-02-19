@@ -51,4 +51,9 @@ run_models $train_clf $newdata predict
 # final touch
 echo
 echo "### Prediction files:"
-ls -1 *.predicted
+ls -la *.predicted
+
+# move files in place
+if [ -n "$DCAF_PREDICTIONS" ] && [ -d $DCAF_PREDICTIONS ]; then
+    /bin/mv -f *.predicted $DCAF_PREDICTIONS
+fi
