@@ -7,6 +7,11 @@ This release series is targeted to identify necessary step, workflow,
 procedures required to build suitable dataframe for data analysis. We also try
 to identify necessary metrics for such analysis.
 
+0.0.X releases are preliminary implementation of all components
+
+- 0.0.16
+  
+  - add static web service
 - 0.0.15
 
   - add cron4dataframe and cron4model scripts to generate dataframes
