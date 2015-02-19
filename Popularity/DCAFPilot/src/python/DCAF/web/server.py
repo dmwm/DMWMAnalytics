@@ -36,7 +36,7 @@ def server(port):
                             'log.screen': True,
                             'server.socket_port': port})
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    idir = os.environ.get('DCAF_PREDICTION', os.path.join(current_dir, 'data/predictions'))
+    idir = os.environ.get('DCAF_PREDICTIONS', os.path.join(current_dir, 'data/predictions'))
     conf = {'/data': {'tools.staticdir.on': True,
                       'tools.staticdir.dir': idir,
                       'tools.staticdir.content_types': {'data': 'multipart/form-data'}}}
