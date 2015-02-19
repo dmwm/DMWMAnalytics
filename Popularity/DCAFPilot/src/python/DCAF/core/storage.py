@@ -61,7 +61,12 @@ class StorageManager(object):
         msg = "%s@%s" % (self.dburi, self.dbname)
         self.dbinst = MongoClient(host=self.dburi)
 
-        # Initialize analytics collection
+        # Initialize analytics cache if necessary
+        if  config['mongodb'].get('capped_cache', False):
+            size = config['mongodb'].get('capsize', 5368709120) # 5GB
+            dbn = self.dbinst[self.dbname]
+            if  'cache' not in dbn.collection_names():
+                dbn.create_collection('cache', capped=True, size=size)
 
     def indexes(self, cname, index_list):
         "Create indexes in given collection for given index list"
