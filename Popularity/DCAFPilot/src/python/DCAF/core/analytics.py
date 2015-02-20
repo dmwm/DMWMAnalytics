@@ -52,6 +52,7 @@ class DCAF(object):
         self.dashboard = DashboardService(self.config, verbose)
         self.salt = self.config.get('core', {}).get('salt', 'secret sauce')
         self.verbose = verbose
+        self.multitask = self.config.get('multitask', True)
 
     def fetch(self, doc):
         """
@@ -118,19 +119,34 @@ class DCAF(object):
         output = mp.Queue()
         # local functions to fetch info about dataset from different subsystems
         def proc1(pos, out, dataset):
-            res = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+            try:
+                res = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+            except:
+                res = []
             out.put((pos, res))
         def proc2(pos, out, dataset):
-            res = [sname for sname in self.phedex.sites(dataset)]
+            try:
+                res = [sname for sname in self.phedex.sites(dataset)]
+            except:
+                res = []
             out.put((pos, res))
         def proc3(pos, out, dataset):
-            res = [r for r in self.dbs.dataset_parents(dataset)]
+            try:
+                res = [r for r in self.dbs.dataset_parents(dataset)]
+            except:
+                res = []
             out.put((pos, res))
         def proc4(pos, out, dataset):
-            res = self.dbs.dataset_summary(dataset)
+            try:
+                res = self.dbs.dataset_summary(dataset)
+            except:
+                res = dict()
             out.put((pos, res))
         def proc5(pos, out, dataset, tframe):
-            res = self.dashboard.dataset_info(dataset, tframe[0], tframe[1])
+            try:
+                res = self.dashboard.dataset_info(dataset, tframe[0], tframe[1])
+            except:
+                res = dict()
             out.put((pos, res))
         # concurrent processes to run, each args contains
         # a position value, output queue and args for internal function call
@@ -159,9 +175,15 @@ class DCAF(object):
         "Return common dataset info in specified data format"
         row = self.dbs.dataset_info(dataset)
         if  row:
-            releases, sites, parents, summary, dashboard = \
-                    self.dataset_info_all(dataset, timeframe)
-#            releases = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+            if  self.multitask:
+                releases, sites, parents, summary, dashboard = \
+                        self.dataset_info_all(dataset, timeframe)
+            else:
+                releases = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+                sites = [sname for sname in self.phedex.sites(dataset)]
+                parents = [r for r in self.dbs.dataset_parents(dataset)]
+                summary = self.dbs.dataset_summary(dataset)
+                dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
             nrels = len(releases)
             series = rtypes['series']
             majors = rtypes['majors']
@@ -188,7 +210,6 @@ class DCAF(object):
                     relclf['relt_%s'%rtype] += 1
                 except:
                     pass
-#            sites = [sname for sname in self.phedex.sites(dataset)]
             nsites = len(sites)
             for site in sites:
                 stier = site_tier(site)
@@ -209,18 +230,20 @@ class DCAF(object):
             if  tier not in tiers:
                 tiers.append(tier)
             tier = tiers.index(tier)
-#            parents = [r for r in self.dbs.dataset_parents(dataset)]
             parent = parents[0] if len(parents) else 0
-#            summary = self.dbs.dataset_summary(dataset)
-#            dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
             uid = genuid(yyyymmdd(timeframe[0]), dbsinst, dataset_id)
+            size_norm = 2**30 # normalization factor for file size
             rec = dict(id=uid, dataset=dataset_id, primds=prim, procds=proc, tier=tier,
                     dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
-                    nfiles=summary['num_file'], nlumis=summary['num_lumi'],
-                    nblk=summary['num_block'], nevt=summary['num_event'],
-                    parent=parent,
-                    size=summary['file_size']/2**30, era=era, dbs=dbsinst,
-                    cpu=dashboard['cpu'], wct=dashboard['wct'], proc_evts=dashboard['nevt'])
+                    parent=parent, era=era, dbs=dbsinst,
+                    nfiles=summary.get('num_file', 0),
+                    nlumis=summary.get('num_lumi', 0),
+                    nblk=summary.get('num_block', 0),
+                    nevt=summary.get('num_event', 0),
+                    size=summary.get('file_size', 0)/size_norm,
+                    cpu=dashboard.get('cpu', 0),
+                    wct=dashboard.get('wct', 0),
+                    proc_evts=dashboard.get('nevt', 0))
             if  isinstance(target, dict):
                 rec.update(target)
             for key,val in series.items():
