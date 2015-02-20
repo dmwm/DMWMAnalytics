@@ -71,3 +71,4 @@ fi
 
 # clean-up
 rm $train $train_clf $new $newdata
+rm *.libsvm* *.vw* xgboost.txt vwpreds* xgpreds*
