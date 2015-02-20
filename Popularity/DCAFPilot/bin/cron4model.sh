@@ -68,3 +68,6 @@ if [ -n "$DCAF_PREDICTIONS" ] && [ -d $DCAF_PREDICTIONS ]; then
     mkdir -p $DCAF_PREDICTIONS/$newtstamps
     /bin/mv -f *.predicted $DCAF_PREDICTIONS/$newtstamps
 fi
+
+# clean-up
+rm $train $train_clf $new $newdata
