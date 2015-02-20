@@ -9,6 +9,10 @@ to identify necessary metrics for such analysis.
 
 0.0.X releases are preliminary implementation of all components
 
+- 0.0.21
+
+  - move VW into src/python domain
+
 - 0.0.18
 
   - add multitask option into configuration and the code. It uses
