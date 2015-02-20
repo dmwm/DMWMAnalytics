@@ -71,4 +71,4 @@ fi
 
 # clean-up
 rm $train $train_clf $new $newdata
-rm *.libsvm* *.vw* pred.txt vwpreds* xgpreds*
+rm *.libsvm* *.vw* pred.txt vwpreds* xgpreds* *.ids *.model
