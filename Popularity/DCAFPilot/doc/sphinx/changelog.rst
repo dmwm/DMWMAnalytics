@@ -9,6 +9,11 @@ to identify necessary metrics for such analysis.
 
 0.0.X releases are preliminary implementation of all components
 
+- 0.0.18
+
+  - add multitask option into configuration and the code. It uses
+    multiprocessing module to concurrently submit url calls to data-services
+
 - 0.0.17
   
   - switch to use capped collection analytics cache, it is configurable via
