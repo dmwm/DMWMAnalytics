@@ -33,20 +33,29 @@ if [ -n $last_date ]; then
 else
     start_day=$today
 fi
-newtstamps="$start_day-$today"
-newdata=newdata-$newtstamps.csv.gz
-echo "New data: $newdata"
-
-# generate new data
-dataframe --start=$start_day --stop=$today --newdata --fout=$newdata
 
 # merge data
+echo "merge_csv --fin=$ddir --fout=$train"
 merge_csv --fin=$ddir --fout=$train --verbose
 
 # transform the data
+echo "transform_csv --fin=$train --fout=$train_clf --target=naccess --target-thr=$thr --drops=$drops"
 transform_csv --fin=$train --fout=$train_clf --target=naccess --target-thr=$thr --drops=$drops
 
+# generate new data
+newtstamps="$start_day-$today"
+new=new-$newtstamps.csv.gz
+newdata=newdata-$newtstamps.csv.gz
+echo "New data: $new"
+echo "dataframe --start=$start_day --stop=$today --newdata --fout=$new"
+dataframe --start=$start_day --stop=$today --newdata --fout=$new
+
+# transform the newdata
+echo "transform_csv --fin=$new --fout=$newdata --target=naccess --target-thr=$thr --drops=$drops"
+transform_csv --fin=$new --fout=$newdata --target=naccess --target-thr=$thr --drops=$drops
+
 # run models via run_models script
+echo "run_models $train_clf $newdata predict"
 run_models $train_clf $newdata predict
 
 # final touch
