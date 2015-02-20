@@ -46,21 +46,23 @@ def get_dataset(vwrow):
 
 def convert(fin, fvw, fout, headers, thr):
     "Function which convert VW input file into CSV output one"
-    with open(fin, 'r') as istream, open(fvw, 'r') as wstream, open(fout, 'w') as ostream:
-        ostream.write(headers+'\n')
-        while True:
-            try:
-                vwrow = wstream.readline()
-                if  not vwrow:
-                    break
-                row = istream.readline().replace('\n', '').split()
-                if  thr == -1:
-                    popular = row[0]
-                else:
-                    popular = 1 if float(row[0])>thr else 0
-                ostream.write("%s,%s,%s\n" % (get_dataset(vwrow), get_dbs(vwrow), popular))
-            except:
-                break
+    with open(fin, 'r') as istream:
+        with open(fvw, 'r') as wstream:
+            with open(fout, 'w') as ostream:
+                ostream.write(headers+'\n')
+                while True:
+                    try:
+                        vwrow = wstream.readline()
+                        if  not vwrow:
+                            break
+                        row = istream.readline().replace('\n', '').split()
+                        if  thr == -1:
+                            popular = row[0]
+                        else:
+                            popular = 1 if float(row[0])>thr else 0
+                        ostream.write("%s,%s,%s\n" % (get_dataset(vwrow), get_dbs(vwrow), popular))
+                    except:
+                        break
 
 def main():
     "Main function"
