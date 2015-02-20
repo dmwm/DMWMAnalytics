@@ -33,7 +33,8 @@ if [ -n $last_date ]; then
 else
     start_day=$today
 fi
-newdata=newdata-$start_day-$today.csv.gz
+newtstamps="$start_day-$today"
+newdata=newdata-$newtstamps.csv.gz
 echo "New data: $newdata"
 
 # generate new data
@@ -55,5 +56,6 @@ ls -la *.predicted
 
 # move files in place
 if [ -n "$DCAF_PREDICTIONS" ] && [ -d $DCAF_PREDICTIONS ]; then
-    /bin/mv -f *.predicted $DCAF_PREDICTIONS
+    mkdir -p $DCAF_PREDICTIONS/$newtstamps
+    /bin/mv -f *.predicted $DCAF_PREDICTIONS/$newtstamps
 fi
