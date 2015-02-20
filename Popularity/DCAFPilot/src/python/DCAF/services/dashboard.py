@@ -32,8 +32,9 @@ class DashboardService(GenericService):
         "Fetch data for given api"
         url = '%s/%s' % (self.url, api)
         data = json.loads(super(DashboardService, self).fetch(url, params))
-        for row in data['jobs']:
-            yield row
+        if  data and 'jobs' in data:
+            for row in data['jobs']:
+                yield row
 
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
