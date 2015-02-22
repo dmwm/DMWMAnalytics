@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>DCAFPilot - pilot project for CMS computing data-mining</title>
+
+    <meta name="description" content="DCAFPilot for CMS">
+    <meta name="author" content="Valentin Kuznetsov">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!--
+    <link rel="stylesheet" href="css/reveal.min.css">
+-->
+    <link rel="stylesheet" href="css/reveal.css">
+    <!-- beige.css,moon.css,serif.css,sky.css,default.css,night.css,simple.css,solarized.css -->
+    <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- local styles-->
+    <style type="text/css" media="all">
+    .highlight {color:#FF8000; padding: 30px;}
+    </style>
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+        document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.4/d3.min.js"></script>
+    <script src="js/d3pie.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section>
+    <h2>Mining CMS Computing</h2>
+    <p>
+    <small>by
+        <a href="http://github.com/vkuznet">Valentin Kuznetsov</a> /
+        <a href="http://www.cornell.edu">Cornell University</a>
+    </small>
+    </p>
+</section>
+
+<section>
+    <h2>Netflix</h2>
+<img src="images/NetflixSuggestions.png" alt="Netflix suggestinos" />
+<h4>suggests movies we may like to watch</h4>
+</section>
+
+<section>
+    <h2>Amazon</h2>
+<img src="images/AmazonSuggestions.jpg" alt="Amazon suggestinos" />
+<h4>guesses what we may buy next</h4>
+</section>
+
+<section>
+<img src="images/CMSInteraction.jpg" alt="CMS interaction" />
+</section>
+
+<!--
+<section>
+    <h2>CMS experiment</h2>
+<img src="images/CMSPhedexTransfer.png" alt="CMS transfer" />
+<h4>can we predict what to transfer to our sites and save resources</h4>
+</section>
+-->
+
+<section>
+<h2>CMS experiment</h2>
+<ul>
+<li>
+In Run I, we collected 10B raw data evetns, and produced 15B MC events
+<br/><br/>
+</li>
+<li>
+Data transfer system (PhEDEx) peeks at 5 GB/s, distributing more than 100 PB of replicas over all sites
+(40-80TB/day is export rate of T1 sites)
+<br/><br/>
+</li>
+<li>
+We collected O(TB) of meta-data, e.g. Data Bookkeeping System (DBS) has 220K datasets, 40M files
+<br/><br/>
+</li>
+<li>
+An average 250 daily users submit 200K jobs per day,
+reaching peaks of 500K jobs that access distributed data.
+<br/><br/>
+</li>
+</ul>
+<h3>Data at Big scale is not that easy to manage</h3>
+</section>
+
+<section>
+<h2>Project scope</h2>
+<div align="left">
+<ul>
+<li>
+CMS Analytics
+(<a href="mailto:cms-dmwm-analytics@cern.ch">cms-dmwm-analytics@cern.ch</a>)
+group would like to improve our understanding of CMS computing data,
+full list of projects:
+<a href="https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMSComputingAnalytics">
+    http://bit.ly/1CWvl6U
+</a>
+<br />
+<br />
+</li>
+
+<li>
+We have historical data what users did in a past
+and we want to predict what they'll do in near by future.
+<br />
+<br />
+</li>
+
+<li>
+Initial goal is to predict popularity of new datasets.
+<br />
+<br />
+</li>
+
+</ul>
+
+</div>
+</section>
+
+<section>
+<h2>Why do we need this</h2>
+<div align="left">
+    <ul>
+        <li>
+        15PB of data are resident @ T2 sites; 4.5PB added just in the last
+        year of LHC operation
+        <br/><br/>
+        </li>
+        <li>
+        O(20PB): volume of data transfered to the CMS T2 sites, transfer ~ 5x Resident data
+        <br/><br/>
+        </li>
+        <li>
+        How well do we use our resources, what is used/unused, find skipes/interests in physics group
+        <br/><br/>
+        </li>
+        <li>CMS formed Dynamic Data Placement group to optimize data transfer
+        based on historical information of dataset usage
+        <br/><br/>
+        </li>
+        <li>What if we'll predict which datasets will become popular
+        once they appear on a market, this will help to reduce latency of dataset
+        availability and better utilization of our resources
+        </li>
+    </ul>
+</div>
+</section>
+
+<section>
+<h2>What do we know</h2>
+<div align="left">
+    <p>
+    <ul>
+    <li>Meta-data information about datasets:
+    # files, # events, releases, data types, job information, etc.
+    <br />
+    <br />
+    </li>
+    <li>
+    Affiliations: CMS groups, physics groups, on-going analysis, etc.
+    <br />
+    <br />
+    </li>
+    <li>Activities: physics groups, panel reviews, up-coming events/conferences
+    </ul>
+</p>
+
+</div>
+</section>
+
+<section>
+<h2>How we can do it</h2>
+<p><img src="images/DCAFPilot_flow.png" alt="Data Collection Flow" width="70%" style="background-color:#E6E6E6" /></p>
+</section>
+
+<section>
+<h2>Dataframe preparation</h2>
+<div align="left">
+    <pre>
+Queried 5 CMS data-services: DBS, PhEDEx, SiteDB, PopularityDB, Dashboard
+   - used 10 APIs to get data content
+   - feed internal cache with ~220K datasets from 4 DBS instances,
+     ~900 release names, 500+ site names, ~5k people DNs.
+   - placed ~800K queries
+
+The final dataframe is constructed out of 78 variables and has 52 files and ~600K rows
+   - each file is worth of 1 week of CMS data, ~600KB zipped/file
+   - each file has about ~1K of popular datasets plus 10K random "un-popular" datasets
+
+Elapsed time: ~4h to 1h per job, times fade out due to cache usage (MongoDB)
+All jobs run on two CERN VM w/ N jobs/core splitting
+    </pre>
+<small>
+We anonymized all data and performed factorization via internal cache
+    <pre>
+        <code>
+id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites,nusers,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,size,tier,totcpu,wct
+999669242,207737071.0,2186,20186,3,0,759090,14251.0,6,21675970,2158,72274,1,10,11.0,5862538,335429,30667701,373256,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0.6,0.4,3.9,0,3,8,0,0,8002,5,64280.0,216946588.0
+332990665,114683734.0,2186,176521,3,1,759090,21311.0,88,334493030,32621,86197,1,4,8.0,6086362,968016,123342232,1037052,0,0,0,0,1,2,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,0,1,0,2,0.8,0.3,3.5,0,6,9,0,0,96689,3,58552.0,276683510.0
+....
+        </code>
+    </pre>
+2013/2014 datasets are available at
+<a href="https://git.cern.ch/web/CMS-DMWM-Analytics-data.git">
+    https://git.cern.ch/web/CMS-DMWM-Analytics-data.git</a>
+</small>
+
+</section>
+
+<section>
+<h3>Data transition through 2014 on weekly basis</h3>
+<table><tr><td>
+<img src="images/dbs1.gif" alt="DBS plots" />
+    </td><td>
+<img src="images/dbs3.gif" alt="DBS plots" />
+</td></tr></table>
+</section>
+
+<section>
+<h2>Dataset popularity</h2>
+<table><tr><td>
+<img src="images/popularity.jpg" alt="Popularity" />
+    </td><td>
+<img src="images/naccess_cloud.gif" alt="Popular datasets" />
+</td></tr></table>
+<small>
+Left plot shows few random datasets, while right one
+summarizes 100 most accessed datasets through 2014.
+<br /><br />
+Dataset access is like stock market, but
+N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
+</small>
+</section>
+
+<section>
+<h2>Different dataset popularity metrics</h2>
+<table><tr><td>
+<img src="images/nusers_cloud.gif" alt="Popular datasets by nusers" />
+    </td><td>
+<img src="images/cpu_cloud.gif" alt="Popular datasets by cpu" />
+</td></tr></table>
+<small>
+<span class="highlight">Left:</span> popular datasets by nusers,
+<span class="highlight">Right:</span> popular datasets by totcpu metric.
+</small>
+</section>
+
+<section>
+<h2>From data to prediction</h2>
+<div align="left">
+<ol>
+    <li>Generate dataframe or get it from existing repository</li>
+    <li>Transform data into suitable format for ML</li>
+    <li>Build ML model
+        <ul>
+            <li>use classification or regression techniques</li>
+            <li>train and validate model, e.g. use 2013 data for training
+            and 2014 for validation
+            </li>
+        </ul>
+    </li>
+    <li>Generate new data and transform it similar to step #2.</li>
+    <li>Apply your best model to new data to make prediction</li>
+    <li>Verify prediction with popularity DB once data metrics become available</li>
+</ol>
+</div>
+</section>
+
+<section>
+<h3>Model prediction</h3>
+<table>
+    <tr><td>
+    <div id="pieChart"></div>
+    </td>
+    <td>
+<pre>
+Run 5 different models:
+- Random Forest Classifier
+- Linear SVC
+- SGDClassifier
+- VW online-classifier
+- xgboost classifier
+
+Datasets we predict     : 605691
+Predicted as popular    : 66583
+Dataset in popdb sample : 23397
+
+We predicted almost 3x times more
+datasets than we had. But we may need
+to choose different classifiers for
+different data-tiers.
+
+TIER        TP(%)  TN(%)  FP(%)  FN(%)
+--------------------------------------
+AOD         49.65  31.58   0.62  18.15
+AODSIM      24.35  52.42   0.76  22.47
+MINIAOD      0.59  95.31   0.88   3.23
+MINIAODSIM  11.99  59.37   0.67  27.98
+USER         9.65  72.16   1.25  16.93
+......
+</pre>
+    </td>
+    </tr>
+</table>
+
+<script>
+var pie = new d3pie("pieChart", {
+    "size": {
+        "canvasWidth": 590,
+        "pieInnerRadius": "4%",
+        "pieOuterRadius": "98%"
+    },
+    "data": {
+        "sortOrder": "label-asc",
+        "content": [
+            {
+                "label": "True Positive",
+                "value": 59331,
+                "color": "#00cc63"
+            },
+            {
+                "label": "True Negative",
+                "value": 462941,
+                "color": "#d2e916"
+            },
+            {
+                "label": "False Positive",
+                "value": 7252,
+                "color": "#660064"
+            },
+            {
+                "label": "False Negative",
+                "value": 76167,
+                "color": "#e41d47"
+            }
+        ]
+    },
+    "labels": {
+        "outer": {
+            "pieDistance": 32
+        },
+        "inner": {
+            "hideWhenLessThanPercentage": 3
+        },
+        "mainLabel": {
+            "color": "#e217c2",
+            "fontSize": 20
+        },
+        "percentage": {
+            "color": "#ffffff",
+            "decimalPlaces": 0
+        },
+        "value": {
+            "color": "#adadad",
+            "fontSize": 11
+        },
+        "lines": {
+            "enabled": true
+        }
+    },
+    "effects": {
+        "pullOutSegmentOnClick": {
+            "effect": "linear",
+            "speed": 400,
+            "size": 8
+        }
+    },
+    "misc": {
+        "gradient": {
+            "enabled": true,
+            "percentage": 100
+        }
+    }
+});
+</script>
+
+</section>
+
+<section data-background="images/bits_bytes.jpg">
+<div align="left">
+<h2>We have a problem to solve</h2>
+<ul>
+    <li>
+    Build/tune the model as we go
+    <br /><br />
+    </li>
+    <li>
+    Mine HyperNews/twikis and find physicist's interests
+    <br /><br />
+    </li>
+    <li>
+    Mine HEP events, e.g. CERN indico calendar, and be predictive
+    <br /><br />
+    </li>
+</ul>
+<h3>If you'are interested take a challenge</h3>
+</div>
+</section>
+
+</div> <!-- end of reveal -->
+
+</div> <!-- end of slides -->
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    slideNumber: true,
+
+    theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+    transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+    math: {
+        mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+        config: 'TeX-AMS_HTML-full' // See http://docs.mathjax.org/en/latest/config-files.html
+    },
+
+    // Optional libraries used to extend on reveal.js
+    dependencies: [
+        { src: 'plugin/math/math.js', async: true },
+        { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+        { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+        { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+        // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+    ]
+});
+
+</script>
+
+</body>
+</html>
+
