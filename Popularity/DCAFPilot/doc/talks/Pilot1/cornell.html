@@ -93,12 +93,11 @@
 <h2>CMS computing challenge</h2>
 <ul>
 <li>
-In Run I, we collected 10B raw data evetns, and produced 15B MC events
+In Run I, we collected 10B raw data events, and produced 15B MC events
 <br/><br/>
 </li>
 <li>
 Data transfer system (PhEDEx) peeks at 5 GB/s, distributing more than 100 PB of replicas over all sites
-(40-80TB/day is export rate of T1 sites)
 <br/><br/>
 </li>
 <li>
@@ -162,16 +161,18 @@ Initial goal is to predict popularity of new datasets.
         <br/><br/>
         </li>
         <li>
-        How well do we use our resources, what is used/unused, find skipes/interests in physics group
+        How well do we use our resources, what is used/unused, find spikes/interests in physics group
         <br/><br/>
         </li>
         <li>CMS formed Dynamic Data Placement group to optimize data transfer
         based on historical information of dataset usage
         <br/><br/>
         </li>
-        <li>What if we'll predict which datasets will become popular
-        once they appear on a market, this will help to reduce latency of dataset
-        availability and better utilization of our resources
+        <li>
+        <span class="highlight">
+        What if we'll predict which datasets will become popular
+        before they appear on a market?
+        </span>
         </li>
     </ul>
 </div>
@@ -184,15 +185,13 @@ Initial goal is to predict popularity of new datasets.
     <ul>
     <li>Meta-data information about datasets:
     # files, # events, releases, data types, job information, etc.
+    <span style="color:green">DONE</span>
     <br />
     <br />
     </li>
-    <li>
-    Affiliations: CMS groups, physics groups, on-going analysis, etc.
+    <li>Interests: CMS physics groups, on-going analysis, up-coming events/conferences, etc.
     <br />
-    <br />
-    </li>
-    <li>Activities: physics groups, panel reviews, up-coming events/conferences
+    <span class="highlight">TO DO:</span> mine HyperNews, twiki pages, talks, papers, presentaions, Indico calendar
     </ul>
 </p>
 
@@ -200,29 +199,16 @@ Initial goal is to predict popularity of new datasets.
 </section>
 
 <section>
-<h2>How we can do it</h2>
+<h2>How do it</h2>
 <p><img src="images/DCAFPilot_flow.png" alt="Data Collection Flow" width="70%" style="background-color:#E6E6E6" /></p>
 </section>
 
 <section>
 <h2>Dataframe preparation</h2>
 <div align="left">
-    <pre>
-Queried 5 CMS data-services: DBS, PhEDEx, SiteDB, PopularityDB, Dashboard
-   - used 10 APIs to get data content
-   - feed internal cache with ~220K datasets from 4 DBS instances,
-     ~900 release names, 500+ site names, ~5k people DNs.
-   - placed ~800K queries
-
-The final dataframe is constructed out of 78 variables and has 52 files and ~600K rows
-   - each file is worth of 1 week of CMS data, ~600KB zipped/file
-   - each file has about ~1K of popular datasets plus 10K random "un-popular" datasets
-
-Elapsed time: ~4h to 1h per job, times fade out due to cache usage (MongoDB)
-All jobs run on two CERN VM w/ N jobs/core splitting
-    </pre>
-<small>
-We anonymized all data and performed factorization via internal cache
+Queries 5 CMS data-services, placed 800K queries, spawn 220K datasets, 900 releases, 500 sites, 5k people DNs
+<br /><br />
+Anonymized and performed factorization of all data
     <pre>
         <code>
 id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites,nusers,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,size,tier,totcpu,wct
@@ -234,8 +220,6 @@ id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites
 2013/2014 datasets are available at
 <a href="https://git.cern.ch/web/CMS-DMWM-Analytics-data.git">
     https://git.cern.ch/web/CMS-DMWM-Analytics-data.git</a>
-</small>
-
 </section>
 
 <section>
