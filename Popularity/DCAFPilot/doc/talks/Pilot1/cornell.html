@@ -208,8 +208,8 @@ Initial goal is to predict popularity of new datasets.
 </section>
 
 <section>
-<h2>How do it</h2>
-<p><img src="images/DCAFPilot_flow.png" alt="Data Collection Flow" width="70%" style="background-color:#E6E6E6" /></p>
+<h2>A way to do it</h2>
+<p><img src="images/DCAFPilot_flow.png" alt="Data Collection Flow" width="80%" style="background-color:#E6E6E6" /></p>
 </section>
 
 <section>
@@ -218,13 +218,14 @@ Initial goal is to predict popularity of new datasets.
 Queries 5 CMS data-services, placed 800K queries, spawn 220K datasets, 900 releases, 500 sites, 5k people DNs
 <br /><br />
 Anonymized and performed factorization of all data
+<br /><br />
+One year of meta-data translates into 78x600000 dataframe
+<br /><br />
     <pre>
-        <code>
 id,cpu,creator,dataset,dbs,dtype,era,naccess,nblk,nevt,nfiles,nlumis,nrel,nsites,nusers,parent,primds,proc_evts,procds,rel1_0,rel1_1,rel1_2,rel1_3,rel1_4,rel1_5,rel1_6,rel1_7,rel2_0,rel2_1,rel2_10,rel2_11,rel2_2,rel2_3,rel2_4,rel2_5,rel2_6,rel2_7,rel2_8,rel2_9,rel3_0,rel3_1,rel3_10,rel3_11,rel3_12,rel3_13,rel3_14,rel3_15,rel3_16,rel3_17,rel3_18,rel3_19,rel3_2,rel3_20,rel3_21,rel3_22,rel3_23,rel3_3,rel3_4,rel3_5,rel3_6,rel3_7,rel3_8,rel3_9,relt_0,relt_1,relt_2,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,size,tier,totcpu,wct
 999669242,207737071.0,2186,20186,3,0,759090,14251.0,6,21675970,2158,72274,1,10,11.0,5862538,335429,30667701,373256,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0.6,0.4,3.9,0,3,8,0,0,8002,5,64280.0,216946588.0
 332990665,114683734.0,2186,176521,3,1,759090,21311.0,88,334493030,32621,86197,1,4,8.0,6086362,968016,123342232,1037052,0,0,0,0,1,2,0,0,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,0,1,0,2,0.8,0.3,3.5,0,6,9,0,0,96689,3,58552.0,276683510.0
 ....
-        </code>
     </pre>
 2013/2014 datasets are available at
 <a href="https://git.cern.ch/web/CMS-DMWM-Analytics-data.git">
@@ -269,11 +270,11 @@ N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
 </small>
 </section>
 
-<section>
+<section data-background="images/circle.jpg">
 <h2>From data to prediction</h2>
 <div align="left">
-<ol>
-    <li>Generate dataframe or get it from existing repository</li>
+<ul>
+    <li>Generate dataframes</li>
     <li>Transform data into suitable format for ML</li>
     <li>Build ML model
         <ul>
@@ -284,20 +285,21 @@ N(datasets) &gt;&gt; N(stocks &#64; NASDAQ)
         </ul>
     </li>
     <li>Generate new data and transform it similar to step #2.</li>
-    <li>Apply your best model to new data to make prediction</li>
+    <li>Apply best model to new data to make prediction</li>
     <li>Verify prediction with popularity DB once data metrics become available</li>
-</ol>
+    <li>Iterate again</li>
+</ul>
 </div>
 </section>
 
 <section>
-<h3>Model prediction</h3>
+<h2>Model prediction</h2>
 <table>
     <tr><td>
     <div id="pieChart"></div>
     </td>
     <td>
-<pre>
+<pre style="font-size:22px">
 Run 5 different models:
 - Random Forest Classifier
 - Linear SVC
@@ -329,6 +331,13 @@ USER         9.65  72.16   1.25  16.93
 
 <script>
 var pie = new d3pie("pieChart", {
+    "footer": {
+        "text": "Data-tier analysis is required to bring down FP/FN rates",
+        "color": "#19ce62",
+        "fontSize": 25,
+        "font": "open sans",
+        "location": "bottom-center"
+    },
     "size": {
         "canvasWidth": 590,
         "pieInnerRadius": "4%",
