@@ -17,7 +17,7 @@ from pymongo import DESCENDING
 
 # package modules
 import DCAF.utils.jsonwrapper as json
-from DCAF.utils.utils import dates_from_today
+from DCAF.utils.utils import dates_from_today, genkey
 from DCAF.services.generic import GenericService
 
 class DBSService(GenericService):
@@ -40,12 +40,10 @@ class DBSService(GenericService):
         else:
             url = '%s/%s' % (dbs_url, api)
         data = json.loads(super(DBSService, self).fetch(url, params, cache))
-        rid = 0
         if  api == 'releases':
             data = data[0]['release_version']
         for row in data:
             if  api == 'datasets':
-#                row['rid'] = rid
                 try:
                     row['rid'] = row['dataset_id']
                 except KeyError:
@@ -61,13 +59,13 @@ class DBSService(GenericService):
                 row.update(inst)
                 yield row
             elif api == 'releases':
+                rid = genkey(row, truncate=5)
                 rec = {'release':row, 'rid':rid}
                 yield rec
             elif api == 'filesummaries':
                 yield row
             else:
                 yield row
-            rid += 1
 
     def update(self, cname):
         "Update internal database with fresh snapshot of data"

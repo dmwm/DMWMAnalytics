@@ -13,6 +13,7 @@ from   types import InstanceType
 
 # package modules
 import DCAF.utils.jsonwrapper as json
+from DCAF.utils.utils import genkey
 from DCAF.services.generic import GenericService
 
 def rowdict(columns, row):
@@ -70,14 +71,14 @@ class SiteDBService(GenericService):
             api = 'site-names'
         url = '%s/%s' % (self.url, api)
         data = super(SiteDBService, self).fetch(url, params)
-        rid = 0
         for row in sitedb_parser(data):
             if  api == 'people':
+                rid = genkey(str(row['dn']), truncate=5)
                 rec = {'dn':row['dn'], 'rid':rid}
             if  api == 'site-names':
+                rid = genkey(str(row['alias']), truncate=5)
                 rec = {'site':row['alias'], 'rid':rid}
             yield rec
-            rid += 1
 
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
