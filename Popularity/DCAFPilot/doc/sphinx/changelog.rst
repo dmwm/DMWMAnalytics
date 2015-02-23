@@ -9,6 +9,11 @@ to identify necessary metrics for such analysis.
 
 0.0.X releases are preliminary implementation of all components
 
+- 0.0.26
+
+  - generate persistent rid for people/releases/sites cache entries
+  - add new slides for CMS Computing Data Mining talk
+
 - 0.0.21
 
   - move VW into src/python domain
