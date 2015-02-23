@@ -209,7 +209,10 @@ Initial goal is to predict popularity of new datasets.
 
 <section>
 <h2>A way to do it</h2>
-<p><img src="images/DCAFPilot_flow.png" alt="Data Collection Flow" width="80%" style="background-color:#E6E6E6" /></p>
+<p>
+<img src="images/DCAFPilot_flow.png" alt="Data Collection Flow" width="70%" style="background-color:#E6E6E6" />
+</p>
+Toolset: R/Python, ML libs, NLP, Hadoop, IR-systems, etc.
 </section>
 
 <section>
@@ -334,28 +337,18 @@ var pie = new d3pie("pieChart", {
     "footer": {
         "text": "Data-tier analysis is required to bring down FP/FN rates",
         "color": "#19ce62",
-        "fontSize": 25,
+        "fontSize": 20,
         "font": "open sans",
         "location": "bottom-center"
     },
     "size": {
-        "canvasWidth": 590,
-        "pieInnerRadius": "4%",
-        "pieOuterRadius": "98%"
+        "canvasWidth": 600,
+        "pieInnerRadius": "10%",
+        "pieOuterRadius": "90%"
     },
     "data": {
-        "sortOrder": "label-asc",
+        "sortOrder": "label-desc",
         "content": [
-            {
-                "label": "True Positive",
-                "value": 59331,
-                "color": "#00cc63"
-            },
-            {
-                "label": "True Negative",
-                "value": 462941,
-                "color": "#d2e916"
-            },
             {
                 "label": "False Positive",
                 "value": 7252,
@@ -365,6 +358,16 @@ var pie = new d3pie("pieChart", {
                 "label": "False Negative",
                 "value": 76167,
                 "color": "#e41d47"
+            },
+            {
+                "label": "True Positive",
+                "value": 59331,
+                "color": "#00cc63"
+            },
+            {
+                "label": "True Negative",
+                "value": 462941,
+                "color": "#6666FF"
             }
         ]
     },
@@ -376,7 +379,7 @@ var pie = new d3pie("pieChart", {
             "hideWhenLessThanPercentage": 3
         },
         "mainLabel": {
-            "color": "#e217c2",
+            "color": "#19ce62",
             "fontSize": 20
         },
         "percentage": {
