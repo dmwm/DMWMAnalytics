@@ -24,9 +24,13 @@ else
     start_day=$today
 fi
 
+diff=`python -c "print $today-$start_day"`
+if [ $diff < 7 ]; then
+    echo "Period less than a week, no more work, go sleep"
+    exit 0
+fi
 # write generator script
 echo "#!/bin/bash" > $gfile
-echo "dataframe --clean-cache" >> $gfile
 echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
 dates --start=$start_day | awk \
 '{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout=dataframe-"$1"-"$2".csv.gz 2>&1 1>& dataframe-"$1"-"$2".log < /dev/null &"}' \
