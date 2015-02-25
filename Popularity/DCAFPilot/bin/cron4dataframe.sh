@@ -25,7 +25,7 @@ else
 fi
 
 diff=`python -c "print $today-$start_day"`
-if [ $diff < 7 ]; then
+if [ $diff -le 7 ]; then
     echo "Period less than a week, no more work, go sleep"
     exit 0
 fi
