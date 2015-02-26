@@ -53,7 +53,7 @@ class DCAF(object):
         self.dashboard = DashboardService(self.config, verbose)
         self.salt = self.config.get('core', {}).get('salt', 'secret sauce')
         self.verbose = verbose
-        self.multitask = self.config.get('multitask', True)
+        self.multitask = self.config.get('multitask', False)
 
     def fetch(self, doc):
         """
