@@ -9,6 +9,10 @@ to identify necessary metrics for such analysis.
 
 0.0.X releases are preliminary implementation of all components
 
+- 0.0.27
+
+  - disable multitask by default
+
 - 0.0.26
 
   - generate persistent rid for people/releases/sites cache entries
