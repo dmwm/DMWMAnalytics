@@ -33,7 +33,8 @@ class DBSService(GenericService):
 
     def fetch(self, api, params=None, dbsinst='prod/global', cache=True):
         "Fetch data for given api"
-        dbs_url = self.url.replace('prod/global', dbsinst)
+        if  dbsinst:
+            dbs_url = self.url.replace('prod/global', dbsinst)
         inst = {'dbs_instance':self.all_dbs.index(dbsinst)}
         if  api == 'releases':
             url = '%s/releaseversions' % dbs_url
@@ -106,7 +107,7 @@ class DBSService(GenericService):
         for row in self.storage.fetch('releases', spec):
             yield row
 
-    def dataset_info(self, dataset):
+    def dataset_info(self, dataset, dbsinst=None):
         "Return list of datasets"
         api = 'datasets'
         spec = {'dataset':dataset}
@@ -114,6 +115,9 @@ class DBSService(GenericService):
         if  not len(res):
             # look-up dataset in other DBS instances
             spec.update({'detail':'true'})
+            if  dbsinst:
+                res = [r for r in self.fetch(api, spec, dbsinst)]
+                return res[0]
             for dbsinst in self.all_dbs:
                 res = [r for r in self.fetch(api, spec, dbsinst)]
                 if  len(res):
@@ -122,12 +126,12 @@ class DBSService(GenericService):
         else:
             return res[0]
 
-    def dataset_summary(self, dataset):
+    def dataset_summary(self, dataset, dbsinst=None):
         "Return dataset summary"
         # TODO, store dataset summary into analytics db
         api = 'filesummaries'
         spec = {'dataset':dataset}
-        res = [r for r in self.fetch(api, spec)]
+        res = [r for r in self.fetch(api, spec, dbsinst)]
         if  not len(res):
             # look-up dataset in other DBS instances
             for dbsinst in self.all_dbs:
@@ -139,18 +143,19 @@ class DBSService(GenericService):
         else:
             return res[0]
 
-    def dataset_parents(self, dataset):
+    def dataset_parents(self, dataset, dbsinst=None):
         "Return dataset id of the parent"
         api = 'datasetparents'
         spec = {'dataset': dataset}
-        for row in self.fetch(api, spec):
+        for row in self.fetch(api, spec, dbsinst):
             yield row['parent_dataset_id']
 
-    def dataset_release_versions(self, dataset):
+    def dataset_release_versions(self, dataset, dbsinst=None):
         "Return dataset release versions"
         url = '%s/releaseversions' % self.url
         params = {'dataset':dataset}
-        data = json.loads(super(DBSService, self).fetch(url, params))
+        dbs_url = url.replace('prod/global', dbsinst)
+        data = json.loads(super(DBSService, self).fetch(dbs_url, params))
         if  not len(data) or not 'release_version' in data[0]:
             for dbsinst in self.all_dbs:
                 dbs_url = url.replace('prod/global', dbsinst)
@@ -165,3 +170,13 @@ class DBSService(GenericService):
                 yield "N/A"
         else:
             yield "N/A"
+
+    def dataset_dbsinst(self, dataset):
+        "Find dbsinstance of given dataset"
+        url = '%s/datasets' % self.url
+        params = {'dataset': dataset}
+        for dbsinst in self.all_dbs:
+            dbs_url = url.replace('prod/global', dbsinst)
+            data = json.loads(super(DBSService, self).fetch(dbs_url, params))
+            if  len(data) and 'dataset' in data[0] and data[0]['dataset'] == dataset:
+                return dbsinst

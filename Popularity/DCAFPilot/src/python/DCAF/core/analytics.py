@@ -107,7 +107,7 @@ class DCAF(object):
         rtypes = {'series': serdict, 'majors': majdict, 'minors': mindict, 'rtypes': typdict}
         return dtypes, stypes, rtypes, tiers
 
-    def dataset_info_all(self, dataset, timeframe):
+    def dataset_info_all(self, dataset, dbsinst, timeframe):
         "Concurrently obtain information about dataset."
         # NOTE: this function may need expansion if we'll need to obtain more information
         #       about given dataset/timeframe. To extend, please add new local
@@ -119,27 +119,28 @@ class DCAF(object):
         # output Queue
         output = mp.Queue()
         # local functions to fetch info about dataset from different subsystems
-        def proc1(pos, out, dataset):
+        def proc1(pos, out, dataset, inst):
             try:
-                res = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+                res = [rname for rname in \
+                        self.dbs.dataset_release_versions(dataset, inst)]
             except:
                 res = []
             out.put((pos, res))
-        def proc2(pos, out, dataset):
+        def proc2(pos, out, dataset, _inst):
             try:
                 res = [sname for sname in self.phedex.sites(dataset)]
             except:
                 res = []
             out.put((pos, res))
-        def proc3(pos, out, dataset):
+        def proc3(pos, out, dataset, inst):
             try:
-                res = [r for r in self.dbs.dataset_parents(dataset)]
+                res = [r for r in self.dbs.dataset_parents(dataset, inst)]
             except:
                 res = []
             out.put((pos, res))
-        def proc4(pos, out, dataset):
+        def proc4(pos, out, dataset, inst):
             try:
-                res = self.dbs.dataset_summary(dataset)
+                res = self.dbs.dataset_summary(dataset, inst)
             except:
                 res = dict()
             out.put((pos, res))
@@ -152,10 +153,10 @@ class DCAF(object):
         # concurrent processes to run, each args contains
         # a position value, output queue and args for internal function call
         processes = [
-            mp.Process(target=proc1, args=(1, output, dataset)),
-            mp.Process(target=proc2, args=(2, output, dataset)),
-            mp.Process(target=proc3, args=(3, output, dataset)),
-            mp.Process(target=proc4, args=(4, output, dataset)),
+            mp.Process(target=proc1, args=(1, output, dataset, dbsinst)),
+            mp.Process(target=proc2, args=(2, output, dataset, dbsinst)),
+            mp.Process(target=proc3, args=(3, output, dataset, dbsinst)),
+            mp.Process(target=proc4, args=(4, output, dataset, dbsinst)),
             mp.Process(target=proc5, args=(5, output, dataset, timeframe))
         ]
         # Run processes
@@ -174,16 +175,19 @@ class DCAF(object):
 
     def dataset_info(self, timeframe, dataset, dtypes, stypes, rtypes, tiers, dformat, target=0):
         "Return common dataset info in specified data format"
-        row = self.dbs.dataset_info(dataset)
+        dbsinst = self.dbs.dataset_dbsinst(dataset)
+        if  not dbsinst:
+            return
+        row = self.dbs.dataset_info(dataset, dbsinst)
         if  row:
             if  self.multitask:
                 releases, sites, parents, summary, dashboard = \
-                        self.dataset_info_all(dataset, timeframe)
+                        self.dataset_info_all(dataset, dbsinst, timeframe)
             else:
-                releases = [rname for rname in self.dbs.dataset_release_versions(dataset)]
+                releases = [rname for rname in self.dbs.dataset_release_versions(dataset, dbsinst)]
                 sites = [sname for sname in self.phedex.sites(dataset)]
-                parents = [r for r in self.dbs.dataset_parents(dataset)]
-                summary = self.dbs.dataset_summary(dataset)
+                parents = [r for r in self.dbs.dataset_parents(dataset, dbsinst)]
+                summary = self.dbs.dataset_summary(dataset, dbsinst)
                 dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
             nrels = len(releases)
             series = rtypes['series']
@@ -218,7 +222,7 @@ class DCAF(object):
             dataset_id = row['rid']
             era = genkey(row['acquisition_era_name'], self.salt, 5)
             create_dn = self.sitedb.dnid(row['create_by'])
-            dbsinst = row['dbs_instance']
+#            dbsinst = row['dbs_instance']
             dtype = row['primary_ds_type']
             # number of data types should be small and simple
             # list look-up shouldn't be a problem
