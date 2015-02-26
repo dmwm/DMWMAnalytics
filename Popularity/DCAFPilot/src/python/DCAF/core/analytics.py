@@ -222,7 +222,7 @@ class DCAF(object):
             dataset_id = row['rid']
             era = genkey(row['acquisition_era_name'], self.salt, 5)
             create_dn = self.sitedb.dnid(row['create_by'])
-#            dbsinst = row['dbs_instance']
+            dbsinstid = row['dbs_instance']
             dtype = row['primary_ds_type']
             # number of data types should be small and simple
             # list look-up shouldn't be a problem
@@ -236,11 +236,11 @@ class DCAF(object):
                 tiers.append(tier)
             tier = tiers.index(tier)
             parent = parents[0] if len(parents) else 0
-            uid = genuid(yyyymmdd(timeframe[0]), dbsinst, dataset_id)
+            uid = genuid(yyyymmdd(timeframe[0]), dbsinstid, dataset_id)
             size_norm = 2**30 # normalization factor for file size
             rec = dict(id=uid, dataset=dataset_id, primds=prim, procds=proc, tier=tier,
                     dtype=dtype, creator=create_dn, nrel=nrels, nsites=nsites,
-                    parent=parent, era=era, dbs=dbsinst,
+                    parent=parent, era=era, dbs=dbsinstid,
                     nfiles=summary.get('num_file', 0),
                     nlumis=summary.get('num_lumi', 0),
                     nblk=summary.get('num_block', 0),
