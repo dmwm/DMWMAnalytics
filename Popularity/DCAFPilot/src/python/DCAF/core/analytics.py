@@ -10,6 +10,7 @@ Description: Generic module to perform various analytics tasks
 # system modules
 import os
 import sys
+import time
 import random
 import ConfigParser
 import multiprocessing as mp
@@ -304,9 +305,10 @@ class DCAF(object):
                     tiers, 'headers', target)
             headers = [r for r in rows][0]
             yield ','.join(headers)
+        tstamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(sec))
         if  newdata: # request new dataset
             if  self.verbose:
-                print "Generate dataframe for new datasets"
+                print "Generate dataframe for new datasets", tstamp
             n_days = 7
             if  timeframe:
                 n_days = ndays(yyyymmdd(timeframe[0]), yyyymmdd(timeframe[1]))
@@ -328,7 +330,8 @@ class DCAF(object):
             if  not DATASET_PAT.match(dataset):
                 continue
             if  self.verbose:
-                print "Generate dataframe for %s, timeframe: %s" % (dataset, timeframe)
+                print "Generate dataframe for %s, timeframe: %s, %s" \
+                        % (dataset, timeframe, tstamp)
             target = dict(naccess=row['naccess'],nusers=row['nusers'],totcpu=row['totcpu'],
                     rnaccess=row['rnaccess'],rnusers=row['rnusers'],rtotcpu=row['rtotcpu'])
             rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
