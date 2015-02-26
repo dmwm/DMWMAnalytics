@@ -305,7 +305,7 @@ class DCAF(object):
                     tiers, 'headers', target)
             headers = [r for r in rows][0]
             yield ','.join(headers)
-        tstamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(sec))
+        tstamp = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
         if  newdata: # request new dataset
             if  self.verbose:
                 print "Generate dataframe for new datasets", tstamp
