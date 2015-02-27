@@ -64,9 +64,9 @@ echo "### Prediction files:"
 ls -la *.predicted
 
 # move files in place
-if [ -n "$DCAF_PREDICTIONS" ] && [ -d $DCAF_PREDICTIONS ]; then
-    mkdir -p $DCAF_PREDICTIONS/$newtstamps
-    /bin/mv -f *.predicted $DCAF_PREDICTIONS/$newtstamps
+if [ -n "$DCAFPILOT_PREDICTIONS" ] && [ -d $DCAFPILOT_PREDICTIONS ]; then
+    mkdir -p $DCAFPILOT_PREDICTIONS/$newtstamps
+    /bin/mv -f *.predicted $DCAFPILOT_PREDICTIONS/$newtstamps
 fi
 
 # clean-up
