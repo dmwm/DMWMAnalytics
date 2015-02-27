@@ -12,7 +12,9 @@ else
     exit 1
 fi
 gfile=/tmp/gen_dataframes.sh
-rm $gfile
+if [ -f $gfile ]; then
+    rm $gfile
+fi
 cd $wdir
 dbsextra=10000
 last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
