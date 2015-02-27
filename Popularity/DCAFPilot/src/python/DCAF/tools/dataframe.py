@@ -41,7 +41,10 @@ class OptionParser():
         msg = 'Output file format, deafult csv (supported csv, vw)'
         self.parser.add_option("--format", action="store", type="string",
             dest="dformat", default="csv", help=msg)
-        cfg = os.path.join(os.environ.get('DCAFPILOT_ROOT', os.getcwd()), 'etc/dcaf.cfg')
+        if  'DCAFPILOT_CONFIG' in os.environ:
+            cfg = os.environ['DCAFPILOT_CONFIG']
+        else:
+            cfg = os.path.join(os.environ.get('DCAFPILOT_ROOT', os.getcwd()), 'etc/dcaf.cfg')
         self.parser.add_option("--config", action="store", type="string",
             dest="config", default=cfg, help="Config file, default etc/dcaf.cfg")
         self.parser.add_option("--verbose", action="store", type="int",
