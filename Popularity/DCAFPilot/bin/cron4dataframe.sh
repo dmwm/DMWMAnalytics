@@ -15,6 +15,7 @@ gfile=/tmp/gen_dataframes.sh
 if [ -f $gfile ]; then
     rm $gfile
 fi
+mkdir -p $ddir/log
 cd $wdir
 dbsextra=10000
 last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
@@ -36,8 +37,8 @@ fi
 echo "#!/bin/bash" > $gfile
 echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
 dates --start=$start_day | awk \
-'{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout=dataframe-"$1"-"$2".csv.gz 2>&1 1>& dataframe-"$1"-"$2".log < /dev/null &"}' \
-CFG=$cfg DBSEXTRA=$dbsextra >> $gfile
+'{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout="DDIR"/dataframe-"$1"-"$2".csv.gz 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
+DDIR=$ddir CFG=$cfg DBSEXTRA=$dbsextra >> $gfile
 
 # change generator script permissions
 chmod +x $gfile
