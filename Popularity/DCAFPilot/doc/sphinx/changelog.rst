@@ -9,7 +9,7 @@ to identify necessary metrics for such analysis.
 
 0.0.X releases are preliminary implementation of all components
 
-- 0.0.33 - 0.0.27
+- 0.0.34 - 0.0.27
   
   - changes towards dataframe/prediction automation
 
