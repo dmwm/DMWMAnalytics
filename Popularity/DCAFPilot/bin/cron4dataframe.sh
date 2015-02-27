@@ -12,6 +12,7 @@ else
     exit 1
 fi
 gfile=/tmp/gen_dataframes.sh
+rm $gfile
 cd $wdir
 dbsextra=10000
 last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
@@ -19,7 +20,7 @@ last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split
 today=`date +%Y%m%d`
 
 if [ -n $last_date ]; then
-    start_day=$last_date
+    start_day=`newdate --date=$last_date`
 else
     start_day=$today
 fi
