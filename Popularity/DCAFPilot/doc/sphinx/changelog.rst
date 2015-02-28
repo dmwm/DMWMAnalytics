@@ -9,9 +9,10 @@ to identify necessary metrics for such analysis.
 
 0.0.X releases are preliminary implementation of all components
 
-- 0.0.35 - 0.0.27
+- 0.0.37 - 0.0.27
   
   - changes towards dataframe/prediction automation
+  - add new cron4verify.sh script
 
 - 0.0.27
 
