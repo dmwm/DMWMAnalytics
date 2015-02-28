@@ -10,6 +10,7 @@ Description: PopDB service module
 # system modules
 import time
 import urllib
+import socket
 import optparse
 
 # package modules
@@ -30,6 +31,9 @@ class OptionParser():
         self.parser.add_option("--stop", action="store", type="string",
             dest="tstop", default="", help="end date, format YYYYMMDD")
         url = 'https://cms-popularity.cern.ch/popdb/popularity/'
+        host = socket.gethostbyaddr(socket.gethostname())[0]
+        if  host.endswith('cern.ch'):
+            url = 'http://cms-popularity-prod.cern.ch/popdb/popularity'
         self.parser.add_option("--url", action="store", type="string",
             dest="url", default=url, help="Popularity DB URL:, %s" % url)
     def get_opt(self):
@@ -47,10 +51,10 @@ def popdb_datasets(tstart, tstop, url):
     # authentication, while later passes through CERN SSO.
     # The following block reflects this, in a future, when popularity DB
     # will move into cmsweb domain we'll no longer need it
-    if  self.url.find('cms-popularity-prod.cern.ch') != -1:
-        data = getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
+    if  url.find('cms-popularity-prod.cern.ch') != -1:
+        data = getdata(url, ckey=ckey, cert=cert, debug=0)
     else:
-        data = sso_getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
+        data = sso_getdata(url, ckey=ckey, cert=cert, debug=0)
     data = json.loads(data)
     headers = []
     for row in data['DATA']:
