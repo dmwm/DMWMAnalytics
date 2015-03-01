@@ -11,6 +11,7 @@ to identify necessary metrics for such analysis.
 
 - 0.0.38 - 0.0.27
   
+  - fix multitask flag
   - add profiler
   - changes towards dataframe/prediction automation
   - add new cron4verify.sh script
