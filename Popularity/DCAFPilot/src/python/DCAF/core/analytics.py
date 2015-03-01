@@ -54,6 +54,7 @@ class DCAF(object):
         self.salt = self.config.get('core', {}).get('salt', 'secret sauce')
         self.verbose = verbose
         self.multitask = self.config.get('multitask', False)
+        self.queue = mp.Queue()
 
     def fetch(self, doc):
         """
@@ -116,8 +117,6 @@ class DCAF(object):
         # the pos is a position in queue, out is an output queue and args
         # are arguments required to pass to internal function
 
-        # output Queue
-        output = mp.Queue()
         # local functions to fetch info about dataset from different subsystems
         def proc1(pos, out, dataset, inst):
             try:
@@ -153,11 +152,11 @@ class DCAF(object):
         # concurrent processes to run, each args contains
         # a position value, output queue and args for internal function call
         processes = [
-            mp.Process(target=proc1, args=(1, output, dataset, dbsinst)),
-            mp.Process(target=proc2, args=(2, output, dataset, dbsinst)),
-            mp.Process(target=proc3, args=(3, output, dataset, dbsinst)),
-            mp.Process(target=proc4, args=(4, output, dataset, dbsinst)),
-            mp.Process(target=proc5, args=(5, output, dataset, timeframe))
+            mp.Process(target=proc1, args=(1, self.queue, dataset, dbsinst)),
+            mp.Process(target=proc2, args=(2, self.queue, dataset, dbsinst)),
+            mp.Process(target=proc3, args=(3, self.queue, dataset, dbsinst)),
+            mp.Process(target=proc4, args=(4, self.queue, dataset, dbsinst)),
+            mp.Process(target=proc5, args=(5, self.queue, dataset, timeframe))
         ]
         # Run processes
         for proc in processes:
@@ -167,8 +166,8 @@ class DCAF(object):
         for proc in processes:
             proc.join()
 
-        # Get process results from the output queue
-        results = [output.get() for _ in processes]
+        # Get process results from the self.queue queue
+        results = [self.queue.get() for _ in processes]
         results.sort() # sort by position
         results = [v for _, v in results] # extract values
         return results
