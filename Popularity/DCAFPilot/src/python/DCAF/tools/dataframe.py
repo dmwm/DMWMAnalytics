@@ -57,6 +57,8 @@ class OptionParser():
             dest="docid", default=None, help="Remove given docid from cache")
         self.parser.add_option("--newdata", action="store_true",
             dest="newdata", default=False, help="Get new set of data from DBS, instead of popularity DB")
+        self.parser.add_option("--profile", action="store_true",
+            dest="profile", default=False, help="Run program under profiler")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
@@ -88,9 +90,21 @@ def main():
     dformat = opts.dformat
     dbsextra = opts.dbs_extra
     newdata = opts.newdata
-    with fopen(opts.fout, 'w') as ostream:
-        for row in mgr.dataframe(tframe, seed, dformat, dbsextra, newdata):
-            ostream.write(row+'\n')
+    fout = opts.fout
+    def run(fout, tframe, seed, dformat, dbsextra, newdata):
+        with fopen(opts.fout, 'w') as ostream:
+            for row in mgr.dataframe(tframe, seed, dformat, dbsextra, newdata):
+                ostream.write(row+'\n')
+    if  opts.profile:
+        import cProfile # python profiler
+        import pstats   # profiler statistics
+        cmd  = 'run(fout,tframe,seed,dformat,dbsextra,newdata)'
+        cProfile.runctx(cmd, globals(), locals(), 'profile.dat')
+        info = pstats.Stats('profile.dat')
+        info.sort_stats('cumulative')
+        info.print_stats()
+    else:
+        run(fout, tframe, seed, dformat, dbsextra, newdata)
     if  opts.verbose:
         print "Elapsed time:", datetime.timedelta(seconds=(time.time()-time0))
         print time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
