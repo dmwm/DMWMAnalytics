@@ -53,8 +53,10 @@ class DCAF(object):
         self.dashboard = DashboardService(self.config, verbose)
         self.salt = self.config.get('core', {}).get('salt', 'secret sauce')
         self.verbose = verbose
-        self.multitask = self.config.get('multitask', False)
+        self.multitask = self.config.get('core', {}).get('multitask', False)
         self.queue = mp.Queue()
+        if  verbose:
+            print "DCAF multitask", self.multitask
 
     def fetch(self, doc):
         """
