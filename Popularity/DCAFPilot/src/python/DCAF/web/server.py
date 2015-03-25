@@ -10,14 +10,66 @@ import stat
 import time
 import cherrypy
 from optparse import OptionParser
+from json import JSONEncoder
+
+def popular_datasets(fname):
+    "Return content of given file and return list of popular datasets"
+    with open(fname, 'r') as istream:
+        line = istream.readline().replace('\n', '')
+        if  line:
+            prob, dataset = line.split(',')
+            prob = float(prob)
+            if prob > 0.5:
+                yield dataset
+
+def exposejson (func):
+    """CherryPy expose JSON decorator"""
+    @cherrypy.expose
+    def wrapper (self, *args, **kwds):
+        """Decorator wrapper"""
+        encoder = JSONEncoder()
+        data = func (self, *args, **kwds)
+        cherrypy.response.headers['Content-Type'] = "text/json"
+        try:
+            jsondata = encoder.encode(data)
+            return jsondata
+        except:
+            Exception("Fail to JSONtify obj '%s' type '%s'" \
+                % (data, type(data)))
+    return wrapper
 
 class Root:
     """DCAFPilot static web server root class"""
     def __init__(self, idir):
         self.idir = idir
 
+    def pop_datasets(self):
+        "Retrieve popular datasets for different algorithms"
+        pdict = {}
+        for fname in os.listdir(self.idir):
+            if  fname.endswith('predicted'):
+                alg = fname.split('.')[0]
+                pdict[alg] = list(popular_datasets(os.path.join(self.idir, fname)))
+        return pdict
+
+    @exposejson
+    def popular_datasets(self):
+        "Return JSON stream with popular datasets"
+        return self.pop_datasets()
+
     @cherrypy.expose
     def index(self):
+        "Main method"
+        pdict = self.pop_datasets()
+        out = ""
+        for alg, datasets in pdict.items():
+            out += "<h3>%s</h3>\n" % alg
+            for dataset in datasets:
+                out += dataset+"<br/>\n"
+        return out
+
+    @cherrypy.expose
+    def predictions(self):
         "Main method"
         files = ''
         for fname in os.listdir(self.idir):
