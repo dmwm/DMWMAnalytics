@@ -152,3 +152,11 @@ Utils.utils
 -----------
 .. automodule:: DCAF.utils.utils
       :members:
+
+DCAF server
+===========
+
+Web interface
+-------------
+.. automodule:: DCAF.web.server
+      :members:
