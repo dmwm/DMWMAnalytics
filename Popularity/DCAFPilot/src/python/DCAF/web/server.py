@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 """
-DCAFPilot static web server
+DCAFPilot static web server. It serves DCAF predictions from
+DCAF_PREDICTIONS area. It also provides JSON access point
+via /popular_datasets. The output is JSON dict with
+various classifiers and latest timestamp.
 """
 
 # system modules
@@ -38,6 +41,15 @@ def exposejson (func):
                 % (data, type(data)))
     return wrapper
 
+def page(data, title='DCAF predictions'):
+    "Wrapper page"
+    return """<html>
+<head><title>DCAFPilot predictions</title></head>
+<body>
+<h2>%s</h2>
+%s
+</body></html>""" % (title, data)
+
 class Root:
     """DCAFPilot static web server root class"""
     def __init__(self, idir):
@@ -46,11 +58,19 @@ class Root:
     def pop_datasets(self):
         "Retrieve popular datasets for different algorithms"
         pdict = {}
-        for fname in os.listdir(self.idir):
+        tstamp = time.strftime("%Y%m%d", time.gmtime())
+        files = [os.path.join(self.idir, f) for f in os.listdir(self.idir)]
+        if  os.path.isdir(files[0]): # dir structure
+            idir = os.path.join(self.idir, max(files))
+            tstamp = max([f for f in os.listdir(self.idir)])
+        else:
+            idir = self.idir
+        for fname in os.listdir(idir):
             if  fname.endswith('predicted'):
                 alg = fname.split('.')[0]
-                pdict[alg] = list(popular_datasets(os.path.join(self.idir, fname)))
-        return pdict
+                pdict[alg] = list(popular_datasets(os.path.join(idir, fname)))
+        out = dict(classifiers=pdict, tstamp=tstamp)
+        return out
 
     @exposejson
     def popular_datasets(self):
@@ -61,26 +81,13 @@ class Root:
     def index(self):
         "Main method"
         pdict = self.pop_datasets()
+        title = 'DCAF predictions for %s' % pdict['tstamp']
         out = ""
-        for alg, datasets in pdict.items():
+        for alg, datasets in pdict['classifiers'].items():
             out += "<h3>%s</h3>\n" % alg
             for dataset in datasets:
                 out += dataset+"<br/>\n"
-        return out
-
-    @cherrypy.expose
-    def predictions(self):
-        "Main method"
-        files = ''
-        for fname in os.listdir(self.idir):
-            ctime = os.stat(os.path.join(self.idir, fname)).st_ctime
-            ctime = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(ctime))
-            files += '<a href="data/%s">%s</a> created on %s<br/>' % (fname, fname, ctime)
-        form = """<html><head><title>DCAFPilot data</title></head><html>
-                <body><h2>DCAF predictions</h2>
-                %s
-                </body></html>""" % files
-        return form
+        return page(out, title)
 
 def server(port):
     "DCAFPilot static web server"
