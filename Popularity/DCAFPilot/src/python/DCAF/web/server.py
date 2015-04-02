@@ -109,7 +109,7 @@ def main():
     parser.add_option("--pdir", dest="pdir", default=pdir, type="string",
             help="prediction directory, default %s" % pdir)
     opts, _ = parser.parse_args()
-    server(opts.port)
+    server(opts.port, opts.pdir)
 
 if __name__ == '__main__':
     main()
