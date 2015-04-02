@@ -89,22 +89,25 @@ class Root:
                 out += dataset+"<br/>\n"
         return page(out, title)
 
-def server(port):
+def server(port, pdir):
     "DCAFPilot static web server"
     cherrypy.config.update({'environment': 'production',
                             'log.screen': True,
                             'server.socket_port': port})
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    idir = os.environ.get('DCAF_PREDICTIONS', os.path.join(current_dir, 'data/predictions'))
     conf = {'/data': {'tools.staticdir.on': True,
-                      'tools.staticdir.dir': idir,
+                      'tools.staticdir.dir': pdir,
                       'tools.staticdir.content_types': {'data': 'multipart/form-data'}}}
-    cherrypy.quickstart(Root(idir), '/', config=conf)
+    cherrypy.quickstart(Root(pdir), '/', config=conf)
 
 def main():
     "Main function to run DCAFPilot server"
     parser  = OptionParser()
-    parser.add_option("--port", dest="port", default=8888, type="int", help="port number")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    pdir = os.environ.get('DCAF_PREDICTIONS', os.path.join(current_dir, 'data/predictions'))
+    parser.add_option("--port", dest="port", default=8888, type="int",
+            help="port number")
+    parser.add_option("--pdir", dest="pdir", default=pdir, type="string",
+            help="prediction directory, default %s" % pdir)
     opts, _ = parser.parse_args()
     server(opts.port)
 
