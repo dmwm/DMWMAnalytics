@@ -11,7 +11,9 @@ if [ $# -eq 3 ]; then
     ndata=$2
     action=$3
 else
-    echo "Usage: run_models.sh <train_file> <new_data_file> <predict|validate>"
+    echo "Usage: run_models.sh <file1> <file2> <predict|validate>"
+    echo "For validation: run_models train_file valid_file validate"
+    echo "For prediction: run_modesl train_file newdata_file predict"
     exit 1
 fi
 # convert train/ndata files into VW/libSVM formats
