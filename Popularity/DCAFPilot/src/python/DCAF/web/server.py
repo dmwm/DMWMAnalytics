@@ -55,38 +55,53 @@ class Root:
     def __init__(self, idir):
         self.idir = idir
 
-    def pop_datasets(self):
+    def pop_datasets(self, date=None):
         "Retrieve popular datasets for different algorithms"
-        pdict = {}
         tstamp = time.strftime("%Y%m%d", time.gmtime())
         files = [os.path.join(self.idir, f) for f in os.listdir(self.idir)]
         if  os.path.isdir(files[0]): # dir structure
-            idir = os.path.join(self.idir, max(files))
-            tstamp = max([f for f in os.listdir(self.idir)])
+            if  date:
+                matches = []
+                for fname in files:
+                    date1, date2 = fname.split('-')
+                    date1 = date1.split('/')[-1]
+                    date2 = date2.split('/')[-1]
+                    if  int(date1)<=int(date) and int(date)<=int(date2):
+                        matches.append(fname)
+                if  not matches:
+                    return dict(classifiers={}, tstamp=tstamp)
+                dirs = [os.path.join(self.idir, m) for m in matches]
+            else:
+                dirs = [os.path.join(self.idir, max(files))]
         else:
-            idir = self.idir
-        for fname in os.listdir(idir):
-            if  fname.endswith('predicted'):
-                alg = fname.split('.')[0]
-                pdict[alg] = list(popular_datasets(os.path.join(idir, fname)))
-        out = dict(classifiers=pdict, tstamp=tstamp)
+            dirs = [self.idir]
+        out = []
+        for idir in dirs:
+            pdict = {}
+            last_dir = idir.split('/')[-1]
+            for fname in os.listdir(idir):
+                if  fname.endswith('predicted'):
+                    alg = fname.split('.')[0]
+                    pdict[alg] = list(popular_datasets(os.path.join(idir, fname)))
+            out.append(dict(classifiers=pdict, trange=last_dir, tstamp=tstamp))
         return out
 
     @exposejson
-    def popular_datasets(self):
+    def popular_datasets(self, date=None):
         "Return JSON stream with popular datasets"
-        return self.pop_datasets()
+        return self.pop_datasets(date)
 
     @cherrypy.expose
     def index(self):
         "Main method"
-        pdict = self.pop_datasets()
         title = 'DCAF predictions for %s' % pdict['tstamp']
         out = ""
-        for alg, datasets in pdict['classifiers'].items():
-            out += "<h3>%s</h3>\n" % alg
-            for dataset in datasets:
-                out += dataset+"<br/>\n"
+        for pdict in self.pop_datasets():
+            out += '<h2>Dates: %s</h2>\n' % pdict['trange']
+            for alg, datasets in pdict['classifiers'].items():
+                out += "<h3>%s</h3>\n" % alg
+                for dataset in datasets:
+                    out += dataset+"<br/>\n"
         return page(out, title)
 
 def server(port, pdir):
