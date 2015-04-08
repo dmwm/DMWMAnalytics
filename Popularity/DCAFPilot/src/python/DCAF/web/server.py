@@ -94,10 +94,10 @@ class Root:
     @cherrypy.expose
     def index(self):
         "Main method"
-        title = 'DCAF predictions for %s' % pdict['tstamp']
+        title = 'DCAF predictions'
         out = ""
         for pdict in self.pop_datasets():
-            out += '<h2>Dates: %s</h2>\n' % pdict['trange']
+            out += '<h2>%s</h2><hr/>\n' % pdict['trange']
             for alg, datasets in pdict['classifiers'].items():
                 out += "<h3>%s</h3>\n" % alg
                 for dataset in datasets:
