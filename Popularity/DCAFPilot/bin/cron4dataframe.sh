@@ -26,7 +26,7 @@ else
 fi
 today=`date +%Y%m%d`
 
-if [ -n $last_date ]; then
+if [ -n "$last_date" ]; then
     start_day=`newdate --date=$last_date`
 else
     start_day=$today
