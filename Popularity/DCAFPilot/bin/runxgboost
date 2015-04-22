@@ -8,6 +8,7 @@ fi
 input=$1
 valid=$2
 xgbconf=$3
+echo "Use $xgbconf configuration"
 inputxgb=`ls $input | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
 validxgb=`ls $valid | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
 validvw=`ls $valid | awk '{split($1,a,"."); print ""a[1]".vw"}'`
