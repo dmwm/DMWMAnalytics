@@ -59,7 +59,7 @@ class Root:
         "Retrieve popular datasets for different algorithms"
         tstamp = time.strftime("%Y%m%d", time.gmtime())
         files = [os.path.join(self.idir, f) for f in os.listdir(self.idir)]
-        if  os.path.isdir(files[0]): # dir structure
+        if  files and os.path.isdir(files[0]): # dir structure
             if  date:
                 matches = []
                 for fname in files:
