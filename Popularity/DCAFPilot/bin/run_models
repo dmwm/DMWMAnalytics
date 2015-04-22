@@ -74,7 +74,7 @@ for alg in "RandomForestClassifier" "SGDClassifier" "LinearSVC" "vw" "xgboost"; 
         fi
     elif  [ "$alg" == "xgboost" ]; then
         if [ -f "`command -v xgboost`" ]; then
-            runxgboost $1 $2 /tmp/xgboost.conf
+            runxgboost $1 $2 ${XGBOOST_CONFIG:-"/tmp/xgboost.conf"}
             cp xgpreds.csv pred.txt
         else
             echo "Unable to locate $alg executable, skip $alg algorithm"
