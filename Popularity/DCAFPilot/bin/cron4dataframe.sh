@@ -18,8 +18,12 @@ fi
 mkdir -p $ddir/log
 cd $wdir
 dbsextra=10000
-last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
-last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
+if [ -n "`ls $ddir | grep csv.gz`" ]; then
+    last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
+    last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
+else
+    last_date=""
+fi
 today=`date +%Y%m%d`
 
 if [ -n $last_date ]; then
