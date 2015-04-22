@@ -31,6 +31,8 @@ if [ -n "`ls $ddir | grep csv.gz`" ]; then
     last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
 else
     last_date=""
+    echo "No data files found in $ddir, exit"
+    exit 0
 fi
 today=`date +%Y%m%d`
 
