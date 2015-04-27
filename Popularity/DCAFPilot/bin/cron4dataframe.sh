@@ -22,7 +22,11 @@ if [ -n "`ls $ddir | grep csv.gz`" ]; then
     last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
     last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
 else
-    last_date=""
+    # get a date from a past such that we'll step one day from it and still have a week
+    # i.e. we need to get a 9 days back timestamp. On Linux we can use GNU date
+    #    last_date=`date --date="9 days ago" +%Y%m%d`
+    # but it does not work on OSX, instead we'll use perl
+    last_date=`perl -MPOSIX=strftime -le 'print strftime("%Y%m%d", localtime(time-9*86400))'`
 fi
 today=`date +%Y%m%d`
 
