@@ -1,0 +1,75 @@
+Problem Description
+-------------------
+CMS experiment constantly produces large number of datasets for physics
+analysis.  The "dataset" is a collection of files which define some specific
+physics process.  These files can be reconstructed using different set of
+software and later used for different goals, e.g. to perform physics analysis.
+Therefore there is notion of popularity among dataset, i.e. some datasets
+somehow become more popular (accessed more frequently) then others. We would
+like to find a model which will predict popular of newly created datasets. For
+that we collect historical data from various CMS data-services and can feed it
+into any Machine Learning (ML) algorithm. The data are collected on weekly
+basis. We also know that it some seasonality may exists in a data due to
+upcoming conferences and/or other physics events. For more information see
+[1,2].
+
+High Level goals
+----------------
+There are two goals we would like to achieve with this work:
+- find out machinery how to identify best ML algorithms for dataset popularity
+- generalize machinery to abstract dataframes, i.e. feed data, transform data,
+  perform ML and yield predictions
+- build analytics platform: stream data, ML analytics and predictions
+
+Milestones:
+-----------
+
+1. Take existing datasets [3] and feed them into analysis cluster
+   - identify steps involved with data streaming
+   - data transformation
+2. Run various ML algorithms and make predictions for number of accesses to the dataset
+   - identify existing ML algorithms to run over the data
+   - how to configure and choose ML algorithm
+   - how to perform Cross Validation and generalize ML algorithm
+   - yield predictions
+   - measure performance, e.g. how long each algorithm takes vs its efficiency vs hardware resources
+3. Perform step #2 for various data-tiers or collection of data-tiers
+   - identify best approach for multiclass/multilabel problem [4]
+4. Perform time-series analysis over provided datasets, i.e. make prediction for
+   every week in specific year
+   - identify predictive metrics
+   - identify best set of ML algorithms for data-tier in interest
+   - use different predictive metrics and evaluate their performance/sensitivity to the problem
+5. Evaluate ensembles performance, e.g. use predictions from multiple
+   algorithms and see if their combinations will yield better results
+6. Generalize steps #1-5 into framework/APIs for other usage
+7. Write report about the problem and provide support materials
+   - find data seasonality
+   - plot performance metrics of different ML algorithms
+     - RAM/CPU/time usage
+     - efficiency of ML algorithm vs tiers
+     - choice of muticlass/multilabel approaches
+   - recommendation/choice of ML algorithm for dataset popularity
+   
+We have DCAFPilot package [5] which can generate dataframes and perform simple
+modeling. Student is encouraged to look at its structure and either enhance it
+or create his/her own package to work with analysis cluster. In later case
+we should discuss the package structure, dependencies and deployment.
+
+References
+----------
+
+[1] Exploring Patterns and Correlations in CMS Computing Operations Data with Big Data Analytics Techniques
+V. Kuznetsov, T. Wildish, L. Giommi, D. Bonacorsi
+International Symposium on Grids and Clouds (ISGC) 2015, 15 -20 March 2015
+Academia Sinica, Taipei, Taiwan
+
+[2] https://indico.cern.ch/event/368319/contribution/1/material/slides/1.pdf
+
+[3] We generated dataset for 2013/2014/2015 years and they can be found on
+lxplus:/afs/cern.ch/user/v/valya/workspace/analytics/data/
+
+[4] http://scikit-learn.org/stable/modules/multiclass.html
+
+[5] DCAFPilot package is available on github:
+https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot
