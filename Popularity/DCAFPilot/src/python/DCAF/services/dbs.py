@@ -117,7 +117,8 @@ class DBSService(GenericService):
             spec.update({'detail':'true'})
             if  dbsinst:
                 res = [r for r in self.fetch(api, spec, dbsinst)]
-                return res[0]
+                if  len(res):
+                    return res[0]
             for dbsinst in self.all_dbs:
                 res = [r for r in self.fetch(api, spec, dbsinst)]
                 if  len(res):
