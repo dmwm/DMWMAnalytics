@@ -81,7 +81,7 @@ class DCAF(object):
               {'series':{'major':{'minor':}}
         """
         dtypes = ['mc', 'data'] # data types, should be small list
-        tiers = ['GEN', 'SIM', 'RECO', 'AOD'] # tier types, should be small list
+        tiers = self.dbs.data_tiers()
         stypes = {'s_%s'%TIER0:0, 's_%s'%TIER1:0, 's_%s'%TIER2:0, 's_%s'%TIER3:0, 's_%s'%TIER_NA:0} # site types
         rtypes = {} # release types
         releases = self.dbs.releases()
@@ -235,7 +235,7 @@ class DCAF(object):
             proc = genkey(proc, self.salt, 5)
             if  tier not in tiers:
                 tiers.append(tier)
-            tier = tiers.index(tier)
+            tier = genkey(tier, self.salt, 5)
             parent = parents[0] if len(parents) else 0
             uid = genuid(yyyymmdd(timeframe[0]), dbsinstid, dataset_id)
             size_norm = 2**30 # normalization factor for file size

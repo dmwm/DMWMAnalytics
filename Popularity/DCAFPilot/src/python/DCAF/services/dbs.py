@@ -30,6 +30,7 @@ class DBSService(GenericService):
         self.url = config['services'][self.name]
         self.instances = ["prod/phys01", "prod/phys02", "prod/phys03"]
         self.all_dbs = ['prod/global']+self.instances
+        self.tiers = set() # fill at run time
 
     def fetch(self, api, params=None, dbsinst='prod/global', cache=True):
         "Fetch data for given api"
@@ -181,3 +182,16 @@ class DBSService(GenericService):
             data = json.loads(super(DBSService, self).fetch(dbs_url, params))
             if  len(data) and 'dataset' in data[0] and data[0]['dataset'] == dataset:
                 return dbsinst
+
+    def data_tiers(self):
+        "Return list of known data-tiers"
+        if  self.tiers:
+            return self.tiers
+        url = '%s/datatiers' % self.url
+        params = {}
+        for dbsinst in self.all_dbs:
+            dbs_url = url.replace('prod/global', dbsinst)
+            data = json.loads(super(DBSService, self).fetch(dbs_url, params))
+            for tdict in data:
+                self.tiers.add(tdict['data_tier_name'])
+        return self.tiers
