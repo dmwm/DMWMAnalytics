@@ -30,7 +30,7 @@ class OptionParser():
         self.parser.add_option("--uri", action="store", type="string", \
             dest="uri", default=uri, help="DCAF cache (MongoDB) uri, default %s" %  uri)
         self.parser.add_option("--sep", action="store", type="string", \
-            dest="sep", default=" ", help="Output file separator, default space")
+            dest="sep", default=",", help="Output file separator, default comma")
         self.parser.add_option("--sort", action="store", type="string", \
             dest="sort", default="tier", help="Sort by tier or id, default by tier name")
     def get_opt(self):
