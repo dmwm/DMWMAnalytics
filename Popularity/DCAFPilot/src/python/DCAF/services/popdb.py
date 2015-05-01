@@ -47,7 +47,8 @@ class PopDBService(GenericService):
             # authentication, while later passes through CERN SSO.
             # The following block reflects this, in a future, when popularity DB
             # will move into cmsweb domain we'll no longer need it
-            if  self.url.find('cms-popularity-prod.cern.ch') != -1:
+            if  self.url.find('cms-popularity-prod') != -1 or \
+                    self.url.find('cmsweb') != -1:
                 data = getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
             else:
                 data = sso_getdata(url, ckey=self.ckey, cert=self.cert, debug=self.verbose)
