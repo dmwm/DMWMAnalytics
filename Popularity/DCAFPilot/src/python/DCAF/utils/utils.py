@@ -18,6 +18,20 @@ import time
 import hashlib
 import calendar
 import datetime
+import ConfigParser
+
+def parse_config(filename):
+    "Parse given config file into dict representation"
+    config = ConfigParser.ConfigParser()
+    config.read(filename)
+    cdict = {}
+    for section in config.sections():
+        for pair in config.items(section):
+            if  section in cdict:
+                cdict[section].update(dict([pair]))
+            else:
+                cdict[section] = dict([pair])
+    return cdict
 
 class myGzipFile(gzip.GzipFile):
     def __enter__(self):

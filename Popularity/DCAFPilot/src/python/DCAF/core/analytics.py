@@ -12,7 +12,6 @@ import os
 import sys
 import time
 import random
-import ConfigParser
 import multiprocessing as mp
 
 # package modules
@@ -27,19 +26,6 @@ from DCAF.services.utils import genuid, RFULL, RPRE, RPATCH
 from DCAF.services.utils import TIER0, TIER1, TIER2, TIER3, TIER_NA
 from DCAF.utils.utils import genkey, ndays, yyyymmdd
 from DCAF.utils.regex import DATASET_PAT
-
-def parse_config(filename):
-    "Parse given config file into dict representation"
-    config = ConfigParser.ConfigParser()
-    config.read(filename)
-    cdict = {}
-    for section in config.sections():
-        for pair in config.items(section):
-            if  section in cdict:
-                cdict[section].update(dict([pair]))
-            else:
-                cdict[section] = dict([pair])
-    return cdict
 
 class DCAF(object):
     def __init__(self, configfile, verbose=0):
