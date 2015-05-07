@@ -6,6 +6,7 @@ File       : vw_grid.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: This script will perform grid search over listed parameter space.
 """
+from __future__ import print_function
 
 # PARAMETER SPACE
 PARAMS = {'--passes':8,
@@ -82,7 +83,7 @@ def genid(kwds):
 
 def run(cmd):
     "Run given command in subprocess"
-    print cmd
+    print(cmd)
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     out = proc.stdout.read()
@@ -90,7 +91,7 @@ def run(cmd):
     proc.stdout.close()
     proc.stderr.close()
     if  out:
-        print "ERROR:", out
+        print("ERROR:", out)
         sys.exit(1)
     return parse(err)
 
@@ -163,14 +164,14 @@ def grid_search(wdir, train_vw, test_vw, outcome):
     opts = []
     for model_opts in gen_model(PARAMS):
         opts.append(' '.join(model_opts))
-    print "Total number of combinations:", len(opts)
+    print("Total number of combinations:", len(opts))
     results = []
     for model_opts in opts:
         res = run_model(wdir, train_vw, test_vw, model_opts, outcome)
         results.append(res)
     pprint.pprint(results)
     best_models = find_best(results)
-    print "\n### BEST models (auc+train+test)"
+    print("\n### BEST models (auc+train+test)")
     pprint.pprint(best_models)
 
 def main():
@@ -178,7 +179,7 @@ def main():
     optmgr = OptionParser()
     opts, _ = optmgr.get_opt()
     if  not opts.train_vw or not opts.test_vw:
-        print "Usage: %s --help" % __file__
+        print("Usage: %s --help" % __file__)
         sys.exit(1)
     if  os.path.isdir(opts.wdir):
         shutil.rmtree(opts.wdir)

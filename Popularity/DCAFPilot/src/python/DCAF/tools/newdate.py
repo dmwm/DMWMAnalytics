@@ -7,6 +7,7 @@ File       : newdate.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Generate new date from given one and a step
 """
+from __future__ import print_function
 
 # system modules
 import sys
@@ -35,9 +36,9 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
     if  not opts.date:
-        print "Please specify the date, see --help for more options"
+        print("Please specify the date, see --help for more options")
         sys.exit(1)
-    print newdate(opts.date, opts.step)
+    print(newdate(opts.date, opts.step))
 
 if __name__ == '__main__':
     main()

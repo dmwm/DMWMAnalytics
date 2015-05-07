@@ -6,6 +6,7 @@ File       : clf.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: generic module with sklearn learners
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -87,8 +88,8 @@ def param_search(clf, X_train, Y_train, X_rest, Y_rest, gsearch):
     specified as gsearch string
     """
     parameters = eval(gsearch)
-    print "test classifier", clf
-    print "parameters", parameters
+    print("test classifier", clf)
+    print("parameters", parameters)
     svr = clf
     scores = ['precision', 'recall']
     for score in scores:
@@ -112,5 +113,5 @@ def crossvalidation(clf, X_train, Y_train):
 
 def print_clf_report(y_rest, predictions):
     "Prepare classification report"
-    print pd.crosstab(y_rest, predictions, rownames=["Actual"], colnames=["Predicted"])
-    print "classification report:\n", classification_report(y_rest, predictions)
+    print(pd.crosstab(y_rest, predictions, rownames=["Actual"], colnames=["Predicted"]))
+    print("classification report:\n", classification_report(y_rest, predictions))

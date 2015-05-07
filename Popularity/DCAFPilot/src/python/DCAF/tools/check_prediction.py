@@ -6,6 +6,7 @@ File       : check_prediction.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: 
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -87,20 +88,20 @@ def checker(predictions, y_true, scorer, verbose=False):
         tot = 0
         for pval, yval in zip(predictions, y_true):
             if  verbose:
-                print "predict value %s, real value %s" % (pval, yval)
+                print("predict value %s, real value %s" % (pval, yval))
             loss += logloss(pval, yval)
             tot += 1
-        print "Final Logloss          :", loss/tot
+        print("Final Logloss          :", loss/tot)
 
     # sklearn metrics for regression
     if  not scorer:
-        print "ERROR: no scorer provided, please see --help for their list"
+        print("ERROR: no scorer provided, please see --help for their list")
         sys.exit(1)
     for scr in scorer.split(','):
         scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
         method = scr_str.split(',')[0]
         res = getattr(metrics, method)(y_true, predictions)
-        print "Score metric (%s): %s" % (method, res)
+        print("Score metric (%s): %s" % (method, res))
 
 def main():
     "Main function"

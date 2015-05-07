@@ -6,6 +6,7 @@ File       : merge_csv.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: 
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -52,14 +53,14 @@ def merger(fin, fout, verbose=False):
             if  len(filelist):
                 break
     if  not filelist:
-        print "ERROR; unable to create filelist from %s" % fin
+        print("ERROR; unable to create filelist from %s" % fin)
         sys.exit(1)
 
     headers = None
     with fopen(fout, 'wb') as ostream:
         for fname in filelist:
             if  verbose:
-                print "Read", fname
+                print("Read", fname)
             with fopen(fname, 'r') as istream:
                 while True:
                     line = istream.readline()

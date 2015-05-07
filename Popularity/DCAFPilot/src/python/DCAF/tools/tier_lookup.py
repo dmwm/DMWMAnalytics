@@ -7,6 +7,7 @@ File       : dataset_lookup.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Script which look-up data-tier info in local cache of datasets
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -50,9 +51,9 @@ def convert(config, sep=',', sortby='tier'):
             tiers[tid] = tier
     for tier in sorted(tiers.keys()):
         if  sortby == 'tier':
-            print '%s%s%s' % (tiers[tier], sep, tier)
+            print('%s%s%s' % (tiers[tier], sep, tier))
         else:
-            print '%s%s%s' % (tier, sep, tiers[tier])
+            print('%s%s%s' % (tier, sep, tiers[tier]))
 
 def main():
     "Main function"

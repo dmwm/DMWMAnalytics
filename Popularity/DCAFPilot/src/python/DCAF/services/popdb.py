@@ -6,6 +6,7 @@ File       : popdb.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: PopDB service module
 """
+from __future__ import print_function
 
 # system modules
 import time
@@ -36,12 +37,12 @@ class PopDBService(GenericService):
         res = self.storage.fetch_one('cache', {'_id':docid})
         if  res and 'data' in res:
             if  self.verbose:
-                print "%s::fetch url=%s, params=%s, docid=%s" \
-                        % (self.name, url, params, docid)
+                print("%s::fetch url=%s, params=%s, docid=%s" \
+                        % (self.name, url, params, docid))
             data = res['data']
         else:
             if  self.verbose:
-                print "%s::fetch url=%s, params=%s" % (self.name, url, params)
+                print("%s::fetch url=%s, params=%s" % (self.name, url, params))
             # NOTE: popularity DB has two different access points, one
             # within CERN network and out outside. The former does not require
             # authentication, while later passes through CERN SSO.
@@ -60,7 +61,7 @@ class PopDBService(GenericService):
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
         if  self.verbose:
-            print "%s update %s" % (self.name, cname)
+            print("%s update %s" % (self.name, cname))
         self.storage.cleanup(cname)
         docs = self.fetch(cname)
         self.storage.insert(cname, docs)

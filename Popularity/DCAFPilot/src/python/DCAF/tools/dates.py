@@ -8,6 +8,7 @@ Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: This module generates series of days in specific
 interval starting from given date.
 """
+from __future__ import print_function
 
 # system modules
 import sys
@@ -40,10 +41,10 @@ def main():
     start_date = opts.start
     ndays = opts.ndays
     if  not start_date:
-        print "Please specify start date, see --help for more options"
+        print("Please specify start date, see --help for more options")
         sys.exit(1)
     for pair in dates(start_date, ndays, opts.overlap):
-        print '%s %s' % (pair[0], pair[1])
+        print('%s %s' % (pair[0], pair[1]))
 
 if __name__ == '__main__':
     main()

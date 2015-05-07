@@ -6,6 +6,7 @@ File       : vw2csv.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Read VW output and convert to CSV format
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -66,7 +67,7 @@ def main():
     trainfile = opts.vwtrain
     testfile = opts.vwtest
     if  not trainfile or not testfile:
-        print "Usage: %s --help" % __file__
+        print("Usage: %s --help" % __file__)
         sys.exit(0)
     flist_train = features(trainfile)
     flist_test = features(testfile)

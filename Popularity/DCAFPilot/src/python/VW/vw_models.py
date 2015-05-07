@@ -7,6 +7,7 @@ Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: This script will perform multiple VW training
              passes and average results among them.
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -75,10 +76,10 @@ def process(vwtrain, vwtest, vwopts, passes=10):
         vwmodel = '%s/model.%s' % (wdir, idx)
         vwpred = '%s/preds.%s' % (wdir, idx) 
         cmd = 'vw %s -c -k -f %s %s' % (vwname, vwmodel, vwopts)
-        print cmd
+        print(cmd)
         os.system(cmd)
         cmd = 'vw %s -t -i %s -p %s' % (vwtest, vwmodel, vwpred)
-        print cmd
+        print(cmd)
         os.system(cmd)
         preds = {}
         for _, line in enumerate( open(vwpred) ):
@@ -101,7 +102,7 @@ def main():
     optmgr = OptionParser()
     opts, _ = optmgr.get_opt()
     if  not opts.vwtrain or not opts.vwtest or not opts.vwopts:
-        print "Please provide train/test/opts options, for details see --help"
+        print("Please provide train/test/opts options, for details see --help")
         sys.exit(1)
     preds = process(opts.vwtrain, opts.vwtest, opts.vwopts, opts.passes)
     with open(opts.vwout, 'w') as ostream:

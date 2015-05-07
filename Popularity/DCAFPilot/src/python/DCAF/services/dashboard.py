@@ -6,6 +6,7 @@ File       : dashboard.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Dashboard service module
 """
+from __future__ import print_function
 
 # system modules
 import time
@@ -39,7 +40,7 @@ class DashboardService(GenericService):
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
         if  self.verbose:
-            print "%s update %s" % (self.name, cname)
+            print("%s update %s" % (self.name, cname))
         self.storage.cleanup(cname)
         docs = self.fetch(cname)
         self.storage.insert(cname, docs)
@@ -71,6 +72,6 @@ def test():
 #    for row in mgr.dataset_info(dataset, '20141001', '20141031'):
 #        print row
     row = mgr.dataset_info(dataset, '20141001', '20141031')
-    print row
+    print(row)
 if __name__ == '__main__':
     test()

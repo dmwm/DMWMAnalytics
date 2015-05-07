@@ -6,6 +6,7 @@ File       : popdb.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: PopDB service module
 """
+from __future__ import print_function
 
 # system modules
 import time
@@ -60,9 +61,9 @@ def popdb_datasets(tstart, tstop, url):
     for row in data['DATA']:
         if  not headers:
             headers = row.keys()
-            print ','.join(headers)
+            print(','.join(headers))
         out = [str(row[k]) for k in headers]
-        print ','.join(out)
+        print(','.join(out))
 
 def main():
     optmgr  = OptionParser()

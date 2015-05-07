@@ -6,6 +6,7 @@ File       : DCAF.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Generic module to perform various analytics tasks
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -42,7 +43,7 @@ class DCAF(object):
         self.multitask = self.config.get('core', {}).get('multitask', False)
         self.queue = mp.Queue()
         if  verbose:
-            print "DCAF multitask", self.multitask
+            print("DCAF multitask", self.multitask)
 
     def fetch(self, doc):
         """
@@ -52,10 +53,10 @@ class DCAF(object):
         source = doc.get('source', None)
         params = doc.get('params', {})
         if  self.verbose:
-            print "Fetch data from %s(%s)" % (source, params)
+            print("Fetch data from %s(%s)" % (source, params))
         if  source == 'sitedb':
             for item in self.sitedb.fetch('people', {}):
-                print item
+                print(item)
                 break
 
     def data_types(self):
@@ -299,7 +300,7 @@ class DCAF(object):
         tstamp = time.strftime("%Y-%m-%d %H:%M:%S GMT", time.gmtime())
         if  newdata: # request new dataset
             if  self.verbose:
-                print "Generate dataframe for new datasets", tstamp
+                print("Generate dataframe for new datasets", tstamp)
             n_days = 7
             if  timeframe:
                 n_days = ndays(yyyymmdd(timeframe[0]), yyyymmdd(timeframe[1]))
@@ -321,8 +322,8 @@ class DCAF(object):
             if  not DATASET_PAT.match(dataset):
                 continue
             if  self.verbose:
-                print "Generate dataframe for %s, timeframe: %s, %s" \
-                        % (dataset, timeframe, tstamp)
+                print("Generate dataframe for %s, timeframe: %s, %s" \
+                        % (dataset, timeframe, tstamp))
             target = dict(naccess=row['naccess'],nusers=row['nusers'],totcpu=row['totcpu'],
                     rnaccess=row['rnaccess'],rnusers=row['rnusers'],rtotcpu=row['rtotcpu'])
             rows = self.dataset_info(timeframe, dataset, dtypes, stypes, \
@@ -345,14 +346,14 @@ class DCAF(object):
                 yield row
                 dbs_datasets += 1
         if  self.verbose:
-            print "DBS datasets  : %s" % dbs_datasets
-            print "PopDB datasets: %s out of %s" % (pop_datasets, len(popdb_results))
+            print("DBS datasets  : %s" % dbs_datasets)
+            print("PopDB datasets: %s out of %s" % (pop_datasets, len(popdb_results)))
 
     def export(self, dformat):
         "Export analytics dataframe into provided data format"
-        print "Export dataframe into %s format" % dformat.lower()
+        print("Export dataframe into %s format" % dformat.lower())
         if  dformat.lower() == 'csv':
-            print "Do CSV export"
+            print("Do CSV export")
             headers = []
             for row in self.dataframe():
                 if  not headers:
@@ -361,6 +362,6 @@ class DCAF(object):
                     continue
                 yield ','.join(row)
         elif  dformat.lower() == 'vw':
-            print "Do vw export"
+            print("Do vw export")
         else:
             raise NotImplemented

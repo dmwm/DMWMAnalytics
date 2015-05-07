@@ -6,6 +6,7 @@ File       : dbs.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: DBS service module
 """
+from __future__ import print_function
 
 # system modules
 import time
@@ -49,14 +50,14 @@ class DBSService(GenericService):
                 try:
                     row['rid'] = row['dataset_id']
                 except KeyError:
-                    print "Unable to process dataset row", row
+                    print("Unable to process dataset row", row)
                     if  'dataset' in row:
                         h = hashlib.md5()
                         h.update(row['dataset'])
                         row['rid'] = int(h.hexdigest()[:10], 16)
-                        print "Generated new dataset_id", row['dataset'], h.hexdigest(), row['rid']
+                        print("Generated new dataset_id", row['dataset'], h.hexdigest(), row['rid'])
                 except:
-                    print "Unable to process dataset row", row
+                    print("Unable to process dataset row", row)
                     raise
                 row.update(inst)
                 yield row
@@ -72,7 +73,7 @@ class DBSService(GenericService):
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
         if  self.verbose:
-            print "%s update %s" % (self.name, cname)
+            print("%s update %s" % (self.name, cname))
         self.storage.cleanup(cname)
         if  cname == 'datasets':
             spec = {'dataset':'/*/*/*', 'detail':'true'}

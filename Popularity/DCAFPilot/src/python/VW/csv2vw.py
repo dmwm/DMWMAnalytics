@@ -7,6 +7,7 @@ Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Convert CSV file into VW data format
              we assume that CSV file should have id/target attributes
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -81,7 +82,7 @@ def main():
     opts, _ = optmgr.get_opt()
     csvname = opts.csv
     if not csvname:
-        print "No input CSV file is provided"
+        print("No input CSV file is provided")
         sys.exit(1)
     vwname  = opts.vw if opts.vw else '%s.vw' % csvname.split('.csv')[0]
     csv2vw(csvname, vwname, opts.sep, opts.rid, opts.target, opts.drops, opts.preds)

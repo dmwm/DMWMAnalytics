@@ -6,6 +6,7 @@ File       : model.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Generic classification model template
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -101,7 +102,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         for key, val in lparams.items():
             setattr(clf, key, val)
     setattr(clf, "random_state", 123)
-    print clf
+    print(clf)
     if  split:
         if  isinstance(split, int):
             split = split/100.
@@ -109,9 +110,9 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             pass
         elif isinstance(split, basestring):
             split = float(split)
-        print "Split level: train %s%%, validation %s%%" % (round((1-split)*100), round(split*100))
+        print("Split level: train %s%%, validation %s%%" % (round((1-split)*100), round(split*100)))
     if  verbose:
-        print "idx/limit", idx, limit
+        print("idx/limit", idx, limit)
 
     # read data and normalize it
     if  drops:
@@ -127,18 +128,18 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
     target = xdf[tcol]
     xdf = xdf.drop(tcol, axis=1)
     if  verbose:
-        print "Train file", train_file
-        print "Columns:", ','.join(xdf.columns)
-        print "train shapes:", xdf.shape, target.shape
+        print("Train file", train_file)
+        print("Columns:", ','.join(xdf.columns))
+        print("train shapes:", xdf.shape, target.shape)
         if  verbose>1:
-            print "Target:", tcol, target
+            print("Target:", tcol, target)
 
     # split our train data
     if  split:
         x_train, x_rest, y_train, y_rest = \
                 train_test_split(xdf, target, test_size=split)
         if  verbose:
-            print "train shapes after splitting:", x_train.shape, y_train.shape
+            print("train shapes after splitting:", x_train.shape, y_train.shape)
     else:
         x_train = xdf
         y_train = target
@@ -156,13 +157,13 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
     time0 = time.time()
     fit = clf.fit(x_train, y_train)
     if  verbose:
-        print "Train elapsed time", time.time()-time0
+        print("Train elapsed time", time.time()-time0)
     if  split:
         predictions = fit.predict(x_rest)
         try:
             importances = clf.feature_importances_
             if  importances.any():
-                print "Feature ranking:"
+                print("Feature ranking:")
                 columns = xdf.columns
                 indices = np.argsort(importances)[::-1]
                 num = 9 if len(columns)>9 else len(columns)
@@ -175,18 +176,18 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
                 scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
                 method = scr_str.split(',')[0]
                 res = getattr(metrics, method)(y_rest, predictions)
-                print "Score metric (%s): %s" % (method, res)
+                print("Score metric (%s): %s" % (method, res))
         if  verbose:
             loss = 0
             tot = 0
             for pval, yval in zip(predictions, y_rest):
                 if  verbose>1:
-                    print "predict value %s, real value %s" % (pval, yval)
+                    print("predict value %s, real value %s" % (pval, yval))
                 loss += logloss(pval, yval)
                 tot += 1
-            print "Final Logloss", loss/tot
+            print("Final Logloss", loss/tot)
     else:
-        print "Since there is no train/validation splitting, no prediction metrics will be shown"
+        print("Since there is no train/validation splitting, no prediction metrics will be shown")
 
     # new data file for which we want to predict
     if  newdata_file:
@@ -194,9 +195,9 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         if  verbose:
-            print "New data file", newdata_file
-            print "Columns:", ','.join(tdf.columns)
-            print "test shapes:", tdf.shape
+            print("New data file", newdata_file)
+            print("Columns:", ','.join(tdf.columns))
+            print("test shapes:", tdf.shape)
         datasets = [int(i) for i in list(tdf['dataset'])]
         dbses = [int(i) for i in list(tdf['dbs'])]
         if  scaler:
@@ -226,7 +227,7 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
             raise Exception('Invalid data type for lparams="%s", type: %s' % (lparams, type(lparams)))
         for key, val in lparams.items():
             setattr(clf, key, val)
-    print "clf:", clf
+    print("clf:", clf)
 
     if  drops:
         if  isinstance(drops, basestring):
@@ -237,7 +238,7 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         drops = [idcol]
     fit = None
     for train_file in train_file_list:
-        print "Train file", train_file
+        print("Train file", train_file)
         # read data and normalize it
         xdf = read_data(train_file, drops, scaler=scaler)
 
@@ -245,8 +246,8 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         target = xdf[tcol]
         xdf = xdf.drop(tcol, axis=1)
         if  verbose:
-            print "Columns:", ','.join(xdf.columns)
-            print "Target:", target
+            print("Columns:", ','.join(xdf.columns))
+            print("Target:", target)
 
         if  scaler:
             xdf = getattr(preprocessing, scaler)().fit_transform(xdf)
@@ -256,15 +257,15 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
             time0 = time.time()
             fit = clf.partial_fit(x_train, y_train)
             if  verbose:
-                print "Train elapsed time", time.time()-time0
-            print "### SCORE", clf.score(x_rest, y_rest)
+                print("Train elapsed time", time.time()-time0)
+            print("### SCORE", clf.score(x_rest, y_rest))
         else:
             x_train = xdf
             y_train = target
             time0 = time.time()
             fit = clf.partial_fit(x_train, y_train)
             if  verbose:
-                print "Train elapsed time", time.time()-time0
+                print("Train elapsed time", time.time()-time0)
 
     # new data for which we want to predict
     if  newdata_file:
@@ -287,8 +288,8 @@ def main():
     opts, _ = optmgr.options()
     if  opts.learner_help:
         obj = learners()[opts.learner_help]
-        print obj
-        print obj.__doc__
+        print(obj)
+        print(obj.__doc__)
         sys.exit(0)
     ofile = opts.predict
     if  not ofile:

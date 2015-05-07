@@ -6,6 +6,7 @@ File       : phedex.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Phedex service module
 """
+from __future__ import print_function
 
 # system modules
 import time
@@ -42,7 +43,7 @@ class PhedexService(GenericService):
                     yield node
                 rid += 1
         except Exception as exc:
-            print str(exc)
+            print(str(exc))
             pass
 
     def sites(self, dataset):
@@ -61,6 +62,6 @@ def test():
     dataset = '/GenericTTbar/HC-CMSSW_7_0_4_START70_V7-v1/GEN-SIM-RECO'
     res = mgr.sites(dataset)
     sites = set([r for r in res])
-    print sites
+    print(sites)
 if __name__ == '__main__':
     test()
