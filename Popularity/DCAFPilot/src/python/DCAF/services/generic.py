@@ -6,6 +6,7 @@ File       : generic.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Generic service module
 """
+from __future__ import print_function
 
 # system modules
 import time
@@ -33,24 +34,24 @@ class GenericService(object):
             res = self.storage.fetch_one('cache', {'_id':docid})
             if  res and 'data' in res:
                 if  self.verbose:
-                    print "%s::fetch url=%s, params=%s, docid=%s" \
-                            % (self.name, url, params, docid)
+                    print("%s::fetch url=%s, params=%s, docid=%s" \
+                            % (self.name, url, params, docid))
                 return res['data']
         if  self.verbose:
-            print "%s::fetch url=%s, params=%s" % (self.name, url, params)
+            print("%s::fetch url=%s, params=%s" % (self.name, url, params))
             debug = self.verbose-1
         try:
             data = getdata(url, params, debug=debug)
         except Exception as exc:
-            print str(exc)
+            print(str(exc))
             for attempt in xrange(3):
                 time.sleep(0.1)
-                print "Attempt %s" % attempt
+                print("Attempt %s" % attempt)
                 try:
                     data = getdata(url, params, debug=debug)
                     break
                 except Exception as err:
-                    print str(err)
+                    print(str(err))
                     pass
         if  cache:
             self.storage.insert('cache', {'_id':docid, 'data': data, 'url': url, 'params': params})

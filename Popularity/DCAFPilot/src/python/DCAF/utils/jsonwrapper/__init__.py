@@ -39,6 +39,7 @@ Therefore when records contains timestamp it is ADVISED to round it to integer.
 Then json/cjson implementations will agreee on input/output, while yajl will
 still differ (for that reason we can't use yajl).
 """
+from __future__ import print_function
 
 __author__ = "Valentin Kuznetsov <vkuznet@gmail.com>"
 
@@ -72,7 +73,7 @@ def loads(idict, **kwargs):
         try:
             return cjson.decode(idict)
         except:
-            print 'Unable to decode %s' % idict
+            print('Unable to decode %s' % idict)
             raise
     elif MODULE == 'yajl':
         try: # yajl.loads("123") will fail

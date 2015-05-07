@@ -3,6 +3,7 @@
 #pylint: disable=
 # https://raw.githubusercontent.com/cms-sw/ib-scheduler/master/ws_sso_content_reader.py
 
+from __future__ import print_function
 import re
 import os
 import sys
@@ -118,7 +119,7 @@ def get_cern_sso_cookie(url, debug=0):
         cookiefile = NamedTemporaryFile(delete=False)
         cmd = '%s --krb -r -u "%s" -o %s' % (cern_tool, url, cookiefile.name)
         if  debug:
-            print "Get CERN SSO cookies", cmd
+            print("Get CERN SSO cookies", cmd)
         os.system(cmd)
         cookie = cookielib.MozillaCookieJar(cookiefile.name)
         cookie.load()
@@ -131,7 +132,7 @@ def getdata_new(url, params, headers=None, ckey=None, cert=None, debug=0):
     if  params:
         url += '?%s' % urllib.urlencode(params, doseq=True)
     if  debug:
-        print "getdata:url", url
+        print("getdata:url", url)
     req = urllib2.Request(url)
     if  headers == None:
         headers = {'Accept': 'application/json'}

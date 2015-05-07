@@ -6,6 +6,7 @@ File       : utils.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: generic module with useful set of utilites
 """
+from __future__ import print_function
 
 # system modules
 import optparse
@@ -65,9 +66,9 @@ def best_features(clf, xdf, targets):
     sorted_idx = np.argsort(importances)
     best_features = features[sorted_idx][::-1]
     best_indecies = importances[sorted_idx][::-1]
-    print "Best features/importances:"
+    print("Best features/importances:")
     for key, val in zip(best_features, best_indecies):
-        print "   %20s: %.3f" % (key, val)
+        print("   %20s: %.3f" % (key, val))
     return best_features
 
 def keep_features(xdf, features):

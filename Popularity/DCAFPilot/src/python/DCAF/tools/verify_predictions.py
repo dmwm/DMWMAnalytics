@@ -6,6 +6,7 @@ File       : verify_prediction.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Verify prediction file against popular datasets
 """
+from __future__ import print_function
 
 # system modules
 import optparse
@@ -96,7 +97,7 @@ def classify(datasets):
     for key, val in pairs:
         if  not width:
             width = len(str(key))+1
-        print '%s %s %s'  % (key, ' '*(width-len(str(key))), val)
+        print('%s %s %s'  % (key, ' '*(width-len(str(key))), val))
 
 def percentage(tp, tn, fp, fn):
     "Return percentage of TP/TN/FP/FN"
@@ -112,16 +113,16 @@ def classify_all(tplist, tnlist, fplist, fnlist):
     alltiers = set(tptiers.keys()+tntiers.keys()+fptiers.keys()+fntiers.keys())
     width = max([len(t) for t in alltiers])
     title = 'TIER ' + ' '*(width-len('TIER')) + '  TP(%)  TN(%)  FP(%)  FN(%)'
-    print title
-    print '-'*len(title)
+    print(title)
+    print('-'*len(title))
     for tier in sorted(alltiers):
         pad = ' '*(width-len(tier))
         tp, tn, fp, fn = percentage(tptiers.get(tier, 0),
                                     tntiers.get(tier, 0),
                                     fptiers.get(tier, 0),
                                     fntiers.get(tier, 0))
-        print '%s %s %6.2f %6.2f %6.2f %6.2f' % (tier, pad, tp, tn, fp, fn)
-    print
+        print('%s %s %6.2f %6.2f %6.2f %6.2f' % (tier, pad, tp, tn, fp, fn))
+    print()
 
 def verify_prediction(pred, popdb, verbose=0):
     "Verify prediction file against popdb one"
@@ -147,7 +148,7 @@ def verify_prediction(pred, popdb, verbose=0):
             if  verbose>1:
                 naccess = pdict[dataset]['naccess']
                 nusers = pdict[dataset]['nusers']
-                print 'prob=%s nacc=%s nusers=%s %s' % (prob, naccess, nusers, dataset)
+                print('prob=%s nacc=%s nusers=%s %s' % (prob, naccess, nusers, dataset))
             if  float(prob)>0:
                 tpos += 1
                 tp_list.append(dataset)
@@ -162,35 +163,35 @@ def verify_prediction(pred, popdb, verbose=0):
                 tneg += 1
                 tn_list.append(dataset)
     accuracy, precision, recall, f1score = metrics(fpos, tneg, fpos, fneg)
-    print "# dataset in popdb sample :", len(pdict.keys())
-    print "# datasets we predict     :", total
-    print "# datasets in popular set :", totpop
-    print "Predicted as popular      :", popular
-    print
+    print("# dataset in popdb sample :", len(pdict.keys()))
+    print("# datasets we predict     :", total)
+    print("# datasets in popular set :", totpop)
+    print("Predicted as popular      :", popular)
+    print()
     def perc(vvv):
         return '%s%%' % round(vvv*100./total, 1)
     def space(vvv):
         return '%s%s' % (vvv, ' '*(len(str(total))-len(str(vvv))))
-    print "True positive             : %s, %s" % (space(tpos), perc(tpos))
-    print "True negative             : %s, %s" % (space(tneg), perc(tneg))
-    print "False positive            : %s, %s" % (space(fpos), perc(fpos))
-    print "False negative            : %s, %s" % (space(fneg), perc(fneg))
-    print
-    print "Tier classification"
+    print("True positive             : %s, %s" % (space(tpos), perc(tpos)))
+    print("True negative             : %s, %s" % (space(tneg), perc(tneg)))
+    print("False positive            : %s, %s" % (space(fpos), perc(fpos)))
+    print("False negative            : %s, %s" % (space(fneg), perc(fneg)))
+    print()
+    print("Tier classification")
     classify_all(tp_list, tn_list, fp_list, fn_list)
     if  verbose:
-        print "Classification of TP sample"
+        print("Classification of TP sample")
         classify(tp_list)
-        print "Classification of TN sample"
+        print("Classification of TN sample")
         classify(tn_list)
-        print "Classification of FP sample"
+        print("Classification of FP sample")
         classify(fp_list)
-        print "Classification of FN sample"
+        print("Classification of FN sample")
         classify(fn_list)
-    print "Accuracy                  :", accuracy
-    print "Precision                 :", precision
-    print "Recall                    :", recall
-    print "F1-score                  :", f1score
+    print("Accuracy                  :", accuracy)
+    print("Precision                 :", precision)
+    print("Recall                    :", recall)
+    print("F1-score                  :", f1score)
 
 def main():
     optmgr  = OptionParser()

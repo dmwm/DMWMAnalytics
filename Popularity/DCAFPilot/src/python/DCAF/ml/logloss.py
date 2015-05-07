@@ -6,6 +6,7 @@ File       : logloss.py
 Author     : Valentin Kuznetsov <vkuznet@gmail.com>
 Description: script to calculate logloss function from given input
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -48,9 +49,9 @@ def calc_logloss(fpred, fobs):
             r.lower().startswith('id')]
     pred = [int(r.replace('\n','').split(',')[-1]) for r in fopen(fpred) if not
             r.lower().startswith('id')]
-    print "obs", obs[:5]
-    print "pred", pred[:5]
-    print "LogLoss", logloss(obs, pred)
+    print("obs", obs[:5])
+    print("pred", pred[:5])
+    print("LogLoss", logloss(obs, pred))
 
 def main():
     "Main function"

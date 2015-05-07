@@ -6,6 +6,7 @@ File       : storage.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: analytics storage manager
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -97,7 +98,7 @@ class StorageManager(object):
                     break
         except InvalidDocument as exp:
             msg = "Caught bson error: " + str(exp)
-            print msg
+            print(msg)
         except InvalidOperation:
             pass
         except DuplicateKeyError as err:

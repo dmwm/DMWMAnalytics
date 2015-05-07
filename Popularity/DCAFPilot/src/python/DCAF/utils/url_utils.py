@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import os
 import sys
 import time
@@ -49,7 +50,7 @@ def getdata(url, params=None, headers=None, ckey=None, cert=None, debug=0):
     if  params:
         url += '?%s' % urllib.urlencode(params, doseq=True)
     if  debug:
-        print "getdata:url", url
+        print("getdata:url", url)
     req = urllib2.Request(url)
     if  headers == None:
         headers = {'Accept': 'application/json'}

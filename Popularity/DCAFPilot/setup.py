@@ -8,6 +8,7 @@ To clean     : python setup.py clean
 To build doc : python setup.py doc
 To run tests : python setup.py test
 """
+from __future__ import print_function
 __author__ = "Valentin Kuznetsov"
 
 import os
@@ -64,7 +65,7 @@ class TestCommand(Command):
         try:
             tests = TestLoader().loadTestsFromNames(testfiles)
         except:
-            print "\nFail to load unit tests", testfiles
+            print("\nFail to load unit tests", testfiles)
             raise
         test = TextTestRunner(verbosity = 2)
         test.run(tests)
@@ -193,7 +194,7 @@ def main():
 
     if  sys.version < required_python_version:
         msg = "I'm sorry, but %s %s requires Python %s or later."
-        print msg % (name, version, required_python_version)
+        print(msg % (name, version, required_python_version))
         sys.exit(1)
 
     # set default location for "data_files" to

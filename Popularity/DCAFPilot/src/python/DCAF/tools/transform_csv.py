@@ -8,6 +8,7 @@ Description: Perform transformation with given CSV file. The allowed transformat
 drop multiple columns, convert dataframe into classification problem, rename given target
 column.
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -79,7 +80,7 @@ def transform(fin, fout, target, thr, drops, verbose=0):
                     else:
                         tval = 0
                 except:
-                    print "Please supply valid python condition, e.g. row['naccess']>10 and row['nusers']>5"
+                    print("Please supply valid python condition, e.g. row['naccess']>10 and row['nusers']>5")
                     sys.exit(1)
         new_vals = []
         for key in new_headers:

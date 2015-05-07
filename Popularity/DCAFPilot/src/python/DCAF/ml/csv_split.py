@@ -8,6 +8,7 @@ Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: This script split given CSV file into two which
 can be used for training and validation.
 """
+from __future__ import print_function
 
 # system modules
 import os
@@ -74,7 +75,7 @@ def main():
     optmgr = OptionParser()
     opts, _ = optmgr.get_opt()
     if  not opts.fin or not opts.fout:
-        print "Usage: %s --help" % __file__
+        print("Usage: %s --help" % __file__)
         sys.exit(1)
     run(opts.fin, opts.fout, opts.split, opts.seed)
 

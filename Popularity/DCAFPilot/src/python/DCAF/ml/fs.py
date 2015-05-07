@@ -9,6 +9,7 @@ http://www.kaggle.com/c/tradeshift-text-classification/forums/t/10537/beat-the-b
 Generic case of loss function and various improvements done by
 Valentin Kuznetsov <vkuznet@gmail.com>
 '''
+from __future__ import print_function
 
 # system modules
 import os
@@ -132,8 +133,8 @@ def data(path, D, ndim, extra_dim, label_path=None, hcols=[], misses=[]):
                 val = str(tidx)+'_'+row[hcols[i]]+"_"+row[hcols[j]]
                 x[tidx] = abs(hash(val)) % D
             except Exception as exc:
-                print "tidx=%s, i=%s, j=%s" % (tidx, i, j)
-                print str(exc)
+                print("tidx=%s, i=%s, j=%s" % (tidx, i, j))
+                print(str(exc))
                 raise
 
         # parse y, if provided
@@ -264,14 +265,14 @@ def run(train, test, label, bits, alpha, hcols, no_out, misses, glf):
             print('%s\tencountered: %d\tcurrent logloss: %f' % (
                 datetime.now(), ID, (loss/33.)/ID))
             sys.__stdout__.flush()
-    print "Final loss", (loss/33.)/ID
+    print("Final loss", (loss/33.)/ID)
 
     if  no_out:
-        print "No output request"
+        print("No output request")
         sys.__stdout__.flush()
     else:
         oname = 'b%s_a%s.csv' % (bits, alpha)
-        print "Yield %s" % oname
+        print("Yield %s" % oname)
         sys.__stdout__.flush()
         with fopen(oname, 'w') as outfile:
             outfile.write('id_label,pred\n')
@@ -305,7 +306,7 @@ def main():
     no_out = opts.no_out
     misses = [int(r) for r in opts.misses.split(',') if r]
     glf = GLF(opts.a, opts.k, opts.b, opts.q, opts.m, opts.nu)
-    print glf
+    print(glf)
     run(train, test, label, bits, alpha, cols, no_out, misses, glf)
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ File       : mcm.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: mcm service module
 """
+from __future__ import print_function
 
 # system modules
 import time
@@ -36,7 +37,7 @@ class mcmService(GenericService):
     def update(self, cname):
         "Update internal database with fresh snapshot of data"
         if  self.verbose:
-            print "%s update %s" % (self.name, cname)
+            print("%s update %s" % (self.name, cname))
         self.storage.cleanup(cname)
         docs = self.fetch(cname)
         self.storage.insert(cname, docs)
@@ -57,6 +58,6 @@ def test():
     config = {'mongodb':{'dburi':'mongodb://localhost:8230'}, 'db':{'name':'analytics'}}
     mgr = mcmService(config)
     for row in mgr.prepid(prepid):
-        print row
+        print(row)
 if __name__ == '__main__':
     test()
