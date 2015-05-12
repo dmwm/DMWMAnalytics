@@ -32,7 +32,10 @@ class OptionParser():
         self.parser.add_option("--stop", action="store", type="string",
             dest="tstop", default="", help="end date, format YYYYMMDD")
         url = 'https://cms-popularity.cern.ch/popdb/popularity/'
-        host = socket.gethostbyaddr(socket.gethostname())[0]
+        try:
+            host = socket.gethostbyaddr(socket.gethostname())[0]
+        except Exception as _:
+            host = 'localhost'
         if  host.endswith('cern.ch'):
             url = 'http://cms-popularity-prod.cern.ch/popdb/popularity'
         self.parser.add_option("--url", action="store", type="string",
