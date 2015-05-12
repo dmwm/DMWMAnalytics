@@ -25,7 +25,7 @@ from DCAF.services.dashboard import DashboardService
 from DCAF.services.utils import site_tier, rel_ver, rel_type, cmssw_test
 from DCAF.services.utils import genuid, RFULL, RPRE, RPATCH
 from DCAF.services.utils import TIER0, TIER1, TIER2, TIER3, TIER_NA
-from DCAF.utils.utils import genkey, ndays, yyyymmdd
+from DCAF.utils.utils import genkey, ndays, yyyymmdd, parse_config
 from DCAF.utils.regex import DATASET_PAT
 
 class DCAF(object):
