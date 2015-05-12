@@ -32,7 +32,7 @@ class PopDBService(GenericService):
 
     def fetch(self, api, params=None):
         "Fetch data for given api"
-        url = '%s/%s?%s' % (self.url, api, urllib.urlencode(params, doseq=True))
+        url = '%s/%s/?%s' % (self.url, api, urllib.urlencode(params, doseq=True))
         docid = genkey("url=%s params=%s" % (url, params))
         res = self.storage.fetch_one('cache', {'_id':docid})
         if  res and 'data' in res:
