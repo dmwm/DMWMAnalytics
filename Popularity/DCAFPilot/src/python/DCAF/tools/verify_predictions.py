@@ -25,6 +25,8 @@ class OptionParser():
             dest="pred", default="", help="Input prediction file")
         self.parser.add_option("--popdb", action="store", type="string",
             dest="popdb", default="", help="Input popular datasets file")
+        self.parser.add_option("--format", action="store", type="string",
+            dest="oformat", default="", help="Output format, plain or csv, default plain")
         self.parser.add_option("--verbose", action="store", type="int",
             dest="verbose", default=False, help="verbose mode")
     def get_opt(self):
@@ -124,7 +126,7 @@ def classify_all(tplist, tnlist, fplist, fnlist):
         print('%s %s %6.2f %6.2f %6.2f %6.2f' % (tier, pad, tp, tn, fp, fn))
     print()
 
-def verify_prediction(pred, popdb, verbose=0):
+def verify_prediction(pred, popdb, oformat, verbose=0):
     "Verify prediction file against popdb one"
     pdict = read_popdb(popdb)
     total = 0
@@ -169,34 +171,52 @@ def verify_prediction(pred, popdb, verbose=0):
     print("Predicted as popular      :", popular)
     print()
     def perc(vvv):
-        return '%s%%' % round(vvv*100./total, 1)
+        return '%s' % round(vvv*100./total, 1)
     def space(vvv):
         return '%s%s' % (vvv, ' '*(len(str(total))-len(str(vvv))))
-    print("True positive             : %s, %s" % (space(tpos), perc(tpos)))
-    print("True negative             : %s, %s" % (space(tneg), perc(tneg)))
-    print("False positive            : %s, %s" % (space(fpos), perc(fpos)))
-    print("False negative            : %s, %s" % (space(fneg), perc(fneg)))
-    print()
-    print("Tier classification")
-    classify_all(tp_list, tn_list, fp_list, fn_list)
-    if  verbose:
-        print("Classification of TP sample")
-        classify(tp_list)
-        print("Classification of TN sample")
-        classify(tn_list)
-        print("Classification of FP sample")
-        classify(fp_list)
-        print("Classification of FN sample")
-        classify(fn_list)
-    print("Accuracy                  :", accuracy)
-    print("Precision                 :", precision)
-    print("Recall                    :", recall)
-    print("F1-score                  :", f1score)
+    if  oformat=='csv':
+        out = 'cls,tp,tn,fp,fn\n'
+        out += '%s,ALL,%s,%s,%s,%s\n' \
+                % (pred.split('.')[0], perc(tpos), perc(tneg), perc(fpos), perc(fneg))
+        tptiers = datasets2tiers(tp_list)
+        tntiers = datasets2tiers(tn_list)
+        fptiers = datasets2tiers(fp_list)
+        fntiers = datasets2tiers(fn_list)
+        alltiers = set(tptiers.keys()+tntiers.keys()+fptiers.keys()+fntiers.keys())
+        for tier in sorted(alltiers):
+            tp, tn, fp, fn = percentage(tptiers.get(tier, 0),
+                                        tntiers.get(tier, 0),
+                                        fptiers.get(tier, 0),
+                                        fntiers.get(tier, 0))
+            out += '%s,%s,%s,%s,%s,%s\n' \
+                    % (pred.split('.')[0], tier, tp, tn, fp, fn)
+        print(out)
+    else:
+        print("True positive             : %s, %s%%" % (space(tpos), perc(tpos)))
+        print("True negative             : %s, %s%%" % (space(tneg), perc(tneg)))
+        print("False positive            : %s, %s%%" % (space(fpos), perc(fpos)))
+        print("False negative            : %s, %s%%" % (space(fneg), perc(fneg)))
+        print()
+        print("Tier classification")
+        classify_all(tp_list, tn_list, fp_list, fn_list)
+        if  verbose:
+            print("Classification of TP sample")
+            classify(tp_list)
+            print("Classification of TN sample")
+            classify(tn_list)
+            print("Classification of FP sample")
+            classify(fp_list)
+            print("Classification of FN sample")
+            classify(fn_list)
+        print("Accuracy                  :", accuracy)
+        print("Precision                 :", precision)
+        print("Recall                    :", recall)
+        print("F1-score                  :", f1score)
 
 def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
-    verify_prediction(opts.pred, opts.popdb, opts.verbose)
+    verify_prediction(opts.pred, opts.popdb, opts.oformat, opts.verbose)
 
 if __name__ == '__main__':
     main()
