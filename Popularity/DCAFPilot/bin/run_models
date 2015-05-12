@@ -46,13 +46,17 @@ max_depth = 6
 
 # Task Parameters
 # the number of round to do boosting
-num_round = 2
+num_round = 20
 # 0 means do not save any model except the final round model
 save_period = 0
 # The path of training data
 data = "$trainxgb"
 # evaluate on training data as well each round
 eval_train = 1
+eval_metric = "logloss"
+eval_metric = "auc"
+eval_metric = "error"
+eval_metric = "rmse"
 # The path of test data
 test:data = "$ndataxgb"
 EOF
