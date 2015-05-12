@@ -19,3 +19,6 @@ dist/
 *.txt*
 *.ids
 *.json
+*.model
+*.predicted
+*.gif
