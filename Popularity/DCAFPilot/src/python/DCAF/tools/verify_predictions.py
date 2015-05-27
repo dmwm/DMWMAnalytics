@@ -147,23 +147,27 @@ def verify_prediction(pred, popdb, oformat, verbose=0):
             popular += 1
         if  dataset in pdict:
             totpop += 1
-            if  verbose>1:
-                naccess = pdict[dataset]['naccess']
-                nusers = pdict[dataset]['nusers']
-                print('prob=%s nacc=%s nusers=%s %s' % (prob, naccess, nusers, dataset))
             if  float(prob)>0:
                 tpos += 1
                 tp_list.append(dataset)
+                if  verbose>1:
+                    print('TP, prob=%s dataset=%s' % (prob, dataset))
             else:
                 fneg += 1
                 fn_list.append(dataset)
+                if  verbose>1:
+                    print('FN, prob=%s dataset=%s' % (prob, dataset))
         else:
             if  float(prob)>0:
                 fpos += 1
                 fp_list.append(dataset)
+                if  verbose>1:
+                    print('FP, prob=%s dataset=%s' % (prob, dataset))
             else:
                 tneg += 1
                 tn_list.append(dataset)
+                if  verbose>1:
+                    print('TN, prob=%s dataset=%s' % (prob, dataset))
     accuracy, precision, recall, f1score = metrics(fpos, tneg, fpos, fneg)
     print("# dataset in popdb sample :", len(pdict.keys()))
     print("# datasets we predict     :", total)
@@ -174,15 +178,15 @@ def verify_prediction(pred, popdb, oformat, verbose=0):
         return '%s' % round(vvv*100./total, 1)
     def space(vvv):
         return '%s%s' % (vvv, ' '*(len(str(total))-len(str(vvv))))
+    tptiers = datasets2tiers(tp_list)
+    tntiers = datasets2tiers(tn_list)
+    fptiers = datasets2tiers(fp_list)
+    fntiers = datasets2tiers(fn_list)
+    alltiers = set(tptiers.keys()+tntiers.keys()+fptiers.keys()+fntiers.keys())
     if  oformat=='csv':
         out = 'cls,tp,tn,fp,fn\n'
         out += '%s,ALL,%s,%s,%s,%s\n' \
                 % (pred.split('.')[0], perc(tpos), perc(tneg), perc(fpos), perc(fneg))
-        tptiers = datasets2tiers(tp_list)
-        tntiers = datasets2tiers(tn_list)
-        fptiers = datasets2tiers(fp_list)
-        fntiers = datasets2tiers(fn_list)
-        alltiers = set(tptiers.keys()+tntiers.keys()+fptiers.keys()+fntiers.keys())
         for tier in sorted(alltiers):
             tp, tn, fp, fn = percentage(tptiers.get(tier, 0),
                                         tntiers.get(tier, 0),
@@ -192,13 +196,18 @@ def verify_prediction(pred, popdb, oformat, verbose=0):
                     % (pred.split('.')[0], tier, tp, tn, fp, fn)
         print(out)
     else:
-        print("True positive             : %s, %s%%" % (space(tpos), perc(tpos)))
-        print("True negative             : %s, %s%%" % (space(tneg), perc(tneg)))
-        print("False positive            : %s, %s%%" % (space(fpos), perc(fpos)))
-        print("False negative            : %s, %s%%" % (space(fneg), perc(fneg)))
-        print()
-        print("Tier classification")
+        if  verbose:
+            print("True positive             : %s, %s%%" % (space(tpos), perc(tpos)))
+            print("True negative             : %s, %s%%" % (space(tneg), perc(tneg)))
+            print("False positive            : %s, %s%%" % (space(fpos), perc(fpos)))
+            print("False negative            : %s, %s%%" % (space(fneg), perc(fneg)))
+            print()
         classify_all(tp_list, tn_list, fp_list, fn_list)
+        width = max([len(t) for t in alltiers])
+        msg = 'ALL tiers'
+        pad = ' '*(width-len(msg))
+        tp, tn, fp, fn = percentage(tpos, tneg, fpos, fneg)
+        print("%s %s %6.2f %6.2f %6.2f %6.2f\n" % (msg, pad, tp, tn, fp, fn))
         if  verbose:
             print("Classification of TP sample")
             classify(tp_list)
