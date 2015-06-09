@@ -34,7 +34,7 @@ if [ -f $validvw ]; then
     echo "Found $validvw"
 else
     echo "### convert validation CSV ($valid) to VW ($validvw) format"
-    csv2vw --fin=$valid --fout=$validvw --idcol=id --target=target --prediction=0
+    csv2vw --csv=$valid --vw=$validvw --rid=id --target=target --prediction=0
 fi
 
 echo "### make prediction"
