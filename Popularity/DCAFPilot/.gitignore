@@ -10,6 +10,7 @@ doc/build
 build/
 install
 dist/
+wdir/
 *.egg-info
 *.csv*
 *.pdf
@@ -22,3 +23,4 @@ dist/
 *.model
 *.predicted
 *.gif
+*.conf
