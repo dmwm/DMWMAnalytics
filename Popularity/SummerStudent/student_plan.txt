@@ -56,6 +56,20 @@ modeling. Student is encouraged to look at its structure and either enhance it
 or create his/her own package to work with analysis cluster. In later case
 we should discuss the package structure, dependencies and deployment.
 
+Visualization/Benchmarks
+------------------------
+
+- plot various distributions of attributes to identify which are the most
+sensitive one for popular datasets
+- identify "popularity" metric via different cuts and accompany best choice with a plot
+- plot efficiency of algorithms, e.g. TP/TN/FP/FN, versus time frame (week by week)
+- benchmark CPU/RAM usage of Spark platform per single model
+- plot popularity metric behavior for various data tiers, see tiers.txt file for
+data tier definition
+
+
+
+
 References
 ----------
 
