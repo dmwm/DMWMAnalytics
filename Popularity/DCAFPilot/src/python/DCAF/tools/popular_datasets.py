@@ -43,16 +43,9 @@ def popdb_datasets(tstart, tstop, url):
     api = 'DSStatInTimeWindow'
     ckey, cert = get_key_cert()
     params = {'tstart':tstart, 'tstop':tstop}
-    url = '%s/%s?%s' % (url, api, urllib.urlencode(params, doseq=True))
-    # NOTE: popularity DB has two different access points, one
-    # within CERN network and out outside. The former does not require
-    # authentication, while later passes through CERN SSO.
-    # The following block reflects this, in a future, when popularity DB
-    # will move into cmsweb domain we'll no longer need it
-    if  url.find('cms-popularity-prod.cern.ch') != -1:
-        data = getdata(url, ckey=ckey, cert=cert, debug=0)
-    else:
-        data = sso_getdata(url, ckey=ckey, cert=cert, debug=0)
+    url = '%s/%s/?%s' % (url, api, urllib.urlencode(params, doseq=True))
+    print("url", url)
+    data = getdata(url, ckey=ckey, cert=cert, debug=0)
     data = json.loads(data)
     headers = []
     for row in data['DATA']:
