@@ -195,4 +195,4 @@ class DBSService(GenericService):
             data = json.loads(super(DBSService, self).fetch(dbs_url, params))
             for tdict in data:
                 self.tiers.add(tdict['data_tier_name'])
-        return self.tiers
+        return list(self.tiers)
