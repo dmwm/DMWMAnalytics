@@ -111,8 +111,8 @@ def server(cfile):
     "DCAFPilot static web server"
     config = ConfigParser.ConfigParser()
     config.read(cfile)
-    port = int(config.get('web_server', 'port'))
-    pdir = config.get('web_server', 'prediction_dir')
+    port = int(os.environ.get('DCAFPILOT_PORT', config.get('web_server', 'port')))
+    pdir = os.environ.get('DCAFPILOT_PREDICTIONS', config.get('web_server', 'prediction_dir'))
     mount = config.get('web_server', 'mount_point')
     if  not pdir.startswith('/'):
         pdir = os.path.join(os.getcwd(), pdir)
