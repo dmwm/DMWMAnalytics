@@ -29,8 +29,9 @@ Milestones:
    - data transformation
 2. Run various ML algorithms and make predictions for number of accesses to the dataset
    - identify existing ML algorithms to run over the data
-   - how to configure and choose ML algorithm
-   - how to perform Cross Validation and generalize ML algorithm
+     - run ML algorithm from DCAFPilot (RF, LinearSVC, SGDClassfier, VW, xgboost)
+     as well as SVM, decision tree and naive bayes from Spark platform
+   - perform Cross Validation and generalize ML algorithm
    - yield predictions
    - measure performance, e.g. how long each algorithm takes vs its efficiency vs hardware resources
 3. Perform step #2 for various data-tiers or collection of data-tiers
@@ -87,3 +88,6 @@ lxplus:/afs/cern.ch/user/v/valya/workspace/analytics/data/
 
 [5] DCAFPilot package is available on github:
 https://github.com/dmwm/DMWMAnalytics/tree/master/Popularity/DCAFPilot
+
+[6] Spark MLlib
+https://spark.apache.org/docs/1.1.0/mllib-linear-methods.html
