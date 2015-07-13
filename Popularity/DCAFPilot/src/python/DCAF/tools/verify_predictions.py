@@ -54,8 +54,11 @@ def read_popdb(popdb):
             if  len(vals) < 2:
                 break
             row = dict(zip(headers, vals))
-            dataset = row.pop('dataset')
-            pdict[dataset] = row
+            try:
+                dataset = row.pop('dataset')
+                pdict[dataset] = row
+            except:
+                pass
     return pdict
 
 def metrics(tpos, tneg, fpos, fneg):
