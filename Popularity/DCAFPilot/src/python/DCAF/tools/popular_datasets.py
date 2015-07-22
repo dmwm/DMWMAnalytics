@@ -44,7 +44,6 @@ def popdb_datasets(tstart, tstop, url):
     ckey, cert = get_key_cert()
     params = {'tstart':tstart, 'tstop':tstop}
     url = '%s/%s/?%s' % (url, api, urllib.urlencode(params, doseq=True))
-    print("url", url)
     data = getdata(url, ckey=ckey, cert=cert, debug=0)
     data = json.loads(data)
     headers = []
