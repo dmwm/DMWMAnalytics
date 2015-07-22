@@ -13,7 +13,7 @@ else
 fi
 gfile=/tmp/gen_dataframes.sh
 if [ -f $gfile ]; then
-    rm $gfile
+    rm -f $gfile
 fi
 mkdir -p $ddir/log
 cd $wdir
