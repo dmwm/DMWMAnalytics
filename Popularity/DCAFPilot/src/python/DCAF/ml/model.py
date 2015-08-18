@@ -85,7 +85,8 @@ def factorize(col, xdf, sdf=None):
 
 def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         drops=None, split=0.3, scorer=None,
-        scaler=None, ofile=None, idx=0, limit=-1, gsearch=None, crossval=None, verbose=False):
+        scaler=None, ofile=None, idx=0, limit=-1,
+        gsearch=None, crossval=None, seed=123, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
@@ -101,7 +102,8 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             raise Exception('Invalid data type for lparams="%s", type: %s' % (lparams, type(lparams)))
         for key, val in lparams.items():
             setattr(clf, key, val)
-    setattr(clf, "random_state", 123)
+    setattr(clf, "random_state", seed)
+    random.seed(seed)
     print(clf)
     if  split:
         if  isinstance(split, int):
@@ -137,7 +139,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
     # split our train data
     if  split:
         x_train, x_rest, y_train, y_rest = \
-                train_test_split(xdf, target, test_size=split)
+                train_test_split(xdf, target, test_size=split, random_state=seed)
         if  verbose:
             print("train shapes after splitting:", x_train.shape, y_train.shape)
     else:
@@ -209,7 +211,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             out.to_csv(ofile, header=True, index=False)
 
 def model_iter(train_file_list, newdata_file, idcol, tcol,
-    learner, lparams=None, drops=None, split=0.1, scaler=None, ofile=None, verbose=False):
+    learner, lparams=None, drops=None, split=0.1, scaler=None, ofile=None, seed=123, verbose=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
@@ -218,6 +220,8 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
     if  learner not in ['SGDClassifier', 'SGDRegressor']:
         raise Exception("Unsupported learner %s" % learner)
     clf = learners()[learner]
+    setattr(clf, "random_state", seed)
+    random.seed(seed)
     if  lparams:
         if  isinstance(lparams, str):
             lparams = json.loads(lparams)
@@ -253,7 +257,7 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
             xdf = getattr(preprocessing, scaler)().fit_transform(xdf)
         if  split:
             x_train, x_rest, y_train, y_rest = \
-                    train_test_split(xdf, target, test_size=0.1)
+                    train_test_split(xdf, target, test_size=0.1, random_state=seed)
             time0 = time.time()
             fit = clf.partial_fit(x_train, y_train)
             if  verbose:
@@ -305,13 +309,13 @@ def main():
             if  len(train_files):
                 break
 
-    random.seed(12345)
+#    random.seed(12345)
     if  model2run == 'model_iter':
         model_iter(train_file_list=train_files, newdata_file=opts.newdata,
                 idcol=opts.idcol, tcol=opts.target,
                 learner=opts.learner, lparams=opts.lparams,
                 drops=opts.drops, split=opts.split,
-                scaler=opts.scaler, ofile=ofile, verbose=opts.verbose)
+                scaler=opts.scaler, ofile=ofile, seed=opts.seed, verbose=opts.verbose)
     else:
         model(train_file=opts.train, newdata_file=opts.newdata,
                 idcol=opts.idcol, tcol=opts.target,
@@ -319,7 +323,7 @@ def main():
                 drops=opts.drops, split=opts.split,
                 scorer=opts.scorer, scaler=opts.scaler, ofile=ofile,
                 idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,
-                crossval=opts.cv, verbose=opts.verbose)
+                crossval=opts.cv, seed=opts.seed, verbose=opts.verbose)
 
 if __name__ == '__main__':
     main()
