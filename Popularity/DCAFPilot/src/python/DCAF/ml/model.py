@@ -31,7 +31,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn import metrics
 
 # local modules
-from DCAF.ml.utils import OptionParser, normalize, logloss, GLF
+from DCAF.ml.utils import OptionParser, normalize, logloss, GLF, rates
 from DCAF.ml.clf import learners, param_search, crossvalidation, print_clf_report
 import DCAF.utils.jsonwrapper as json
 
@@ -175,6 +175,10 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             pass
         if  scorer:
             for scr in scorer.split(','):
+                if  scr.lower() in ['tp', 'tn', 'fp', 'fn']:
+                    res = rates(y_rest, predictions)
+                    print("Score metric (%s): %s" % (scr.upper(), res[scr.lower()]))
+                    continue
                 scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
                 method = scr_str.split(',')[0]
                 res = getattr(metrics, method)(y_rest, predictions)
