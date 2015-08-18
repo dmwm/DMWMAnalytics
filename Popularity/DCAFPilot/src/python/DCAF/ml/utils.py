@@ -9,6 +9,7 @@ Description: generic module with useful set of utilites
 from __future__ import print_function
 
 # system modules
+import itertools
 import optparse
 from math import log, exp
 
@@ -142,6 +143,9 @@ class OptionParser(object):
         self.parser.add_option("--limit", action="store", type="int",
             default=-1, dest="limit",
             help="number of rows to process, default -1 (everything)")
+        self.parser.add_option("--seed", action="store", type="int",
+            default=123, dest="seed",
+            help="initial seed value, default 123")
         self.parser.add_option("--verbose", action="store", type="int",
             default=0, dest="verbose",
             help="verbose output, default=0")
@@ -158,3 +162,21 @@ class OptionParser(object):
         "Returns parse list of options"
         return self.parser.parse_args()
 
+def rates(y_true, predictions):
+    "Return TP/TN/FP/FN rates for given vectors"
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    for lhs, rhs in itertools.izip(y_true, predictions):
+        if  lhs == rhs:
+            if  lhs == 1:
+                tp += 1
+            else:
+                tn += 1
+        else:
+            if  lhs == 1:
+                fn += 1
+            else:
+                fp += 1
+    return dict(tp=tp, tn=tn, fp=fp, fn=fn)
