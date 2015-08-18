@@ -22,7 +22,7 @@ from sklearn.metrics.scorer import SCORERS
 #from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # package modules
-from DCAF.ml.utils import logloss
+from DCAF.ml.utils import logloss, rates
 from DCAF.utils.utils import fopen
 
 class OptionParser():
@@ -98,6 +98,10 @@ def checker(predictions, y_true, scorer, verbose=False):
         print("ERROR: no scorer provided, please see --help for their list")
         sys.exit(1)
     for scr in scorer.split(','):
+        if  scr.lower() in ['tp', 'tn', 'fp', 'fn']:
+            res = rates(y_true, predictions)
+            print("Score metric (%s): %s" % (scr.upper(), res[scr.lower()]))
+            continue
         scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
         method = scr_str.split(',')[0]
         res = getattr(metrics, method)(y_true, predictions)
