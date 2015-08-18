@@ -32,6 +32,8 @@ class DashboardService(GenericService):
     def fetch(self, api, params=None):
         "Fetch data for given api"
         url = '%s/%s' % (self.url, api)
+        if self.verbose:
+            print(url, params)
         data = json.loads(super(DashboardService, self).fetch(url, params))
         if  data and 'jobs' in data:
             for row in data['jobs']:
@@ -67,11 +69,13 @@ class DashboardService(GenericService):
 
 def test():
     dataset="/QCD_Pt-1000to1400_Tune4C_13TeV_pythia8/Spring14dr-castor_PU20bx25_POSTLS170_V5-v1/AODSIM"
-    config = {'mongodb':{'dburi':'mongodb://localhost:8230'}, 'db':{'name':'analytics'}}
-    mgr = DashboardService(config)
+    config = {'mongodb':{'dburi':'mongodb://localhost:8230'}, 'db':{'name':'analytics'},
+            'services':{'dashboard':'http://dashb-cms-job.cern.ch/dashboard/request.py',
+                        'sitedb':'https://cmsweb.cern.ch/sitedb/data/prod'}}
+    mgr = DashboardService(config, verbose=1)
 #    for row in mgr.dataset_info(dataset, '20141001', '20141031'):
 #        print row
-    row = mgr.dataset_info(dataset, '20141001', '20141031')
+    row = mgr.dataset_info(dataset, '20140101', '20140107')
     print(row)
 if __name__ == '__main__':
     test()
