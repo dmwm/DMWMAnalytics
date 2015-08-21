@@ -28,7 +28,7 @@ class OptionParser():
         usage  = 'Usage: %prog [options]\n'
         usage += 'Description: transform dataframe from given CSV file, e.g. create classification dataset\n'
         usage += 'Example: transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=100 --drops=nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct\n'
-        usage += '         transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target=naccess --target-thr=\'row["naccess"]>0 and row["nusers"]>5 --drops=totcpu,nsites\''
+        usage += '         transform_csv --fin=2014.csv.gz --fout=train.csv.gz --target-thr=\'row["naccess"]>0 and row["nusers"]>5\' --drops=naccess,nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct'
         self.parser = optparse.OptionParser(usage=usage)
         self.parser.add_option("--fin", action="store", type="string",
             dest="fin", default="", help="Input file")
