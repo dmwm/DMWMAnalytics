@@ -64,7 +64,7 @@ def loader(ifile, target, sep=','):
     arr = []
     with fopen(ifile, 'r') as istream:
         while True:
-            row = istream.readline().replace('\n', '').split(sep)
+            row = istream.readline().replace('\n', '').replace('\r', '').split(sep)
             if  not headers:
                 headers = row
                 tidx = headers.index(target)
