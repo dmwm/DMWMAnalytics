@@ -34,19 +34,25 @@ tiers=c(939483,772735,193739,777543,305515)
 ndf13=subset(df13, df13$tier%in%tiers)
 ndf14=subset(df14, df14$tier%in%tiers)
 ndf15=subset(df15, df15$tier%in%tiers)
-ndf13=subset(ndf13, ndf13$naccess!=0)
-ndf14=subset(ndf14, ndf14$naccess!=0)
-ndf15=subset(ndf15, ndf15$naccess!=0)
+
+#ndf13=subset(ndf13, ndf13$naccess!=0)
+#ndf14=subset(ndf14, ndf14$naccess!=0)
+#ndf15=subset(ndf15, ndf15$naccess!=0)
+
+# apply a cut
+ndf13=subset(ndf13, ndf13$naccess>10 && ndf13$totcpu>10)
+ndf14=subset(ndf14, ndf14$naccess>10 && ndf15$totcpu>10)
+ndf15=subset(ndf15, ndf15$naccess>10 && ndf15$totcpu>10)
 
 # apply cut on nusers
-ndf13=subset(ndf13, log(ndf13$nuser)>2)
-ndf14=subset(ndf14, log(ndf14$nuser)>2)
-ndf15=subset(ndf15, log(ndf15$nuser)>2)
+#ndf13=subset(ndf13, log(ndf13$nuser)>2)
+#ndf14=subset(ndf14, log(ndf14$nuser)>2)
+#ndf15=subset(ndf15, log(ndf15$nuser)>2)
 
 ntiers13 = nrow(subset(ndf13, ndf13$tier%in%tiers))
 ntiers14 = nrow(subset(ndf14, ndf14$tier%in%tiers))
 ntiers15 = nrow(subset(ndf15, ndf15$tier%in%tiers))
-print(sprintf("Cut naccess>0 && log(nuser)>2, tiers13=%s, tiers14=%s, tiers15=%s", ntiers13, ntiers14, ntiers15))
+print(sprintf("Cut naccess>10 && totcpu>10, tiers13=%s, tiers14=%s, tiers15=%s", ntiers13, ntiers14, ntiers15))
 ntiers13 = nrow(subset(df13, df13$tier%in%tiers))
 ntiers14 = nrow(subset(df14, df14$tier%in%tiers))
 ntiers15 = nrow(subset(df15, df15$tier%in%tiers))
