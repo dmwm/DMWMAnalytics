@@ -44,6 +44,7 @@ fi
 # write generator script
 echo "#!/bin/bash" > $gfile
 echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
+echo "mkdir -p $ddir/log" >> gfile
 dates --start=$start_day | awk \
 '{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout="DDIR"/dataframe-"$1"-"$2".csv.gz 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
 DDIR=$ddir CFG=$cfg DBSEXTRA=$dbsextra >> $gfile
