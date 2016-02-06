@@ -40,6 +40,21 @@ def files(idir, ext=".csv.gz"):
         if  fname.endswith(ext):
             yield '%s/%s' % (idir, fname)
 
+def find_headers(files):
+    "Scan all files and extract full set of attributes"
+    headers = []
+    for fname in files:
+        with fopen(fname, 'r') as istream:
+            line = istream.readline()
+            fheaders = line.replace('\n','').split(',')
+            if  not headers:
+                headers = fheaders
+            if  headers != fheaders: # take a union of two sets
+                headers = list(set(headers) | set(fheaders))
+    if  'id' in headers:
+        headers.remove('id')
+    return ['id'] + sorted(headers)
+
 def merger(fin, fout, verbose=False):
     "Merger function"
     filelist = []
@@ -56,23 +71,23 @@ def merger(fin, fout, verbose=False):
         print("ERROR; unable to create filelist from %s" % fin)
         sys.exit(1)
 
-    headers = None
+    headers = find_headers(filelist)
+
     with fopen(fout, 'wb') as ostream:
+        ostream.write(','.join(headers)+'\n')
         for fname in filelist:
             if  verbose:
                 print("Read", fname)
             with fopen(fname, 'r') as istream:
+                keys = istream.readline().replace('\n', '').split(',') # headers
                 while True:
                     line = istream.readline()
-                    if  not headers:
-                        headers = line
-                        ostream.write(headers)
-                        continue
-                    if  line == headers:
-                        continue
                     if  not line:
                         break
-                    ostream.write(line)
+                    vals = line.replace('\n', '').split(',')
+                    row = dict(zip(keys, vals))
+                    srow = ','.join([str(row.get(k, 0)) for k in headers])
+                    ostream.write(srow+'\n')
 
 def main():
     "Main function"
