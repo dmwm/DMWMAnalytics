@@ -52,7 +52,7 @@ def page(data, title='DCAF predictions'):
 %s
 </body></html>""" % (title, data)
 
-class Root:
+class DCAFRoot(object):
     """DCAFPilot static web server root class"""
     def __init__(self, idir):
         self.idir = idir
@@ -113,14 +113,14 @@ def server(cfile):
     config.read(cfile)
     port = int(os.environ.get('DCAFPILOT_PORT', config.get('web_server', 'port')))
     pdir = os.environ.get('DCAFPILOT_PREDICTIONS', config.get('web_server', 'prediction_dir'))
-    mount = config.get('web_server', 'mount_point')
+    mount = config.get('web_server', 'mount_point').replace('"', '')
     if  not pdir.startswith('/'):
         pdir = os.path.join(os.getcwd(), pdir)
     cherrypy.config.update({'environment': 'production',
                             'log.screen': True,
                             'server.socket_port': port})
     print("Start DCAFPilot server, port=%s, pdir=%s, mount=%s" % (port, pdir, mount))
-    cherrypy.quickstart(Root(pdir), mount)
+    cherrypy.quickstart(DCAFRoot(pdir), mount)
 
 def main():
     "Main function to run DCAFPilot server"
