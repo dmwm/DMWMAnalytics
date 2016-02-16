@@ -1,8 +1,9 @@
-Intership Workflow Log
+Intership Workflow (2016, Spring)
 ----------------------
 
-First week
-2016.02.03-2016.02.05
+### Week #1
+
+03-05 Feb 2016
 * Registration
 * Setting up desktop computer (OS, computing account, network)
 * Printing and reading of "Predicting CMS datasets popularity with Machine Learning" (L.Giommi)
@@ -12,24 +13,25 @@ First week
 * Cloning and reviewing DMWMAnalytics project from https://github.com/dmwm/DMWMAnalytics
 * Taking part in excursion about LEIR, become familiar with general idea of experiments, history, what is being done, planned to be done in CERN (guide Ivan Glushkov)
 
-Second week
-2016.02.08-2016.02.10
+### Week #2
+
+08-10 Feb 2016
 * Taking part in excursion for LHC CMS (guide Ivan Glushkov)
 * Familiarizing with DMWMAnalytics project structure, reading about CMS services
 * Continue reading printed documents
 * Familiarizing with DMWMAnalytics project structure, reading about CMS, went to LHC CMS
 * Working with DMWMAnalytics services issues (found problems with MongoDB service, VER=HG1509a)
 
-2016.02.11
+11 Feb 2016
 * Recreated VM (named "mbiliau-dev"), in favor of complete configuration needed to perform additional step: request and register personal certificate, which (not explicitly described in "CERN virtual machine tutorial") is performed by
- - https://ca.cern.ch/ca/user/Request.aspx?template=EE2User
- - https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookStartingGrid#ObtainingCert
+  * https://ca.cern.ch/ca/user/Request.aspx?template=EE2User
+  * https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookStartingGrid#ObtainingCert
 * Deloyed updated (VER=HG1512e) DMWMAnalytics services from comp.valya repository
 * Overviewing DMWM tutorials in https://cms-http-group.web.cern.ch/cms-http-group/tutorials/index.html
- - Monitoring service is verifying reply from http://localhost:8330/, found http://localhost:8330/ is unavailable in my VM (cause currently unknown)
-* Checking result from http://localhost:8330/dcafpilot/, familiarizing in return with access logs /data/srv/logs/dcafpilot/dcaf-*.log
+  * Monitoring service is verifying reply from http://localhost:8330/, found http://localhost:8330/ is unavailable in my VM (cause currently unknown)
+* Checking result from http://localhost:8330/dcafpilot/, familiarizing with access logs /data/srv/logs/dcafpilot/dcaf-*.log
 
-2016.02.12
+12 Feb 2016
 * Checking services configuration /data/srv/current/config/<service>/
 * Checking crontab, and manually rerunning dataframe, models, verify cron jobs, and the results obtained
  - Dataframe collected data for previous week
@@ -38,16 +40,21 @@ Second week
 * Continuing familiarizing with project structure
 * Checking ML models in code
 
-2016.02.14
+14 Feb 2016
 * Checking tasks for upcoming week (most important is project selection)
 * Dowloading dataframe data for 2013-2016 years, running models and verify crons for new data
 * Checking the prediction results - some classifiers gave 0/1 predictions, some all dataset classified as unpopular. TODO: Recheck results in detail next week
 * Overviewing "Predicting dataset popularity for CMS experiment" (V.Kuznetsov et al.) - https://www.dropbox.com/s/ldjxme0upoonbfb/paper.pdf
-* Working out some UNIX commands (commands with compressed files, curl, nmap, sed)
+* Working with some UNIX commands
 
-[Third week]
-2016.02.15
+### Week #3
+15 Feb 2016
 * Overviewing "Dynamic Data Management in a Data Grid Environment" (B.Barrefors) - http://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1113&context=computerscidiss
 * Overviewing "The anatomy of the grid:  Enabling scalable virtual organizations." (I.Foster et al.) - http://hpc.sagepub.com/content/15/3/200.full.pdf.
 * Filling and formatting of internship workflow document
 * Learning using github : fork, fetch, commit, push, merge, setting remote repositories, updating forked DMWMAnalytics repository
+
+16 Feb 2016
+* Set up new branch "mantas" and uploaded worflow document
+* Reading of "Predicting dataset popularity for CMS experiment" (V.Kuznetsov et al.) - https://www.dropbox.com/s/ldjxme0upoonbfb/paper.pdf
+* Reading slides of Pilot1 talk "DCAFPilot for CMS" by V.Kuznetsov (talk of Pilot2 was not found in the directory DMWMAnalytics/Popularity/DCAFPilot/doc/talks/)
