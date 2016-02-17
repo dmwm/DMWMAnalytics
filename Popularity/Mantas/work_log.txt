@@ -58,3 +58,27 @@ Intership Workflow (2016, Spring)
 * Set up new branch "mantas" and uploaded worflow document
 * Reading of "Predicting dataset popularity for CMS experiment" (V.Kuznetsov et al.) - https://www.dropbox.com/s/ldjxme0upoonbfb/paper.pdf
 * Reading slides of Pilot1 talk "DCAFPilot for CMS" by V.Kuznetsov (talk of Pilot2 was not found in the directory DMWMAnalytics/Popularity/DCAFPilot/doc/talks/)
+* Printing and reading of: 
+  - "Implementing data placement strategies for the CMS experiment based on a popularty model" (D. Giordano et a.)
+  - "The CMD Data Management System" (M. Giffels et al.)
+  - "Explorint Patterns and Correlations in CMS Computing Operations Data with Big Data Analyrics Techniques" (V. Kuznetsov et el.)
+* Printing of:
+  - "Explointing CMS data popularity to model the evolution of data management for Run-2 and beyond" (D. Bonacorsi et al.)
+  - "CMS computing operations during run 1" (J. Adelman et al.)
+
+17 Feb 2016
+* Rereading of "Predicting dataset popularity for CMS experiment" (V.Kuznetsov et al.)
+* Rereading of Pilot1 talk "DCAFPilot for CMS" (V.Kuznetsov) slides
+* Checked current verification resuls, models do not show robust performance (causes unknown for the moment):
+  - LinearSVC: TP 0%, TN 87.8%
+  - RandomForestClassifier: TP 0%, TN 87.8%
+  - SGDClassifier: TP 0.8%, TN 0.9%
+  - VW: TP 12.0%, TN 86.9%
+  - XGBoost: TP 12.2%, TN 0.0%
+* Fixing continuous 404 error logged in /data/srv/logs/admin/feed.lemon:
+  - Error: *Feb 17 03:46:36 dcafpilot-web PING FAILED <http://localhost:8330> DCAFPilot HTTP Error 404: Not Found*
+  - Fix:
+    + 'PING_URL="http://localhost:8330/"' -> 'PING_URL="http://localhost:8330/dcafpilot/"' in /data/srv/current/config/dcafpilot/monitoring-dcafpilot-web.ini
+    + restart web server
+  - After fix: *Feb 17 16:51:45 dcafpilot-web PING OK <http://localhost:8330/dcafpilot/>*
+* Starting working with robustness of dataframe.py
