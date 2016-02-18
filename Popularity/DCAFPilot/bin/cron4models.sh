@@ -12,6 +12,10 @@ else
     exit 1
 fi
 cd $wdir
+
+# seed MongoDB with fresh snapshot of DBS datasets
+dataframe --seed-cache --verbose=1
+
 echo "Workdir $wdir"
 # generic naming conventions
 train=train.csv.gz
