@@ -70,6 +70,8 @@ def merger(fin, fout, verbose=False):
     if  not filelist:
         print("ERROR; unable to create filelist from %s" % fin)
         sys.exit(1)
+    # sort all files
+    filelist.sort()
 
     headers = find_headers(filelist)
 
