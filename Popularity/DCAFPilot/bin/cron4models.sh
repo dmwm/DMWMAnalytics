@@ -12,6 +12,7 @@ else
     exit 1
 fi
 cd $wdir
+echo "Workdir $wdir"
 # generic naming conventions
 train=train.csv.gz
 train_clf=train_clf.csv.gz
@@ -49,6 +50,8 @@ merge_csv --fin=$ddir --fout=$train --verbose
 # transform the data
 echo "transform_csv --fin=$train --fout=$train_clf --target=naccess --target-thr=$thr --drops=$drops"
 transform_csv --fin=$train --fout=$train_clf --target=naccess --target-thr=$thr --drops=$drops
+echo "$wdir/$train_clf"
+zcat $train_clf | head -1
 
 # generate new data
 newtstamps="$start_day-$today"
@@ -61,6 +64,8 @@ dataframe --start=$start_day --stop=$today --newdata --fout=$new
 # transform the newdata
 echo "transform_csv --fin=$new --fout=$newdata --target=naccess --target-thr=$thr --drops=$drops"
 transform_csv --fin=$new --fout=$newdata --target=naccess --target-thr=$thr --drops=$drops
+echo "$wdir/$newdata"
+zcat $newdata | head -1
 
 # run models via run_models script
 echo "run_models $train_clf $newdata predict"
