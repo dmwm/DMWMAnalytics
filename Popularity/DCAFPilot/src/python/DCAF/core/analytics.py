@@ -290,8 +290,13 @@ class DCAF(object):
         dbs_datasets = 0
         popdb_results = [r for r in self.popdb.dataset_stat(timeframe[0], timeframe[1])]
         if  dformat == 'csv':
-            row = popdb_results[0]
-            dataset = row['dataset']
+            dataset = None
+            for row in popdb_results:
+                if  len(row['dataset'].split('/')) == 4: # dataset with 3 slashes
+                    dataset = row['dataset']
+                    break
+            if  not dataset:
+                raise Exception("Unable to find valid dataset name in popdb output")
             target = dict(naccess=row['naccess'],nusers=row['nusers'],totcpu=row['totcpu'],
                     rnaccess=row['rnaccess'],rnusers=row['rnusers'],rtotcpu=row['rtotcpu'])
             # seed dataset to determine headers of the dataframe

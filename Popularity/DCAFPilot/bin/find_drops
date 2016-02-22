@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# find out where package is installed on a system
+root=`python -c "import DCAF; print '/'.join(DCAF.__file__.split('/')[:-1])"`
+# run actual script
+python $root/tools/find_drops.py ${1+"$@"}
