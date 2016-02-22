@@ -7,6 +7,20 @@ TODO:
 * Redo manually whole dataframe-model-verify process
 * Select final scorer functions to use further in project
 
+22 Feb 2016
+* Finished writing 2016 data prediction script
+  - Verification made by:
+    + prediction results comparison against validation data labels
+    + prediction results comparison against data received from popDB
+  - Scorers for two verification methods produce different confusion matrices
+  - TODO: Need to find the cause of different prediction metrics
+  - Observation: in second comparison (with PopDB) there is 0 TP score
+  - Task accomplishment : DMWMAnalytics/Popularity/Mantas/pred_task_0219/ (branch mantas)
+    + run - the script
+    + work_plan.txt - the work plan
+    + results.txt - result output from the run
+
+
 ### Week #3
 
 21 Feb 2016
