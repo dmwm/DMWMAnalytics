@@ -7,6 +7,21 @@ TODO:
 * Redo manually whole dataframe-model-verify process
 * Select final scorer functions to use further in project
 
+23 Feb 2016
+* Cheking origin of validation and popdb verification mismatch
+  - ML model seed seem to have infuence for model prediction instabilily, but current script prediction is done only once, so it should not have influence to mismatch of verifications 
+  - Started to looking deeper into data collection and verification processes
+* Found dataframe cron still produces incorrect files
+  - Reinstalled fresh new copy of latest RMPs (VER=HG1512e, dcafpilot 0.1.21) to avoid any changes I may have made
+  - Rerun cron, it still produces corrupt dataframe file (dataframe-20160211-20160217.csv.gz)
+  - Collected file size is ~200MB whereas ordinary dataframe file is ~700MB
+  - Found errors in log dataframe-20160211-20160217.log (occurs 9 times with different document size figures):
+    *dashboard::fetch url=http://dashb-cms-job.cern.ch/dashboard/request.py/jobefficiencyapi, params={'start': '2016-2-11', 'type': 'analysis', 'end': '2016-2-17', 'site': 'all', 'dataset': u'/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext3-v1/MINIAODSIM'}*
+    *Caught bson error: BSON document too large (49280874 bytes) - the connected server supports BSON document sizes up to 16777216 bytes*
+  - In order to increase BSON document size limit, one line of MongoDB C++ code can be changed before recompilation:
+    + https://github.com/mongodb/mongo/blob/master/src/mongo/bson/util/builder.h#L64
+* Continuing working with search for reason of different scorer results
+
 22 Feb 2016
 * Finished writing 2016 data prediction script
   - Verification made by:
