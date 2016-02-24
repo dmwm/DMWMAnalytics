@@ -30,11 +30,11 @@ for fname in $(ls $DATA_DIR); do
     fi
 done
 flist=${flist::${#flist}-1}
-merge_csv --fin=$flist --fout=train.csv.gz
+#merge_csv --fin=$flist --fout=train.csv.gz
 echo "Transforming training data..."
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 #echo "  - Headers to drop in training set: $drops"
-transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+#transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
 
 
 # prepare validation data
@@ -46,22 +46,24 @@ for fname in $(ls $DATA_DIR); do
     fi
 done
 flist=${flist::${#flist}-1}
-merge_csv --fin=$flist --fout=valid.csv.gz
+#merge_csv --fin=$flist --fout=valid.csv.gz
 echo "Transforming validation data..."
 drops=`find_drops --file1=valid.csv.gz --file2=train_clf.csv.gz --drops=$drops`
 #echo "  - Headers to drop in validation set: $drops"
-transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+#transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
 
+
+#====================== PREDICTION PART ==========================#
 
 # train model and validate
 echo "Training the model and predicting validation data..."
-model --learner=$CLASSIFIER --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt --split=0
+#model --learner=$CLASSIFIER --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt --split=0
 
 
 # check prediction
 echo "Scoring prediction..."
 echo "Scores against validation data labels:" > $OUTPUT
-check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1 >> $OUTPUT
+#check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1 >> $OUTPUT
 
 
 # check prediction according PopDB
@@ -69,10 +71,13 @@ echo "Retrieving popular datasets from PopDB..."
 echo "============================" >> $OUTPUT
 echo "Scores against popDB data:" >> $OUTPUT
 # if needed, seed MongoDB with fresh snapshot of DBS datasets
-dataframe --config=/data/srv/current/config/dcafpilot/dcaf.cfg --seed-cache
-pred2dataset --fin=pred.txt --fout=pred.predicted
-popular_datasets --start=$VALIDATE_START --stop=$VALIDATE_END > pred.popdb
+#dataframe --config=/data/srv/current/config/dcafpilot/dcaf.cfg --seed-cache
+#pred2dataset --fin=pred.txt --fout=pred.predicted
+echo "Removing duplicates..."
+remove_duplicates --fin=pred.predicted --fout=pred.unique --colno=1 --verbose=1
+#popular_datasets --start=$VALIDATE_START --stop=$VALIDATE_END > pred.popdb
 verify_predictions --pred=pred.predicted --popdb=pred.popdb >> $OUTPUT
+verify_predictions --pred=pred.unique --popdb=pred.popdb >> $OUTPUT.uniq
 
 
 # output results

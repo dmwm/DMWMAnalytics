@@ -1,57 +1,54 @@
 Scores against validation data labels:
-Score metric (accuracy_score): 0.999145576856
-Score metric (precision_score): 0.998353055996
-Score metric (recall_score): 0.997318871489
-Score metric (f1_score): 0.997835695778
 ============================
 Scores against popDB data:
-# dataset in popdb sample : 0
-# datasets we predict     : 82919
-# datasets in popular set : 0
-Predicted as popular      : 16263
+# dataset in popdb sample : 18613
+# datasets we predict     : 82829
+# datasets in popular set : 24927
+Predicted as popular      : 16255
 
 TIER                             TP(%)  TN(%)  FP(%)  FN(%)
 -----------------------------------------------------------
 ALCAPROMPT                        0.00 100.00   0.00   0.00
-ALCARECO                          0.00  99.06   0.94   0.00
-AOD                               0.00  60.07  39.93   0.00
-AODSIM                            0.00  63.37  36.63   0.00
+ALCARECO                          0.95  99.02   0.00   0.03
+AOD                              40.86  54.03   0.00   5.11
+AODSIM                           36.48  46.29   0.00  17.24
 DQM                               0.00 100.00   0.00   0.00
-DQMIO                             0.00  97.20   2.80   0.00
+DQMIO                             2.79  95.84   0.00   1.37
 DQMROOT                           0.00 100.00   0.00   0.00
-FEVT                              0.00  80.00  20.00   0.00
+FEVT                             19.57  80.43   0.00   0.00
 FEVTDEBUGHLT                      0.00 100.00   0.00   0.00
 FEVTHLTALL                        0.00 100.00   0.00   0.00
-GEN                               0.00  99.56   0.44   0.00
+GEN                               0.44  97.80   0.00   1.76
 GEN-RAW                           0.00 100.00   0.00   0.00
 GEN-RAWDEBUG                      0.00 100.00   0.00   0.00
-GEN-SIM                           0.00  68.47  31.53   0.00
+GEN-SIM                          31.72  62.01   0.00   6.27
 GEN-SIM-DIGI                      0.00 100.00   0.00   0.00
-GEN-SIM-DIGI-RAW                  0.00  98.22   1.78   0.00
-GEN-SIM-DIGI-RAW-HLTDEBUG         0.00  98.68   1.32   0.00
-GEN-SIM-DIGI-RECO                 0.00  98.84   1.16   0.00
-GEN-SIM-RAW                       0.00  79.88  20.12   0.00
+GEN-SIM-DIGI-RAW                  1.83  97.39   0.00   0.78
+GEN-SIM-DIGI-RAW-HLTDEBUG         1.33  98.52   0.00   0.15
+GEN-SIM-DIGI-RECO                 1.21  98.79   0.00   0.00
+GEN-SIM-RAW                      20.04  78.01   0.00   1.96
 GEN-SIM-RAW-HLT                   0.00 100.00   0.00   0.00
+GEN-SIM-RAW-HLTDEBUG              0.00 100.00   0.00   0.00
 GEN-SIM-RAW-HLTDEBUG-RECO         0.00 100.00   0.00   0.00
 GEN-SIM-RAW-HLTDEBUG-RECODEBUG    0.00 100.00   0.00   0.00
 GEN-SIM-RAW-RECO                  0.00 100.00   0.00   0.00
 GEN-SIM-RAWDEBUG                  0.00 100.00   0.00   0.00
-GEN-SIM-RECO                      0.00  96.40   3.60   0.00
-GEN-SIM-RECODEBUG                 0.00  85.58  14.42   0.00
-LHE                               0.00  66.43  33.57   0.00
-MINIAOD                           0.00  68.29  31.71   0.00
-MINIAODSIM                        0.00  67.11  32.89   0.00
+GEN-SIM-RECO                      3.61  95.78   0.00   0.61
+GEN-SIM-RECODEBUG                15.62  82.29   0.00   2.08
+LHE                              33.59  57.22   0.00   9.19
+MINIAOD                          31.82  65.33   0.00   2.84
+MINIAODSIM                       32.86  28.66   0.00  38.48
 PREMIXRAW                         0.00 100.00   0.00   0.00
-RAW                               0.00  79.23  20.77   0.00
+RAW                              20.92  74.92   0.00   4.16
 RAW-HLT                           0.00 100.00   0.00   0.00
-RAW-RECO                          0.00  91.38   8.62   0.00
+RAW-RECO                          8.53  90.78   0.00   0.69
 RAWRECOSIMHLT                     0.00 100.00   0.00   0.00
-RECO                              0.00  83.84  16.16   0.00
-USER                              0.00  88.18  11.82   0.00
+RECO                             16.36  82.06   0.00   1.58
+USER                             11.79  84.68   0.00   3.53
 
-ALL tiers                         0.00  80.39  19.61   0.00
+ALL tiers                        19.62  69.91   0.00  10.47
 
-Accuracy                  : 0.836028714888
-Precision                 : 0.5
-Recall                    : 1.0
+Accuracy                  : 0.869738937123
+Precision                 : 0
+Recall                    : 0.0
 F1-score                  : 0

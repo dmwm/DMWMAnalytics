@@ -76,7 +76,7 @@ def metrics(tpos, tneg, fpos, fneg):
     except:
         recall = 0
     try:
-        f1score = 2*precition*recall/(precition+recall)
+        f1score = 2*precision*recall/(precision+recall)
     except:
         f1score = 0
     return accuracy, precision, recall, f1score
@@ -171,7 +171,7 @@ def verify_prediction(pred, popdb, oformat, verbose=0):
                 tn_list.append(dataset)
                 if  verbose>1:
                     print('TN, prob=%s dataset=%s' % (prob, dataset))
-    accuracy, precision, recall, f1score = metrics(fpos, tneg, fpos, fneg)
+    accuracy, precision, recall, f1score = metrics(tpos, tneg, fpos, fneg)
     print("# dataset in popdb sample :", len(pdict.keys()))
     print("# datasets we predict     :", total)
     print("# datasets in popular set :", totpop)
