@@ -144,3 +144,14 @@ func testRecords() []Record {
 	}
 	return records
 }
+
+// helper function to get new DBS Records
+func newRecords(start, stop string) []Record {
+	var records []Record
+	datasets := datasetsInTimeWindow(start, stop)
+	for _, d := range datasets {
+		prec := Record{"naccess": 0, "totcpu": 0, "nusers": 0, "rnaccess": 0, "rtotcpu": 0, "rnusers": 0, "dataset": d}
+		records = append(records, prec)
+	}
+	return records
+}
