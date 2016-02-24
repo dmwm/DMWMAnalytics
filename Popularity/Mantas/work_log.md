@@ -7,8 +7,45 @@ TODO:
 * Redo manually whole dataframe-model-verify process
 * Select final scorer functions to use further in project
 
+24 Feb 2016
+* Continue working with inequality of verification results
+  - Found duplicates influence in verify_predictions
+  - Created script to remove duplicates
+  - Added optional --target parameter in verify_predictions to enable evaluation of popular dataset by naccess>10
+  - Fixed run script
+  - Difference dropped up to 15% for recall, 0.1% for precision score
+
+  -------------------------------------------------------  
+  
+    Scores for verification with validation set:
+    
+        Score metric (accuracy_score): 0.999096461744
+        Score metric (precision_score): 0.998474307336
+        Score metric (recall_score): 0.996953263055
+        Score metric (f1_score): 0.997713205476
+    
+    Scorers for verification with popdb data:
+    
+      Primal :
+        Accuracy                  : 0.836028714888
+        Precision                 : 0.5
+        Recall                    : 1.0
+        F1-score                  : 0
+    
+      Current :
+        Accuracy                  : 0.972475728862
+        Precision                 : 0.999590876547
+        Recall                    : 0.838164665523
+        F1-score                  : 0.911788030042
+  
+    - Verification with validation set performed with check_prediction script  
+    - Verification with validation set performed with verify_predictions script  
+    
+  --------------------------------------------------------------
+* Noticed seed-mbriliau.cert disappears several times a day. Did not investigate the causes yet
+
 23 Feb 2016
-* Cheking origin of validation and popdb verification mismatch
+* Checking origin of validation and popdb verification mismatch
   - ML model seed seem to have infuence for model prediction instabilily, but current script prediction is done only once, so it should not have influence to mismatch of verifications 
   - Started to looking deeper into data collection and verification processes
 * Found dataframe cron still produces incorrect files
