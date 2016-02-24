@@ -1,0 +1,27 @@
+Task
+====
+Train classifier using 2015 year second half data and verify it within available 2016 data
+====
+
+Plan
+====
+1. Training data preparation
+  a. Merge dataframe from period 20150701-20160101
+  b. Transform
+
+2. Validation data preparation
+  a. Merge dataframe from period 20160101-20160229
+  b. Transform
+    i. Drop columns to equalize headers with the training data
+
+3. Train a model without split and predict validation data labels
+
+4. Verify prediction against validation data labels
+  a. Check scorers
+
+5. Verify prediction against data from popDB
+  a. Swap ids in prediction file to real dataset names
+  b. Interrogate PopDB for popular databases
+  c. Compare a against b and  obtain scorers
+
+6. Manually investigate scorers from (4) and (5) which should not be different
