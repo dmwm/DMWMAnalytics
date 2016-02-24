@@ -1,24 +1,24 @@
 # dataset in popdb sample : 18613
 # datasets we predict     : 68703
-# datasets in popular set : 14823
+# datasets in popular set : 11660
 Predicted as popular      : 9777
 
 TIER                             TP(%)  TN(%)  FP(%)  FN(%)
 -----------------------------------------------------------
 ALCAPROMPT                        0.00 100.00   0.00   0.00
 ALCARECO                          0.54  99.42   0.00   0.04
-AOD                              20.92  75.50   0.00   3.58
-AODSIM                           34.86  51.99   0.00  13.15
+AOD                              20.92  75.73   0.00   3.36
+AODSIM                           34.83  62.00   0.03   3.14
 DQM                               0.00 100.00   0.00   0.00
-DQMIO                             2.89  96.01   0.00   1.10
+DQMIO                             2.89  97.03   0.00   0.08
 DQMROOT                           0.00 100.00   0.00   0.00
 FEVT                             10.26  89.74   0.00   0.00
 FEVTDEBUGHLT                      0.00 100.00   0.00   0.00
 FEVTHLTALL                        0.00 100.00   0.00   0.00
-GEN                               0.44  97.92   0.00   1.64
+GEN                               0.44  99.45   0.00   0.11
 GEN-RAW                           0.00 100.00   0.00   0.00
 GEN-RAWDEBUG                      0.00 100.00   0.00   0.00
-GEN-SIM                          28.97  66.87   0.00   4.16
+GEN-SIM                          28.97  67.20   0.00   3.83
 GEN-SIM-DIGI                      0.00 100.00   0.00   0.00
 GEN-SIM-DIGI-RAW                  1.38  98.34   0.00   0.28
 GEN-SIM-DIGI-RAW-HLTDEBUG         0.72  99.28   0.00   0.00
@@ -30,122 +30,22 @@ GEN-SIM-RAW-HLTDEBUG-RECO         0.00 100.00   0.00   0.00
 GEN-SIM-RAW-HLTDEBUG-RECODEBUG    0.00 100.00   0.00   0.00
 GEN-SIM-RAW-RECO                  0.00 100.00   0.00   0.00
 GEN-SIM-RAWDEBUG                  0.00 100.00   0.00   0.00
-GEN-SIM-RECO                      2.27  97.34   0.00   0.39
+GEN-SIM-RECO                      2.27  97.46   0.00   0.27
 GEN-SIM-RECODEBUG                15.12  84.88   0.00   0.00
-LHE                              31.35  61.46   0.00   7.19
-MINIAOD                          14.61  83.57   0.00   1.81
-MINIAODSIM                       19.49  44.71   0.00  35.79
+LHE                              31.35  61.60   0.00   7.05
+MINIAOD                          14.61  84.06   0.00   1.33
+MINIAODSIM                       19.48  67.43   0.01  13.08
 PREMIXRAW                         0.00 100.00   0.00   0.00
-RAW                              13.91  82.83   0.00   3.26
+RAW                              13.91  82.97   0.00   3.12
 RAW-HLT                           0.00 100.00   0.00   0.00
 RAW-RECO                          3.59  95.90   0.00   0.51
 RAWRECOSIMHLT                     0.00 100.00   0.00   0.00
 RECO                             10.36  88.91   0.00   0.74
-USER                              8.23  89.32   0.00   2.45
+USER                              8.23  91.15   0.00   0.62
 
-ALL tiers                        14.23  78.42   0.00   7.34
+ALL tiers                        14.22  83.02   0.01   2.75
 
-Accuracy                  : 0.914367172386
-Precision                 : 0
-Recall                    : 0.0
-F1-score                  : 0
-# dataset in popdb sample : 18613
-# datasets we predict     : 21754
-# datasets in popular set : 7607
-Predicted as popular      : 4897
-
-TIER                             TP(%)  TN(%)  FP(%)  FN(%)
------------------------------------------------------------
-ALCAPROMPT                        0.00 100.00   0.00   0.00
-ALCARECO                          1.87  97.98   0.00   0.14
-AOD                              32.48  61.41   0.00   6.11
-AODSIM                           53.21  28.46   0.00  18.33
-DQM                               0.00 100.00   0.00   0.00
-DQMIO                             1.06  98.40   0.00   0.53
-DQMROOT                           0.00 100.00   0.00   0.00
-FEVT                             10.00  90.00   0.00   0.00
-FEVTDEBUGHLT                      0.00 100.00   0.00   0.00
-FEVTHLTALL                        0.00 100.00   0.00   0.00
-GEN                               0.59  97.23   0.00   2.18
-GEN-RAW                           0.00 100.00   0.00   0.00
-GEN-RAWDEBUG                      0.00 100.00   0.00   0.00
-GEN-SIM                          26.43  67.98   0.00   5.60
-GEN-SIM-DIGI                      0.00 100.00   0.00   0.00
-GEN-SIM-DIGI-RAW                  3.33  96.67   0.00   0.00
-GEN-SIM-DIGI-RAW-HLTDEBUG         1.46  98.54   0.00   0.00
-GEN-SIM-DIGI-RECO                 1.35  98.65   0.00   0.00
-GEN-SIM-RAW                      14.79  82.88   0.00   2.33
-GEN-SIM-RAW-HLT                   0.00 100.00   0.00   0.00
-GEN-SIM-RAW-HLTDEBUG-RECO         0.00 100.00   0.00   0.00
-GEN-SIM-RAW-HLTDEBUG-RECODEBUG    0.00 100.00   0.00   0.00
-GEN-SIM-RAW-RECO                  0.00 100.00   0.00   0.00
-GEN-SIM-RAWDEBUG                  0.00 100.00   0.00   0.00
-GEN-SIM-RECO                      3.98  95.05   0.00   0.96
-GEN-SIM-RECODEBUG                41.38  58.62   0.00   0.00
-LHE                              33.42  58.49   0.00   8.09
-MINIAOD                          26.84  71.43   0.00   1.73
-MINIAODSIM                       24.02  26.81   0.00  49.17
-PREMIXRAW                         0.00 100.00   0.00   0.00
-RAW                               9.42  85.60   0.00   4.99
-RAW-RECO                          4.88  93.90   0.00   1.22
-RAWRECOSIMHLT                     0.00 100.00   0.00   0.00
-RECO                             23.37  76.14   0.00   0.48
-USER                             12.06  86.63   0.00   1.31
-
-ALL tiers                        22.51  65.03   0.00  12.46
-
-Accuracy                  : 0.839235925728
-Precision                 : 0
-Recall                    : 0.0
-F1-score                  : 0
-# dataset in popdb sample : 18613
-# datasets we predict     : 68703
-# datasets in popular set : 14823
-Predicted as popular      : 9777
-
-TIER                             TP(%)  TN(%)  FP(%)  FN(%)
------------------------------------------------------------
-ALCAPROMPT                        0.00 100.00   0.00   0.00
-ALCARECO                          0.54  99.42   0.00   0.04
-AOD                              20.92  75.50   0.00   3.58
-AODSIM                           34.86  51.99   0.00  13.15
-DQM                               0.00 100.00   0.00   0.00
-DQMIO                             2.89  96.01   0.00   1.10
-DQMROOT                           0.00 100.00   0.00   0.00
-FEVT                             10.26  89.74   0.00   0.00
-FEVTDEBUGHLT                      0.00 100.00   0.00   0.00
-FEVTHLTALL                        0.00 100.00   0.00   0.00
-GEN                               0.44  97.92   0.00   1.64
-GEN-RAW                           0.00 100.00   0.00   0.00
-GEN-RAWDEBUG                      0.00 100.00   0.00   0.00
-GEN-SIM                          28.97  66.87   0.00   4.16
-GEN-SIM-DIGI                      0.00 100.00   0.00   0.00
-GEN-SIM-DIGI-RAW                  1.38  98.34   0.00   0.28
-GEN-SIM-DIGI-RAW-HLTDEBUG         0.72  99.28   0.00   0.00
-GEN-SIM-DIGI-RECO                 0.44  99.56   0.00   0.00
-GEN-SIM-RAW                       7.88  90.88   0.00   1.25
-GEN-SIM-RAW-HLT                   0.00 100.00   0.00   0.00
-GEN-SIM-RAW-HLTDEBUG              0.00 100.00   0.00   0.00
-GEN-SIM-RAW-HLTDEBUG-RECO         0.00 100.00   0.00   0.00
-GEN-SIM-RAW-HLTDEBUG-RECODEBUG    0.00 100.00   0.00   0.00
-GEN-SIM-RAW-RECO                  0.00 100.00   0.00   0.00
-GEN-SIM-RAWDEBUG                  0.00 100.00   0.00   0.00
-GEN-SIM-RECO                      2.27  97.34   0.00   0.39
-GEN-SIM-RECODEBUG                15.12  84.88   0.00   0.00
-LHE                              31.35  61.46   0.00   7.19
-MINIAOD                          14.61  83.57   0.00   1.81
-MINIAODSIM                       19.49  44.71   0.00  35.79
-PREMIXRAW                         0.00 100.00   0.00   0.00
-RAW                              13.91  82.83   0.00   3.26
-RAW-HLT                           0.00 100.00   0.00   0.00
-RAW-RECO                          3.59  95.90   0.00   0.51
-RAWRECOSIMHLT                     0.00 100.00   0.00   0.00
-RECO                             10.36  88.91   0.00   0.74
-USER                              8.23  89.32   0.00   2.45
-
-ALL tiers                        14.23  78.42   0.00   7.34
-
-Accuracy                  : 0.914367172386
-Precision                 : 0
-Recall                    : 0.0
-F1-score                  : 0
+Accuracy                  : 0.972475728862
+Precision                 : 0.999590876547
+Recall                    : 0.838164665523
+F1-score                  : 0.911788030042
