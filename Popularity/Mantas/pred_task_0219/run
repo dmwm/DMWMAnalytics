@@ -51,10 +51,10 @@ for fname in $(ls $DATA_DIR); do
     fi
 done
 flist=${flist::${#flist}-1}
-#merge_csv --fin=$flist --fout=train.csv.gz
+merge_csv --fin=$flist --fout=train.csv.gz
 echo "Transforming training data..."
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
-#transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
 
 
 # prepare validation data
@@ -66,17 +66,17 @@ for fname in $(ls $DATA_DIR); do
     fi
 done
 flist=${flist::${#flist}-1}
-#merge_csv --fin=$flist --fout=valid.csv.gz
+merge_csv --fin=$flist --fout=valid.csv.gz
 echo "Transforming validation data..."
 drops=`find_drops --file1=valid.csv.gz --file2=train_clf.csv.gz --drops=$drops`
-#transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
 
 
 #====================== PREDICTION ======================#
 
 # train model and validate
 echo "Training the model and predicting validation data..."
-#model --learner=$CLASSIFIER --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt --split=0
+model --learner=$CLASSIFIER --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=pred.txt --split=0
 
 
 # check prediction
@@ -98,7 +98,7 @@ echo "Removing duplicates..."
 echo "Acquiring PopDB datasets within validation period..."
 popular_datasets --start=$VALIDATE_START --stop=$VALIDATE_END > pred.popdb
 verify_predictions --pred=pred.predicted --popdb=pred.popdb --target='naccess' --target-thr=10 >> $OUTPUT
-verify_predictions --pred=pred.unique --popdb=pred.popdb --target='naccess' --target-thr=10 > $OUTPUT.uniq
+verify_predictions --pred=pred.unique --popdb=pred.popdb --target='naccess' --target-thr=10 > $OUTPUT_
 
 
 # output results

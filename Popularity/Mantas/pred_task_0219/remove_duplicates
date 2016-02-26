@@ -13,6 +13,8 @@ __author__ = "Mantas Briliauskas"
 
 # system modules
 import optparse
+
+# package modules
 from DCAF.utils.utils import fopen
 
 class OptionParser():
