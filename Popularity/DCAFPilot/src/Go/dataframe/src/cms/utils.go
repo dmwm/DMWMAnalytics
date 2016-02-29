@@ -86,6 +86,8 @@ func writeRecords(records []Record, fout string) {
 
 			}
 		}
+		// replace possible nil's with -1
+		out = strings.Replace(out, "<nil>", "-1", -1)
 		if _, err := w.Write([]byte(out + "\n")); err != nil {
 			panic(err)
 		}
