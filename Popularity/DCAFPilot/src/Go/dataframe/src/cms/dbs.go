@@ -74,6 +74,29 @@ func allDatasets() Record {
 	return rdict
 }
 
+<<<<<<< HEAD
+=======
+// helper function to get DBS datasets for given time interval
+func datasetsInTimeWindow(start, stop string) []string {
+	var out []string
+	api := "datasets"
+	mint := utils.UnixTime(start)
+	maxt := utils.UnixTime(stop)
+	for dbsinst, _ := range dbsInstances() {
+		furl := fmt.Sprintf("%s/%s/?min_cdate=%d&max_cdate=%d&dataset_access_type=VALID", dbsUrl(dbsinst), api, mint, maxt)
+		response := utils.FetchResponse(furl, "")
+		if response.Error == nil {
+			records := loadDBSData(furl, response.Data)
+			for _, rec := range records {
+				dataset := rec["dataset"].(string)
+				out = append(out, dataset)
+			}
+		}
+	}
+	return out
+}
+
+>>>>>>> master
 // helper function to get release information about dataset
 func datasetReleases(dataset string, ch chan Record) {
 	api := "releaseversions"

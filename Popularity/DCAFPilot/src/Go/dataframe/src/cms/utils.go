@@ -86,6 +86,11 @@ func writeRecords(records []Record, fout string) {
 
 			}
 		}
+<<<<<<< HEAD
+=======
+		// replace possible nil's with -1
+		out = strings.Replace(out, "<nil>", "-1", -1)
+>>>>>>> master
 		if _, err := w.Write([]byte(out + "\n")); err != nil {
 			panic(err)
 		}
@@ -144,3 +149,17 @@ func testRecords() []Record {
 	}
 	return records
 }
+<<<<<<< HEAD
+=======
+
+// helper function to get new DBS Records
+func newRecords(start, stop string) []Record {
+	var records []Record
+	datasets := datasetsInTimeWindow(start, stop)
+	for _, d := range datasets {
+		prec := Record{"naccess": 0, "totcpu": 0, "nusers": 0, "rnaccess": 0, "rtotcpu": 0, "rnusers": 0, "dataset": d}
+		records = append(records, prec)
+	}
+	return records
+}
+>>>>>>> master
