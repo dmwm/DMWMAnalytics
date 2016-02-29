@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# ASSIGNMENT #2
+# received    : 2016 02 29
+# description :
+#  using old dataframes in one case and new Go generated dataframes
+#  in another train a classifier, verify prediction results and analyse
+#  the impact of additional attributes in new dataframes
+
+
+# certificate check
+if [ ! -f $X509_USER_PROXY ]; then
+    echo "Certificate is not accessible. Checking for copy..."
+    if [ -f $X509_USER_PROXY.bkp ]; then
+        cp $X509_USER_PROXY.bkp $X509_USER_PROXY
+        if [ -f $X509_USER_PROXY ]; then
+            echo "Certificate recreated successfully."
+        else
+            echo "Certificate was unsuccessful to recreate. Exiting..."
+            exit 1
+        fi
+    fi
+fi
+
+# training 20150101-20151231, validation 20160101-20160229
+train_rx="dataframe(-2015[0-9]{4}){2}\.csv\.gz$"
+valid_rx="dataframe(-20160[1-2][0-9]{2}){2}\.csv\.gz$"
+
+# data directory
+data_path=/data/srv/state/dcafpilot/analytics/data
+
+# classifiers
+declare -a models=('AdaBoostClassifier' 'BaggingClassifier'
+    'DecisionTreeClassifier' 'RandomForestClassifier' 'KNeighborsClassifier')
+
+echo "Starting script..."
+
+# load of path variables to use DCAFPilot functions
+. /data/srv/current/apps/DCAFPilot/etc/profile.d/init.sh
+
+## PREPARATION OF DATA
+
+# training data
+echo "Merging training data..."
+files=""
+for fn in $(ls $data_path); do
+    if [[ $fn =~ $train_rx ]]; then
+        files="$data_path/$fn,$files"
+    fi
+done
+files=${files::${#files}-1}
+merge_csv --fin=$files --fout=train.csv.gz
+echo "Transforming training data..."
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+
+# validation data
+echo "Merging validation data..."
+files=""
+for fn in $(ls $data_path); do
+    if [[ $fn =~ $valid_rx ]]; then
+        files="$data_path/$fn,$files"
+    fi
+done
+files=${files::${#files}-1}
+merge_csv --fin=$files --fout=valid.csv.gz
+echo "Transforming validation data..."
+drops=`find_drops --file1=valid.csv.gz --file2=train_clf.csv.gz --drops=$drops`
+transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+
+
+## PREDICTION
+
+# train model and validate
+for m in "${models[@]}"; do
+    echo "Training and scoring of $m..."
+    model --learner=$m --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=$m.txt --split=0
+    check_prediction --fin=valid_clf.csv.gz --fpred=$m.txt --scorer=accuracy,precision,recall,f1 > $m.pred
+done
