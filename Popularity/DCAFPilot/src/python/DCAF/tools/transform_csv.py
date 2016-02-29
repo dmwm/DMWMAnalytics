@@ -72,7 +72,7 @@ def transform(fin, fout, target, thr, drops, verbose=0):
             line = line.replace('\n', '')
             if  verbose:
                 eno += 1
-                msg = "Warning %d: unrecognized value in %s line : %s"
+                msg = "Warning #%d: unrecognized value in %s line : %s"
                 print(msg % (eno, fin, line))
             spl = line.split(',')
             row = dict(zip(headers, spl))
