@@ -54,6 +54,7 @@ def transform(fin, fout, target, thr, drops, verbose=0):
     istream = fopen(fin, 'r')
     ostream = fopen(fout, 'wb')
     headers = False
+    eno     = 0
     for line in istream.readlines():
         if  not headers:
             headers = line.replace('\n', '').split(',')
@@ -65,7 +66,26 @@ def transform(fin, fout, target, thr, drops, verbose=0):
                     new_headers.append(val)
                 ostream.write(','.join(new_headers)+',target\n')
             continue
-        vals = [eval(v) for v in line.replace('\n', '').split(',')]
+        try:
+            vals = [eval(v) for v in line.replace('\n', '').split(',')]
+        except:
+            line = line.replace('\n', '')
+            if  verbose:
+                eno += 1
+                msg = "Warning #%d: unrecognized value in %s line : %s"
+                print(msg % (eno, fin, line))
+            spl = line.split(',')
+            row = dict(zip(headers, spl))
+            vals = []
+            for r in row:
+                try:
+                    va = eval(row[r])
+                    vals.append(va)
+                except:
+                    if  verbose:
+                        print("- value: %s, column: %s. altering to -1." %
+                                (row[r], r))
+                    vals.append(-1)
         row = dict(zip(headers, vals))
         if  thr==-1: # keep regression
             tval = row[target]
