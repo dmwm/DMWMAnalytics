@@ -1,11 +1,45 @@
 Intership Workflow (2016, Spring)
 ----------------------
 
-### Week #4
+### Week #5
 TODO:
-* Continue with 2016 data prediction script
-* Redo manually whole dataframe-model-verify process
-* Select final scorer functions to use further in project
+* Assignment 1: use 2015 new dataframes for training 5 classifiers, 2016 data for verification, obtain the results
+* Assignment 2: within same period using old and new dataframes analyze effect of new columns in new dataframe
+
+01 Mar 2016
+* Wrote script for assignment 2, fixed assigment 1
+* Assignment 1 script was running much longer (several hours) - it uses data from more than 1 year period
+  - 4 finished, 5th running
+* Assignment 2 script runs much shorter since it uses 4 months [3+1] data
+  - Constructed setting to run nearly all available - 14 - classifiers (subsequently)
+  - Script has finished processing the data with all classifiers (in ~1.5 hours)
+  - Continue working towards analysing the output results
+
+
+### Week #4
+
+29 Feb 2016
+* Working with assigment 1
+  - Were some differences : 'dbs' -> 'dbsinst' in new dataframe
+  - There are situations when new dataframe does not have columns which older one had
+* Created draft for assignment 2
+
+26 Feb 2016
+* Reading the code how the dataframe is generated and how it differs from information received only from PopDB
+* Reading about ROC AUC
+* Started to implement framework to work with logistic regression and threshold, stopped after Friday skype call since ROC+AUC and AUC are different methods
+* Received new tasks for next week:
+  - Run 5 classifiers on newly Go-generated dataframes using 2015 training data and 2016 validation data
+  - Running same setting use old and new dataframes to show influence of additional attributes within new dataframe
+  - Install Go, run dataframe generation script
+
+25 Feb 2016
+* Investigated scorer functions, there relevance, working towards intuition
+* Continuing working with prediction script regarding verification methods
+* Found out that different verification methods work with different data
+  - check_prediction   : dataframes contain information from PopDB plius 1000% of random databases
+  - verify_predictions : verifies against PopDB
+* Found the duplicates in dataframes data, but its normal in case of sampling with replacement 
 
 24 Feb 2016
 * Continue working with inequality of verification results
