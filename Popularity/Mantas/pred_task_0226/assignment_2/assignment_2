@@ -22,58 +22,99 @@ if [ ! -f $X509_USER_PROXY ]; then
     fi
 fi
 
-# training 20150101-20151231, validation 20160101-20160229
-train_rx="dataframe(-2015[0-9]{4}){2}\.csv\.gz$"
-valid_rx="dataframe(-20160[1-2][0-9]{2}){2}\.csv\.gz$"
+# data expressions: training 201501*-201503*, validation 201504*
+train_rx="dataframe(-20150[1-3][0-9]{2}){2}\.csv\.gz$"
+valid_rx="dataframe(-201504[0-9]{2}){2}\.csv\.gz$"
 
-# data directory
-data_path=/data/srv/state/dcafpilot/analytics/data
+# data directories
+old_data_path=/data/srv/state/dcafpilot/analytics/old_data
+new_data_path=/data/srv/state/dcafpilot/analytics/data
 
-# classifiers
-declare -a models=('AdaBoostClassifier' 'BaggingClassifier'
-    'DecisionTreeClassifier' 'RandomForestClassifier' 'KNeighborsClassifier')
+# headers to drop
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+#drops="rel3_32,$drops" #for this specific case, training data has one attribute more then validation data withing Go-generated dataframes
+
+# models to use
+classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier" "SVC" "lda_rfc" "pca_knc" "pca_rfc" "pca_svc")
 
 echo "Starting script..."
 
 # load of path variables to use DCAFPilot functions
 . /data/srv/current/apps/DCAFPilot/etc/profile.d/init.sh
 
+
 ## PREPARATION OF DATA
 
-# training data
-echo "Merging training data..."
-files=""
-for fn in $(ls $data_path); do
-    if [[ $fn =~ $train_rx ]]; then
-        files="$data_path/$fn,$files"
+find_files() {
+    : '
+    Usage:  find_files /path/to/data/ regex
+    Output: file list suitable to use with merge_csv
+    '
+    path=$1 #data path
+    re=$2 #regex condition 
+    files=""
+    for f in $(ls $path); do
+        if [[ $f =~ $re ]]; then
+            files="$path/$f,$files"
+        fi
+    done
+    echo ${files::${#files}-1}
+}
+
+verify_attributes() {
+    : '
+    Usage:  verify_attributes prefix
+    No output, checks if data is consistent to proceed to prediction
+    '
+    pref=$1 #prefix {old, new}
+    _diff=`./headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
+    if [ ! "${#_diff}" -le 0 ]; then
+        endl=$'\n'
+        echo "[$pref] Error: different number of attributes. Difference:$endl$_diff"
+        exit 1
     fi
-done
-files=${files::${#files}-1}
-merge_csv --fin=$files --fout=train.csv.gz
-echo "Transforming training data..."
-drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
-transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+}
 
-# validation data
-echo "Merging validation data..."
-files=""
-for fn in $(ls $data_path); do
-    if [[ $fn =~ $valid_rx ]]; then
-        files="$data_path/$fn,$files"
-    fi
-done
-files=${files::${#files}-1}
-merge_csv --fin=$files --fout=valid.csv.gz
-echo "Transforming validation data..."
-drops=`find_drops --file1=valid.csv.gz --file2=train_clf.csv.gz --drops=$drops`
-transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+prep_data() {
+    : '
+    Usage: prep_data /path/to/data/ prefix
+    Output: data preparation for prediction
+    '
+    echo "Preparing $2 data..."
+    path=$1 #data path
+    pref=$2 #prefix {old, new}
+    tfiles=$(find_files $path $train_rx)
+    vfiles=$(find_files $path $valid_rx)
+    merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
+    merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
+    drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+    #drops=`find_drops --file1=${pref}_train_clf.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+}
 
+predict_and_verify() {
+    : '
+    Usage:  predict_and_verify prefix classifier
+    Output: trains, predicts, verifies, writes score to file
+    '
+    echo "|`date +'%Y-%m-%d %T'`| Predicting and verifying $2 data..."
+    clf=$1 #classifier
+    pref=$2 #prefix
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
+    check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=accuracy,precision,recall,f1 > "${pref}_${clf}.pred"
+}
 
-## PREDICTION
-
-# train model and validate
-for m in "${models[@]}"; do
-    echo "Training and scoring of $m..."
-    model --learner=$m --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=$m.txt --split=0
-    check_prediction --fin=valid_clf.csv.gz --fpred=$m.txt --scorer=accuracy,precision,recall,f1 > $m.pred
-done
+#prep_data $old_data_path old
+#prep_data $new_data_path new
+verify_attributes old
+verify_attributes new
+if [ ! -z "$classifiers" ]; then
+    for clf in "${classifiers[@]}"; do
+        predict_and_verify $clf old
+        predict_and_verify $clf new
+    done
+elif [ ! -z "$classifier"]; then
+    predict_and_verify $classifier old
+    predict_and_verify $classifier new
+fi

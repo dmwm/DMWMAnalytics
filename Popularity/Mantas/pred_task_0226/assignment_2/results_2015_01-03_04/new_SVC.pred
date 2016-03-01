@@ -1,0 +1,4 @@
+Score metric (accuracy_score): 0.97193244513
+Score metric (precision_score): 0.790960451977
+Score metric (recall_score): 0.110410094637
+Score metric (f1_score): 0.193771626298

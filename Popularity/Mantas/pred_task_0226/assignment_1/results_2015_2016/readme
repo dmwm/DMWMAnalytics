@@ -1,0 +1,9 @@
+2016-03-01
+Results for classification of 2016 data using 2015 data to train models
+
+Notes:
+* Used 5 classifiers
+* Used newly Go-generated dataframes
+
+Todo:
+* Analyse results

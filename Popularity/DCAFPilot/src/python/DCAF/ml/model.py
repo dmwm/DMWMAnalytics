@@ -205,11 +205,14 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             print("Columns:", ','.join(tdf.columns))
             print("test shapes:", tdf.shape)
         datasets = [int(i) for i in list(tdf['dataset'])]
-        dbses = [int(i) for i in list(tdf['dbs'])]
+        #20160301 'dbs' header changed to 'dbsinst'
+        dbs_h = 'dbsinst' if 'dbsinst' in tdf.keys() else 'dbs'
+        dbses = [int(i) for i in list(tdf[dbs_h])]
+        
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict(tdf)
-        data = {'dataset':datasets, 'dbs': dbses, 'prediction':predictions}
+        data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
         out = pd.DataFrame(data=data)
         if  ofile:
             out.to_csv(ofile, header=True, index=False)

@@ -1,0 +1,12 @@
+2016-03-01
+Analysis of effect of new attributes within new dataframe
+
+Prediction and verification task execution notes :
+* Selected periods:
+ - Training data   : Jan-Mar 2015
+ - Validation data : Apr 2015
+* Models    : all classification models which can be found in model --help
+* Data used :
+ - Old : produced using python "dataframe.py" script
+ - New : produced using newly written Go multithread code, this data contains more attributes comparing to old data
+* Output : this folder contains model performance results for new and old data
