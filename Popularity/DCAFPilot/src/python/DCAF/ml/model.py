@@ -208,7 +208,6 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         #20160301 'dbs' header changed to 'dbsinst'
         dbs_h = 'dbsinst' if 'dbsinst' in tdf.keys() else 'dbs'
         dbses = [int(i) for i in list(tdf[dbs_h])]
-        
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict(tdf)
@@ -284,11 +283,12 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         datasets = [int(i) for i in list(tdf['dataset'])]
-        dbses = [int(i) for i in list(tdf['dbs'])]
+        dbs_h = 'dbsinst' if 'dbsinst' in tdf.keys() else 'dbs'
+        dbses = [int(i) for i in list(tdf[dbs_h])]
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict_proba(tdf)
-        data = {'dataset':datasets, 'dbs': dbses, 'prediction':predictions}
+        data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
         out = pd.DataFrame(data=data)
         if  ofile:
             out.to_csv(ofile, header=True, index=False)
