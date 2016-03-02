@@ -7,3 +7,6 @@ Notes:
 * Data preprocessed by StandardScaler
 
 Results
+* The agregated data can be found in report.txt:
+ - Precision of 0.44486 and recall of 0.33146 of far not enough to use such prediction in live. Features tuning need to be applied in order to improve classification results.
+* More conclusions using new dataframes see in assignment 2 readme and report.txt.
