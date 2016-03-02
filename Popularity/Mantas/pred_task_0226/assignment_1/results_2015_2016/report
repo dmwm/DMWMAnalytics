@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+from __future__ import print_function
+
+# system modules
+import os
+import re
+import glob
+import pandas as pd
+from math import sqrt
+
+def read():
+    files = [f for f in os.listdir('.') if os.path.isfile(f)\
+                        and f.endswith(".pred")]
+    scores  = []
+    clfs    = []
+    scorers = []
+    for f in files:
+        ss = []
+        if  not scorers:
+            #values under parentheses
+            r   = re.compile(r"(\([^)]+\))")
+            for l in open(f, 'r').readlines():
+                sr = r.search(l).groups()[0][1:-7] # omit '_score'
+                scorers.append(sr)
+        for l in open(f, 'r').readlines():
+            s = l.replace('\n', '').split(' ')[-1]
+            ss.append(float(s))
+        scores.append(ss)
+        clfs.append(f[:-5])
+    return clfs, scorers, scores
+
+def table(scorers, clfs, scores, means, rmses):
+    r_format = "{:>20}" * (len(scorers) + 1)
+    print(r_format.format("", *scorers))
+    for clf, score in zip(clfs, scores):
+        print (r_format.format(clf, *score))
+    print (r_format.format("Mean:", *means))
+    print (r_format.format("RMSE:", *rmses))
+
+def pd_table(scorers, clfs, scores, means, rmses):
+    pd.set_option('display.width', 1000)
+    pd.set_option('display.float_format', '{:,.5f}'.format)
+    data = scores + [['' for i in xrange(4)]] + [means] + [rmses]
+    rows = clfs + ['', 'Mean', 'RMSE']
+    print(pd.DataFrame(data, rows, scorers))
+
+def get_means(scores):
+    sums = scores[0]
+    n = len(scores)
+    for i in xrange(1, n):
+        sums = [x+y for x,y in zip(sums, scores[i])]
+    means = [float(x)/n for x in sums]
+    return means
+
+def get_rmses(scores, means):
+    ses   = [[pow(s[i]-means[i], 2) for i in xrange(len(s))] for s in scores]
+    mses  = get_means(ses)
+    rmses = [sqrt(s) for s in mses]
+    return rmses
+
+def report():
+    clfs, scorers, scores = read()
+    means = get_means(scores)
+    rmses = get_rmses(scores, means)
+    #table(scorers, clfs, scores, means, rmses)
+    pd_table(scorers, clfs, scores, means, rmses)
+
+def main():
+    report()
+
+if __name__ == '__main__':
+    main()

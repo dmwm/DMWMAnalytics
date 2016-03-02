@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+from __future__ import print_function
+
+# system modules
+import os
+import re
+import glob
+import pandas as pd
+from math import sqrt
+
+def str_to_num(s):
+    try:
+        return int(s)
+    except:
+        try:
+            return float(s)
+        except:
+            return None
+
+def read(pref = ''):
+    """
+    Reads scorers data from *.pred files
+    Use prefix (e.g. 'old' or 'new') if data with specific names are needed to be read
+    """
+    files = [f for f in os.listdir('.') if os.path.isfile(f)\
+                        and f.startswith(pref) and f.endswith(".pred")]
+    scores  = []
+    clfs    = []
+    scorers = []
+    lines_n = 0
+    for f in files:
+        ss = []
+        n  = 0
+        if  not scorers:
+            #values under parentheses
+            r   = re.compile(r"(\([^)]+\))")
+            for l in open(f, 'r').readlines():
+                sr = r.search(l).groups()[0][1:-1] 
+                sr = sr.split('_')[0].lower()  #skipping "_score"
+                scorers.append(sr)
+                lines_n += 1
+        for l in open(f, 'r').readlines():
+            s = l.replace('\n', '').split(' ')[-1]
+            s = str_to_num(s)
+            if  s is not None:
+                ss.append(s)
+            else:
+                print("Cannot read numeric value: ", s)
+            n += 1
+        if  n == lines_n: #is consistent
+            scores.append(ss)
+            clfs.append(f[:-5])
+        else:
+            print("Error reading %s: %d line count instead %d. Skipping."
+                    % (f, n, lines_n))
+    # clfs - file names witout extension, scorers - list of scorers,
+    # scores - scores respectfully
+    return clfs, scorers, scores
+
+def table(scorers, clfs, scores, means, rmses):
+    # pd_table outputs more nicely and is currently used instead
+    r_format = "{:>20}" * (len(scorers) + 1)
+    print(r_format.format("", *scorers))
+    for clf, score in zip(clfs, scores):
+        print(r_format.format(clf, *score))
+    print(r_format.format("Mean:", *means))
+    print(r_format.format("RMSE:", *rmses))
+
+def pd_table(name, scorers, clfs, scores, means, rmses):
+    # prints data to table
+    pd.set_option('display.width', 1000)
+    pd.set_option('display.float_format', '{:,.5f}'.format)
+    coln = len(scorers)
+    data = scores + [['' for i in xrange(coln)]] + [means] + [rmses]
+    rows = clfs + ['', 'Mean', 'RMSE']
+    skip = ""
+    for i in xrange(len(name) + 1): skip += '='
+    print(skip)
+    print(name)
+    print(skip)
+    print(pd.DataFrame(data, rows, scorers))
+    print('\n')
+
+def get_means(scores):
+    "Calculates mean of lists"
+    sums = scores[0]
+    n = len(scores)
+    for i in xrange(1, n):
+        sums = [x+y for x,y in zip(sums, scores[i])]
+    means = [x/n for x in sums]
+    #print (scores)
+    #print (means)
+    #exit()
+    return means
+
+def get_rmses(scores, means):
+    ses   = [[pow(s[i]-means[i], 2) for i in xrange(len(s))] for s in scores]
+    mses  = get_means(ses)
+    rmses = [sqrt(s) for s in mses]
+    return rmses
+
+def report():
+    old_clfs, scorers, old_scores = read('old')
+    new_clfs, _,       new_scores = read('new')
+    old_means = get_means(old_scores)
+    old_rmses = get_rmses(old_scores, old_means)
+    new_means = get_means(new_scores)
+    new_rmses = get_rmses(new_scores, new_means)
+    pd_table('Results using old dataframes', scorers, old_clfs, old_scores, old_means, old_rmses)
+    pd_table('Results using new dataframes', scorers, new_clfs, new_scores, new_means, new_rmses)
+
+def main():
+    report()
+
+if __name__ == '__main__':
+    main()

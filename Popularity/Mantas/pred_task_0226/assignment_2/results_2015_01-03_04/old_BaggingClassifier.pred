@@ -1,3 +1,7 @@
+Score metric (TP): 2970
+Score metric (TN): 40297
+Score metric (FP): 149
+Score metric (FN): 617
 Score metric (accuracy_score): 0.982603956124
 Score metric (precision_score): 0.952228278294
 Score metric (recall_score): 0.827989963758

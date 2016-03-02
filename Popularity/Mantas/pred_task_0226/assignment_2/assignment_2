@@ -35,7 +35,7 @@ drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 #drops="rel3_32,$drops" #for this specific case, training data has one attribute more then validation data withing Go-generated dataframes
 
 # models to use
-classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier" "SVC" "lda_rfc" "pca_knc" "pca_rfc" "pca_svc")
+classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier" "SVC")
 
 echo "Starting script..."
 
@@ -102,7 +102,7 @@ predict_and_verify() {
     clf=$1 #classifier
     pref=$2 #prefix
     model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
-    check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=accuracy,precision,recall,f1 > "${pref}_${clf}.pred"
+    check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=tp,tn,fp,fn,accuracy,precision,recall,f1 > "${pref}_${clf}.pred"
 }
 
 #prep_data $old_data_path old

@@ -1,0 +1,9 @@
+                       accuracy precision  recall      f1
+AdaBoostClassifier      0.78293   0.47934 0.50434 0.49152
+BaggingClassifier       0.77028   0.42509 0.29592 0.34894
+DecisionTreeClassifier  0.76387   0.40086 0.27308 0.32485
+KNeighborsClassifier    0.78988   0.49001 0.24657 0.32806
+RandomForestClassifier  0.76875   0.42901 0.33739 0.37772
+                                                         
+Mean                    0.77514   0.44486 0.33146 0.37422
+RMSE                    0.00969   0.03408 0.09143 0.06161
