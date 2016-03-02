@@ -5,6 +5,24 @@ Intership Workflow (2016, Spring)
 TODO:
 * Assignment 1: use 2015 new dataframes for training 5 classifiers, 2016 data for verification, obtain the results
 * Assignment 2: within same period using old and new dataframes analyze effect of new columns in new dataframe
+* Study usage of auc scorer
+
+02 Mar 2016
+* Collected data from both of assigments, wrote a "report" executable which consolidates produced data, calculates mean and std for primary analysis
+* Results for assignment 1:
+  - Classifiers used: AdaBoostClassifier, BaggingClassifier, DecisionTreeClassifier, KNeighborsClassifier, RandomForestClassifier
+  - Script run slow, however, primary results are sufficient to make some conclusions. Average scores for 5 classifiers:
+    + accuracy  0.77514
+    + precision 0.44486
+    + recall    0.33146
+    + f1        0.37422
+  - Results are too low
+  - Further analysis for feature selection should be applied
+  - More detailed results may be found in files 'readme' and 'report_prim.txt' under pred_task_0226/assignment_1/results_2015_2016/
+* Results for assignment 2:
+   - Comparison against prediction using old data allows to come to same conclution as in assignment 1 that some of new features are biased
+   - Futher study need to be performed to find out impact of new features individually
+   - Detailed results may be found in files 'readme' and 'report.txt' under pred_task_0226/assignment_2/results_2015_01-03_04/
 
 01 Mar 2016
 * Wrote script for assignment 2, fixed assigment 1
