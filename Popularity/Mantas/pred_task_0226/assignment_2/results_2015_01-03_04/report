@@ -90,9 +90,6 @@ def get_means(scores):
     for i in xrange(1, n):
         sums = [x+y for x,y in zip(sums, scores[i])]
     means = [x/n for x in sums]
-    #print (scores)
-    #print (means)
-    #exit()
     return means
 
 def get_rmses(scores, means):

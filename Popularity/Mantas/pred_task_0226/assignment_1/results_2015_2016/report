@@ -6,9 +6,19 @@ from __future__ import print_function
 # system modules
 import os
 import re
+import sys
 import glob
 import pandas as pd
 from math import sqrt
+
+def str_to_num(s):
+    try:
+        return int(s)
+    except:
+        try:
+            return float(s)
+        except:
+            return None
 
 def read():
     files = [f for f in os.listdir('.') if os.path.isfile(f)\
@@ -16,33 +26,41 @@ def read():
     scores  = []
     clfs    = []
     scorers = []
+    lines_n = 0
     for f in files:
         ss = []
+        n  = 0
         if  not scorers:
             #values under parentheses
             r   = re.compile(r"(\([^)]+\))")
             for l in open(f, 'r').readlines():
-                sr = r.search(l).groups()[0][1:-7] # omit '_score'
+                sr = r.search(l).groups()[0][1:-1]
+                sr = sr.split('_')[0].lower() #skipping "_score"
                 scorers.append(sr)
+                lines_n += 1
         for l in open(f, 'r').readlines():
             s = l.replace('\n', '').split(' ')[-1]
-            ss.append(float(s))
-        scores.append(ss)
-        clfs.append(f[:-5])
+            s = str_to_num(s)
+            if  s is not None:
+                ss.append(s)
+            else:
+                print("Cannot read numeric value: ", s)
+            n += 1
+        if  n == lines_n: #is consistent
+            scores.append(ss)
+            clfs.append(f[:-5]) #cut ext
+        else:
+            print("Error reading %s: %d line count instead %d. Skipping."
+                % (f, n, lines_n))
+    # clfs - file names witout extension, scorers - list of scorers,
+    # scores - scores respectfully
     return clfs, scorers, scores
-
-def table(scorers, clfs, scores, means, rmses):
-    r_format = "{:>20}" * (len(scorers) + 1)
-    print(r_format.format("", *scorers))
-    for clf, score in zip(clfs, scores):
-        print (r_format.format(clf, *score))
-    print (r_format.format("Mean:", *means))
-    print (r_format.format("RMSE:", *rmses))
 
 def pd_table(scorers, clfs, scores, means, rmses):
     pd.set_option('display.width', 1000)
     pd.set_option('display.float_format', '{:,.5f}'.format)
-    data = scores + [['' for i in xrange(4)]] + [means] + [rmses]
+    coln = len(scorers)
+    data = scores + [['' for i in xrange(coln)]] + [means] + [rmses]
     rows = clfs + ['', 'Mean', 'RMSE']
     print(pd.DataFrame(data, rows, scorers))
 
@@ -51,7 +69,7 @@ def get_means(scores):
     n = len(scores)
     for i in xrange(1, n):
         sums = [x+y for x,y in zip(sums, scores[i])]
-    means = [float(x)/n for x in sums]
+    means = [x/n for x in sums]
     return means
 
 def get_rmses(scores, means):

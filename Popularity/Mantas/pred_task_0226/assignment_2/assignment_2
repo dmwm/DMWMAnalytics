@@ -22,9 +22,9 @@ if [ ! -f $X509_USER_PROXY ]; then
     fi
 fi
 
-# data expressions: training 201501*-201503*, validation 201504*
-train_rx="dataframe(-20150[1-3][0-9]{2}){2}\.csv\.gz$"
-valid_rx="dataframe(-201504[0-9]{2}){2}\.csv\.gz$"
+# data expressions: training 201501*-201509*, validation 2015100*
+train_rx="dataframe(-20150[1-9][0-9]{2}){2}\.csv\.gz$"
+valid_rx="dataframe(-201510(0[1-9]|1[0-5])){2}\.csv\.gz$"
 
 # data directories
 old_data_path=/data/srv/state/dcafpilot/analytics/old_data
@@ -36,6 +36,8 @@ drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 
 # models to use
 classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier" "SVC")
+#classifiers=("vw" "xgboost")
+#classifier="AdaBoostClassifier"
 
 echo "Starting script..."
 
@@ -61,9 +63,9 @@ find_files() {
     echo ${files::${#files}-1}
 }
 
-verify_attributes() {
+verify_structure() {
     : '
-    Usage:  verify_attributes prefix
+    Usage:  verify_structure prefix
     No output, checks if data is consistent to proceed to prediction
     '
     pref=$1 #prefix {old, new}
@@ -85,11 +87,12 @@ prep_data() {
     pref=$2 #prefix {old, new}
     tfiles=$(find_files $path $train_rx)
     vfiles=$(find_files $path $valid_rx)
+    #echo "$2 training files: $tfiles"
+    #echo "$2 validation files: $vfiles"
     merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
     merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
     drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
     transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
-    #drops=`find_drops --file1=${pref}_train_clf.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
     transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
 }
 
@@ -107,14 +110,14 @@ predict_and_verify() {
 
 #prep_data $old_data_path old
 #prep_data $new_data_path new
-verify_attributes old
-verify_attributes new
+verify_structure old
+verify_structure new
 if [ ! -z "$classifiers" ]; then
     for clf in "${classifiers[@]}"; do
         predict_and_verify $clf old
         predict_and_verify $clf new
     done
-elif [ ! -z "$classifier"]; then
+elif [ ! -z "$classifier" ]; then
     predict_and_verify $classifier old
     predict_and_verify $classifier new
 fi

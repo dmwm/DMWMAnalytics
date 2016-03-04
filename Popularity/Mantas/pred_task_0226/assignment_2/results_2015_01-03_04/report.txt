@@ -1,36 +1,38 @@
 =============================
 Results using old dataframes
 =============================
-                                      tp        tn        fp        fn accuracy precision  recall      f1
-old_AdaBoostClassifier              3551     39801       645        36  0.98453   0.84628 0.98996 0.91250
-old_BaggingClassifier               2970     40297       149       617  0.98260   0.95223 0.82799 0.88577
-old_DecisionTreeClassifier          3059     40176       270       528  0.98188   0.91889 0.85280 0.88462
-old_ExtraTreesClassifier            3302     40165       281       285  0.98715   0.92157 0.92055 0.92106
-old_GradientBoostingClassifier      3376     40147       299       211  0.98842   0.91864 0.94118 0.92977
-old_KNeighborsClassifier            3311     39915       531       276  0.98167   0.86179 0.92306 0.89137
-old_SVC                             3437     40039       407       150  0.98735   0.89412 0.95818 0.92504
-old_RandomForestClassifier          3173     40284       162       414  0.98692   0.95142 0.88458 0.91679
-old_SGDClassifier                   2353     40428        18      1234  0.97157   0.99241 0.65598 0.78986
-                                                                                                         
-Mean                                3170     40139       306       416  0.98357   0.91748 0.88381 0.89520
-RMSE                           335.99107 184.40174 184.40445 335.99107  0.00488   0.04309 0.09367 0.04059
+                                        tp       tn       fp          fn accuracy precision  recall      f1
+old_SVC                                120    21790        0        6311  0.77637   1.00000 0.01866 0.03664
+old_AdaBoostClassifier                   0    21790        0        6431  0.77212   0.00000 0.00000 0.00000
+old_BaggingClassifier                  180    21790        0        6251  0.77850   1.00000 0.02799 0.05445
+old_DecisionTreeClassifier               5    21790        0        6426  0.77230   1.00000 0.00078 0.00155
+old_ExtraTreesClassifier                 0    21790        0        6431  0.77212   0.00000 0.00000 0.00000
+old_GradientBoostingClassifier         103    21790        0        6328  0.77577   1.00000 0.01602 0.03153
+old_KNeighborsClassifier              1931    21770       20        4500  0.83984   0.98975 0.30026 0.46075
+old_RandomForestClassifier               0    21790        0        6431  0.77212   0.00000 0.00000 0.00000
+old_RidgeClassifier                   3627    21772       18        2804  0.90000   0.99506 0.56399 0.71993
+old_SGDClassifier                     3770    21731       59        2661  0.90362   0.98459 0.58622 0.73489
+                                                                                                           
+Mean                                   973    21780        9        5457  0.80628   0.69694 0.15139 0.20397
+RMSE                           1,472.25168 18.05547 18.05547 1,472.25168  0.05161   0.45628 0.22893 0.29324
 
 
 =============================
 Results using new dataframes
 =============================
                                       tp        tn        fp        fn accuracy precision  recall      f1
-new_AdaBoostClassifier               380     39941       298       888  0.97143   0.56047 0.29968 0.39054
-new_BaggingClassifier                372     39968       271       896  0.97188   0.57854 0.29338 0.38932
-new_DecisionTreeClassifier           418     39466       773       850  0.96090   0.35097 0.32965 0.33998
-new_ExtraTreesClassifier             359     40005       234       909  0.97246   0.60540 0.28312 0.38581
-new_GradientBoostingClassifier       393     40015       224       875  0.97352   0.63695 0.30994 0.41698
-new_KNeighborsClassifier             352     39886       353       916  0.96943   0.49929 0.27760 0.35682
-new_RandomForestClassifier           302     39993       246       966  0.97080   0.55109 0.23817 0.33260
-new_SGDClassifier                     12     40235         4      1256  0.96964   0.75000 0.00946 0.01869
-new_SVC                              140     40202        37      1128  0.97193   0.79096 0.11041 0.19377
+new_AdaBoostClassifier               360     39755       484       908  0.96646   0.42654 0.28391 0.34091
+new_BaggingClassifier                302     39586       653       966  0.96099   0.31623 0.23817 0.27170
+new_DecisionTreeClassifier           417     39249       990       851  0.95565   0.29638 0.32886 0.31178
+new_ExtraTreesClassifier             360     39835       404       908  0.96839   0.47120 0.28391 0.35433
+new_GradientBoostingClassifier       446     39916       323       822  0.97241   0.57997 0.35174 0.43790
+new_KNeighborsClassifier             593     39231      1008       675  0.95945   0.37039 0.46767 0.41338
+new_RandomForestClassifier           301     39780       459       967  0.96564   0.39605 0.23738 0.29684
+new_SVC                              329     40006       233       939  0.97176   0.58541 0.25946 0.35956
+new_RidgeClassifier                  141     39975       264      1127  0.96649   0.34815 0.11120 0.16856
+new_SGDClassifier                      6     40229        10      1262  0.96935   0.37500 0.00473 0.00935
                                                                                                          
-Mean                                 303     39967       271       964  0.97022   0.59152 0.23905 0.31383
-RMSE                           128.58071 208.08892 208.08652 128.58460  0.00352   0.12306 0.10141 0.12102
+Mean                                 325     39756       482       942  0.96566   0.41653 0.25670 0.29643
+RMSE                           153.00654 304.66047 304.66047 153.00654  0.00516   0.09580 0.12067 0.11943
 
 
