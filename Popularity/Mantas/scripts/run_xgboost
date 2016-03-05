@@ -1,0 +1,59 @@
+#!/bin/bash
+#-*- coding: utf-8 -*-
+
+options=('predict validate')
+if [[ $# -ne 3 ]] || [[ ! $options =~ (^| )$3($| ) ]]; then
+    echo "Usage: run_xgboost train_clf.csv.gz valid_clf.csv.gz <predict|validate>"
+    exit 1
+fi
+
+config="xgboost.conf"
+output="xgboost_pred.txt"
+scorers="tp,tn,fp,fn,accuracy,precision,recall,f1"
+
+build_config() {
+    trainxgb=`ls $1 | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
+    ndataxgb=`ls $2 | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
+    cat > $config  << EOF
+# General Parameters, see comment for each definition
+# for more info: https://github.com/tqchen/xgboost/wiki/Parameters
+#
+# choose the booster, can be gbtree or gblinear
+booster = gbtree
+# choose logistic regression loss function for binary classification
+objective = binary:logistic
+    
+# Tree Booster Parameters
+# step size shrinkage
+eta = 0.1
+# minimum loss reduction required to make a further partition
+gamma = 1.0
+# minimum sum of instance weight(hessian) needed in a child
+min_child_weight = 1
+# maximum depth of a tree
+max_depth = 6
+# Task Parameters
+# the number of round to do boosting
+num_round = 20
+# 0 means do not save any model except the final round model
+save_period = 0
+# The path of training data
+data = "$trainxgb"
+# evaluate on training data as well each round
+eval_train = 1
+eval_metric = "logloss"
+eval_metric = "auc"
+eval_metric = "error"
+eval_metric = "rmse"
+# The path of test data
+test:data = "$ndataxgb"
+EOF
+} #end build_config()
+
+build_config $1 $2
+runxgboost $1 $2 ${XGBOOST_CONFIG:-"$config"}
+mv xgpreds.csv $output
+
+if [ "$3" == "validate" ]; then
+    check_prediction --fin=$2 --fpred=$output --scorer=$scorers
+fi
