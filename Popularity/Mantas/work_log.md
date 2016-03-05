@@ -16,23 +16,23 @@ Intership Workflow (2016, Spring)
   2. Use pandas to load framework for log_transformation
   3. Add log_transformation as an option to transform_csv : transform all columns, or transform columns using provided list
   4. Report. Add normalized TP, FP, TN, TP values. Do I understand this right? I have to add:
-   1) TPR = TP/(TP+FN)
-   2) TNR = TN/(TN+FP)
+   1) TPR = TP/(TP+FN)  
+   2) TNR = TN/(TN+FP)  
   5. Provide function to extract datasets from selected datatiers (AOD/AODSIM/MINIAOD/MINIAODSIM/USER).
   6. Prediction task #1 using (5) function:
    1) Learn model on full dataframe, predict/verify datasets only from selected datatiers
    2) Learn model on selected datatiers, predict/verify datasets on selected datatiers
    3) Report. Provide results grouped by datatiers
   7. Prediction task #2:
-   1) initial train data      : 9 last months for 2015
-   2) initial prediction week : first week of 2016
-   3) train model using training data
-   4) predict given week
-   5) verify the prediction, provide scorers, record result to csv report
-   6) add prediction week to train data
-   7) move prediction week one week forward and continue with 3rd step or continue with 8th step
-   8) use csv report to plot using TPR, TNR rates
-   9) convert csv report and save to human readable form
+   1) initial train data      : 9 last months for 2015  
+   2) initial prediction week : first week of 2016  
+   3) train model using training data  
+   4) predict given week  
+   5) verify the prediction, provide scorers, record result to csv report  
+   6) add prediction week to train data  
+   7) move prediction week one week forward and continue with 3rd step or if no data available continue with 8th step  
+   8) use csv report to plot using TPR, TNR rates  
+   9) convert csv report and save to human readable form  
 * Working with adding xgboost to model using rep, received message, that it is not necessary since new xgboost comes with python APIs 
 * Reveiced a message that new RPMs (DCAFPilot 0.1.21) are available, left it for next day
 
