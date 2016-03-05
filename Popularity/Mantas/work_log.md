@@ -34,7 +34,7 @@ Intership Workflow (2016, Spring)
    8) use csv report to plot using TPR, TNR rates  
    9) convert csv report and save to human readable form  
 * Working with adding xgboost to model using rep, received message, that it is not necessary since new xgboost comes with python APIs 
-* Reveiced a message that new RPMs (DCAFPilot 0.1.21) are available, left it for next day
+* Reveiced a message that new RPMs (DCAFPilot 0.1.23) are available, left it for next day
 
 03 Mar 2016
 * Received new tasks
