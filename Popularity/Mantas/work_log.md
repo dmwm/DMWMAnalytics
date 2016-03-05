@@ -18,8 +18,8 @@ Intership Workflow (2016, Spring)
   4. Report. Add normalized TP, FP, TN, TP values. Do I understand this right? I have to add:  
    1) TPR = TP/(TP+FN)  
    2) TNR = TN/(TN+FP)  
-  5. Provide function to extract datasets from selected datatiers (AOD/AODSIM/MINIAOD/MINIAODSIM/USER).
-  6. Prediction task #1 using (5) function:  
+  5. Provide function to extract datasets from selected datatiers (AOD/AODSIM/MINIAOD/MINIAODSIM/USER). Use pandas library to do that.
+  6. Prediction task #1 using (5) function. Do it using old dataframe and new dataframe:  
    1) Learn model on full dataframe, predict/verify datasets only from selected datatiers  
    2) Learn model on selected datatiers, predict/verify datasets on selected datatiers  
    3) Report. Provide results grouped by datatiers  
