@@ -67,25 +67,18 @@ def transform(fin, fout, target, thr, drops, verbose=0):
                 ostream.write(','.join(new_headers)+',target\n')
             continue
         try:
-            vals = [eval(v) for v in line.replace('\n', '').split(',')]
-        except:
-            line = line.replace('\n', '')
-            if  verbose:
-                eno += 1
-                msg = "Warning #%d: unrecognized value in %s line : %s"
-                print(msg % (eno, fin, line))
-            spl = line.split(',')
-            row = dict(zip(headers, spl))
+            item = line.replace('\n', '').replace('<nil>', '-1')
+            vals = [eval(v) for v in item.split(',')]
+        except Exception as exp:
+            print("Unable to parse the line", line, type(line), exp)
             vals = []
-            for r in row:
+            for item in line.split(','):
                 try:
-                    va = eval(row[r])
-                    vals.append(va)
+                    vals.append(eval(item))
                 except:
-                    if  verbose:
-                        print("- value: %s, column: %s. altering to -1." %
-                                (row[r], r))
                     vals.append(-1)
+            if  len(vals) != len(headers):
+                raise Exception("Unable to parse line '%s', #values != #headers", line)
         row = dict(zip(headers, vals))
         if  thr==-1: # keep regression
             tval = row[target]
