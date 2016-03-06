@@ -263,6 +263,7 @@ func datasetInfo(prec Record, start, stop string, och chan Record) {
 			break
 		}
 	}
+	close(ch) // close channel when we're done with collect phase
 	rec := make(Record)
 	for _, srec := range records { // loop over all received service records
 		for k, v := range srec { // loop over service record key-value pairs
