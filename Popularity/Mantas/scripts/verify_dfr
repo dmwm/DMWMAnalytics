@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+# system modules
+import os
+import sys
+import numpy as np
+import pandas as pd
+import optparse
+
+# package modules
+from DCAF.utils.utils import fopen
+
+class OptionParser(object):
+    def __init__(self):
+        self.parser = optparse.OptionParser()
+        self.parser.add_option("--file1", action="store", type="string",
+            default=None, dest="file1", help="First file for the action")
+        self.parser.add_option("--file2", action="store", type="string",
+            default=None, dest="file2", help="Second file for the action")
+        self.parser.add_option("--target", action="store", type="string",
+            default=None, dest="target", help="Target column to eliminate unpop data. Used together with target-thr")
+        self.parser.add_option("--target-thr", action="store", type="int",
+            default=None, dest="thr", help="Target value to eliminate unpop data")
+        self.parser.add_option("--drops", action="store", type="string",
+            default=None, dest="drops", help="Columns to drop before summarization")
+    def options(self):
+        return self.parser.parse_args()
+
+def read_summary(fname, drops=None, target=None, thr=None):
+    comp = None
+    if  fname.endswith('.gz'):
+        comp = 'gzip'
+    elif fname.endswith('.bz2'):
+        comp = 'bz2'
+    try:
+        xdf = pd.read_csv(fname, compression=comp, dtype=np.float32)
+    except Exception as e:
+        print("ERROR: failed reading %s" % fname)
+        print(e, e.args)
+        sys.exit(1)
+    xdf = xdf.fillna(-1)
+    if  drops is not None and drops:
+        drops = drops.replace('\n','').split(',')
+        cols = xdf.columns
+        for d in drops:
+            if d in cols:
+                xdf.drop(d, axis=1)
+    if  target is not None and thr is not None:
+        xdf = xdf[xdf[target>=thr]]
+    desc = xdf.describe(include=['number'])
+    return desc
+
+def compare(summ1, summ2):
+    failed = 0
+    for col in summ1.columns:
+        if  col in summ2.columns:
+            for stat in summ1.index:
+                if  summ1.loc[stat, col] != summ2.loc[stat, col]:
+                    print("Summary verification failed. Loc[%s, %s]: %d vs %d"
+                        % (stat, col, summ1.loc[stat, col],
+                                 summ2.loc[stat, col]))
+                    failed += 1
+    if  failed == 0:
+        failed = ""
+    else:
+        failed = "ERROR: %d statictics mismatched. Please check transformation procedure." % failed
+    return failed
+
+def main():
+    optmgr = OptionParser()
+    opts, _ = optmgr.options()
+    summ1 = read_summary(opts.file1, opts.drops, opts.target, opts.thr)
+    summ2 = read_summary(opts.file2, opts.drops, opts.target, opts.thr)
+    failed = compare(summ1, summ2)
+    print(failed) #empty if pass, error if failed
+
+if __name__ == '__main__':
+    main()
