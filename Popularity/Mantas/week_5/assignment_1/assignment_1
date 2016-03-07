@@ -40,11 +40,11 @@ for fn in $(ls $data_path); do
     fi
 done
 files=${files::${#files}-1}
-merge_csv --fin=$files --fout=train.csv.gz
+#merge_csv --fin=$files --fout=train.csv.gz
 echo "Transforming training data..."
 drops_=`find_drops --file1=train.csv.gz --file2=valid.csv.gz --drops=$drops`
-transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
-verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz
+#transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+#verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz --drops=$drops_
 
 # validation data
 echo "Merging validation data..."
@@ -55,14 +55,15 @@ for fn in $(ls $data_path); do
     fi
 done
 files=${files::${#files}-1}
-merge_csv --fin=$files --fout=valid.csv.gz
+#merge_csv --fin=$files --fout=valid.csv.gz
 echo "Transforming validation data..."
-verify_col_data --action=read --fin=valid.csv.gz --fout=valid.col_data
-drops_=`find_drops --file1=train_clf.csv.gz --file2=valid.csv.gz --drops=$drops`
-transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
-verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz
+drops_=`find_drops --file1=train_clf.csv.gz --file2=valid.csv.gz --drops=${drops}`
+#transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+#verify_dfr --file1=valid.csv.gz --file2=valid_clf.csv.gz --drops=$drops_
 
-# explicitly check for difference in headers
+#exit 0
+
+# explicitly check for difference in headers between _clf files
 _diff=`./headers_diff train_clf.csv.gz valid_clf.csv.gz`
 if [ ! "${#_diff}" -le 0 ]; then
     endl=$'\n'

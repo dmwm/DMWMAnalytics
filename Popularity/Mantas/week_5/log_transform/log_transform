@@ -11,9 +11,11 @@ import gzip
 import time
 import optparse
 import numpy as np
+import pandas as pd
 
 # package modules
 from DCAF.utils.utils import fopen
+from DCAF.ml.model import read_data
 
 class OptionParser(object):
     def __init__(self):
@@ -56,6 +58,18 @@ def find_columns(line, thres, sep):
             cols.append(i)
     return cols
 
+def apply_pd_transformation(fin, fout, cols, headers, sep, logbias):
+    start_time = time.time()
+    xdf = read_data(fin, scaler=True)
+    xdf.fillna(-1)
+    #print(xdf.head())
+    xdf.add(2 , axis=1)
+    #print(xdf.head())
+    #xdf.apply
+    #sys.exit(1)
+    elapsed_time = time.time() - start_time
+    print("finished: elapsed time:", elapsed_time)
+
 def apply_transformation(fin, fout, cols, headers, sep, logbias):
     start_time = time.time()
     istream = fopen(fin, 'r')
@@ -89,17 +103,17 @@ def log_transform(fin, fout, toall, cols, thres, sep, logbias):
     if  toall:
         headers, line = get_headers_and_line(fin)
         scols = find_columns(line, -sys.maxint - 1, sep)
-        apply_transformation(fin, fout, scols, headers, sep, logbias)
+        apply_pd_transformation(fin, fout, scols, headers, sep, logbias)
         return
     if  cols is not None:
         headers, _ = get_headers_and_line(fin)
         scols = cols.split(sep)
-        apply_transformation(fin, fout, scols, headers, sep, logbias)
+        apply_pd_transformation(fin, fout, scols, headers, sep, logbias)
         return
     if  thres is not None:
         headers, line = get_headers_and_line(fin)
         scols = find_columns(line, thres, sep)
-        apply_transformation(fin, fout, scols, headers, sep, logbias)
+        apply_pd_transformation(fin, fout, scols, headers, sep, logbias)
         return
     """ No option selected """
     print("Unknown error occurred. Please consult the code")
@@ -111,9 +125,10 @@ def main():
     if  opts.fin is None or opts.fout is None or\
             (opts.thres is None and not opts.toall and opts.cols is None):
         print("Usage: log_transform input_file output_file --mandatory_option")
-        print("e.g. log_transform train.csv.gz train_.csv.gz --transform-all")
-        print("e.g. log_transform train.csv.gz train_.csv.gz --thres=1000000")
-        print("e.g. log_transform train.csv.gz train_.csv.gz --cols=0,4,9,15")
+        com = "e.g. log_transform --fin=train.csv.gz --fout=train_.csv.gz"
+        print(com, " --transform-all")
+        print(com, " --thres=1000000")
+        print(com, " --cols=0,4,9,15")
         sys.exit(1)
     log_transform(opts.fin, opts.fout, opts.toall, opts.cols, opts.thres, opts.sep, 2)
 
