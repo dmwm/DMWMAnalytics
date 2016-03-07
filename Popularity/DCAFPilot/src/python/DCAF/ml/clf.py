@@ -38,6 +38,11 @@ from sklearn.svm import SVR
 from sklearn.cross_validation import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler
 
+try:
+    from xgboost.sklearn import XGBClassifier
+except:
+    pass
+
 def learners(clf=None, kwds=None):
     "Return dict of available classifier"
     models = {}
