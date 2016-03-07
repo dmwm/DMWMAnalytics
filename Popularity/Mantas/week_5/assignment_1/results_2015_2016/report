@@ -3,90 +3,30 @@
 
 from __future__ import print_function
 
-# system modules
-import os
-import re
-import sys
-import glob
-import pandas as pd
-from math import sqrt
+__author__ = "Mantas Briliauskas"
 
-def str_to_num(s):
-    try:
-        return int(s)
-    except:
-        try:
-            return float(s)
-        except:
-            return None
+# local modules
+from reporter import Reporter
 
-def read():
-    files = [f for f in os.listdir('.') if os.path.isfile(f)\
-                        and f.endswith(".pred")]
-    scores  = []
-    clfs    = []
-    scorers = []
-    lines_n = 0
-    for f in files:
-        ss = []
-        n  = 0
-        if  not scorers:
-            #values under parentheses
-            r   = re.compile(r"(\([^)]+\))")
-            for l in open(f, 'r').readlines():
-                sr = r.search(l).groups()[0][1:-1]
-                sr = sr.split('_')[0].lower() #skipping "_score"
-                scorers.append(sr)
-                lines_n += 1
-        for l in open(f, 'r').readlines():
-            s = l.replace('\n', '').split(' ')[-1]
-            s = str_to_num(s)
-            if  s is not None:
-                ss.append(s)
-            else:
-                print("Cannot read numeric value: ", s)
-            n += 1
-        if  n == lines_n: #is consistent
-            scores.append(ss)
-            clfs.append(f[:-5]) #cut ext
-        else:
-            print("Error reading %s: %d line count instead %d. Skipping."
-                % (f, n, lines_n))
-    # clfs - file names witout extension, scorers - list of scorers,
-    # scores - scores respectfully
-    return clfs, scorers, scores
-
-def pd_table(scorers, clfs, scores, means, rmses):
-    pd.set_option('display.width', 1000)
-    pd.set_option('display.float_format', '{:,.5f}'.format)
-    coln = len(scorers)
-    data = scores + [['' for i in xrange(coln)]] + [means] + [rmses]
-    rows = clfs + ['', 'Mean', 'RMSE']
-    print(pd.DataFrame(data, rows, scorers))
-
-def get_means(scores):
-    sums = scores[0]
-    n = len(scores)
-    for i in xrange(1, n):
-        sums = [x+y for x,y in zip(sums, scores[i])]
-    means = [x/n for x in sums]
-    return means
-
-def get_rmses(scores, means):
-    ses   = [[pow(s[i]-means[i], 2) for i in xrange(len(s))] for s in scores]
-    mses  = get_means(ses)
-    rmses = [sqrt(s) for s in mses]
-    return rmses
-
-def report():
-    clfs, scorers, scores = read()
-    means = get_means(scores)
-    rmses = get_rmses(scores, means)
-    #table(scorers, clfs, scores, means, rmses)
-    pd_table(scorers, clfs, scores, means, rmses)
+def gen_report():
+    repmgr = Reporter()
+    #report setup
+    path = "."
+    fout = "report.txt"
+    fend = ".pred"
+    rtit = "Week 5 Assignment 1"
+    desc  = "Description     : train 5 classifiers, predict and verify the results\n"
+    desc += "Training data   : all new 2015\n"
+    desc += "Validation data : first two months of new 2016"
+    ttit = "Prediction results"
+    #report generation
+    repmgr.open(fout)
+    repmgr.write_section(rtit, desc)
+    repmgr.write_table(path, fend=fend, title=ttit)
+    repmgr.close()
 
 def main():
-    report()
+    gen_report()
 
 if __name__ == '__main__':
     main()

@@ -6,6 +6,7 @@ from __future__ import print_function
 # system modules
 import os
 import re
+import sys
 import glob
 import optparse
 import pandas as pd
@@ -83,12 +84,21 @@ class Reporter(object):
         else:
             print("Error: writing in closed mode.")
 
+    def __get_file_list(self, path, fbeg, fend):
+        files = [os.path.join(path, f) for f in os.listdir(path)
+                if os.path.isfile(os.path.join(path, f))
+                    and (len(fbeg) == 0 or f.startswith(fbeg))
+                    and (len(fend) == 0 or f.endswith(fend))]
+        return files
+
     def __read_data(self, path, fbeg="", fend="*.pred"):
         """
         Reads scorers data from files
         """
-        files = [f for f in os.listdir(path) if os.path.isfile(f)\
-                        and f.startswith(fbeg) and f.endswith(fend)]
+        files = self.__get_file_list(path, fbeg, fend)
+        if  len(files) == 0:
+            print("Warning: no files collected from %s with beginning %s and end %s" % (path, fbeg, fend))
+            return None
         scores  = []
         clfs    = []
         scorers = []
@@ -106,7 +116,7 @@ class Reporter(object):
                     lines_n += 1
             for l in open(f, 'r').readlines():
                 s = l.replace('\n', '').split(' ')[-1]
-                s = __to_num(s)
+                s = self.__to_num(s)
                 if  s is not None:
                     ss.append(s)
                 else:
@@ -114,7 +124,10 @@ class Reporter(object):
                 n += 1
             if  n == lines_n: #is consistent
                 scores.append(ss)
-                clfs.append(f[:-5])
+                base = os.path.basename(f)
+                a    = len(fbeg)
+                b    = len(fend) if fend > 0 else None
+                clfs.append(base[a:-b]) #extract clf from filename
             else:
                 print("Error reading %s: %d line count instead %d. Skipping."
                     % (f, n, lines_n))
@@ -136,6 +149,7 @@ class Reporter(object):
         Totals are aggregated data like mean, RMSE, etc.
         Total_data must have #total_names members.
         Each total_data member must have #col_names values.
+        TODO: alter total_names and total_data to dict
         """
         pd.set_option('display.width', 1000)
         pd.set_option('display.float_format', '{:,.5f}'.format)
@@ -162,7 +176,7 @@ class Reporter(object):
             out += _bor  + "\n"
         else:
             out  = ""
-        out += pd.DataFrame(_data, _rows, col_names) + "\n"
+        out += str(pd.DataFrame(_data, _rows, col_names)) + "\n"
         return out
 
     def __to_num(self, s):

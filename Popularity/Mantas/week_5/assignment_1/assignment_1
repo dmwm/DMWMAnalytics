@@ -20,49 +20,8 @@ drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 
 # classifiers
 declare -a models=('AdaBoostClassifier' 'BaggingClassifier'
-    'DecisionTreeClassifier' 'RandomForestClassifier' 'KNeighborsClassifier')
+    'DecisionTreeClassifier' 'RandomForestClassifier' 'xgboost')
 #models=('vw' 'xgboost')
-
-# xgboost config
-train="train_clf.csv.gz"
-ndata="valid_clf.csv.gz"
-trainxgb=`ls $train | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
-ndataxgb=`ls $ndata | awk '{split($1,a,"."); print ""a[1]".libsvm"}'`
-ndatavw=`ls $ndata | awk '{split($1,a,"."); print ""a[1]".vw"}'`
-ndataids=`ls $ndata | awk '{split($1,a,"."); print ""a[1]".ids"}'`
-cat > /tmp/xgboost.conf << EOF
-# General Parameters, see comment for each definition
-# for more info: https://github.com/tqchen/xgboost/wiki/Parameters
-#
-# choose the booster, can be gbtree or gblinear
-booster = gbtree
-# choose logistic regression loss function for binary classification
-objective = binary:logistic
-# Tree Booster Parameters
-# step size shrinkage
-eta = 0.1
-# minimum loss reduction required to make a further partition
-gamma = 1.0
-# minimum sum of instance weight(hessian) needed in a child
-min_child_weight = 1
-# maximum depth of a tree
-max_depth = 6
-# Task Parameters
-# the number of round to do boosting
-num_round = 20
-# 0 means do not save any model except the final round model
-save_period = 0
-# The path of training data
-data = "$trainxgb"
-# evaluate on training data as well each round
-eval_train = 1
-eval_metric = "logloss"
-eval_metric = "auc"
-eval_metric = "error"
-eval_metric = "rmse"
-# The path of test data
-test:data = "$ndataxgb"
-EOF
 
 echo "Starting script..."
 
@@ -81,10 +40,11 @@ for fn in $(ls $data_path); do
     fi
 done
 files=${files::${#files}-1}
-#merge_csv --fin=$files --fout=train.csv.gz
+merge_csv --fin=$files --fout=train.csv.gz
 echo "Transforming training data..."
 drops_=`find_drops --file1=train.csv.gz --file2=valid.csv.gz --drops=$drops`
-#transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz
 
 # validation data
 echo "Merging validation data..."
@@ -95,10 +55,12 @@ for fn in $(ls $data_path); do
     fi
 done
 files=${files::${#files}-1}
-#merge_csv --fin=$files --fout=valid.csv.gz
+merge_csv --fin=$files --fout=valid.csv.gz
 echo "Transforming validation data..."
+verify_col_data --action=read --fin=valid.csv.gz --fout=valid.col_data
 drops_=`find_drops --file1=train_clf.csv.gz --file2=valid.csv.gz --drops=$drops`
-#transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz
 
 # explicitly check for difference in headers
 _diff=`./headers_diff train_clf.csv.gz valid_clf.csv.gz`
