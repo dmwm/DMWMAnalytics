@@ -60,6 +60,7 @@ def learners(clf=None, kwds=None):
     models['GradientBoostingClassifier'] = GradientBoostingClassifier()
     models['DecisionTreeClassifier'] = DecisionTreeClassifier()
     models['PCA'] = PCA()
+    models['XGBClassifier'] = XGBClassifier()
 
     # common ensemble classifiers
     models['AdaBoostClassifier'] = AdaBoostClassifier()
