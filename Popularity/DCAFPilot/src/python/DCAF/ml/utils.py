@@ -163,7 +163,7 @@ class OptionParser(object):
         return self.parser.parse_args()
 
 def rates(y_true, predictions):
-    "Return TP/TN/FP/FN rates for given vectors"
+    "Return TP/TN/FP/FN TPR/TNR/FPR/FNR rates for given vectors"
     tp = 0
     tn = 0
     fp = 0
@@ -179,4 +179,20 @@ def rates(y_true, predictions):
                 fn += 1
             else:
                 fp += 1
-    return dict(tp=tp, tn=tn, fp=fp, fn=fn)
+    try:
+        tpr = float(tp)/(tp+fn)
+    except:
+        tpr = 0
+    try:
+        tnr = float(tn)/(tn+fp)
+    except:
+        tnr = 0
+    try:
+        fpr = float(fp)/(fp+tn)
+    except:
+        fpr = 0
+    try:
+        fnr = float(fn)/(fn+tp)
+    except:
+        fnr = 0
+    return dict(tp=tp, tn=tn, fp=fp, fn=fn, tpr=tpr, tnr=tnr, fpr=fpr, fnr=fnr)
