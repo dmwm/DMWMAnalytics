@@ -1,0 +1,6 @@
+#!/bin/bash
+
+fin=/tmp/verify_dfr_test/train_clf.csv.gz
+fout=/tmp/verify_dfr_test/train_clf_.csv.gz
+change_csv --fin=$fin --fout=$fout --lineno=0 --col=xtcrosssection --newval=0.0
+verify_dfr --file1=$fin --file2=$fout

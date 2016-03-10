@@ -1,0 +1,13 @@
+#!/bin/bash
+
+fpath=/tmp/verify_dfr_test
+fn=train
+f1=$fpath/${fn}.csv.gz
+f2=$fpath/${fn}_clf.csv.gz
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+
+echo "Transforming..."
+#transform_csv --fin=$f1 --fout=$f2 --target=naccess --target-thr=10 --drops=$drops
+echo "Verifying..."
+drops="id,target,$drops"
+verify_dfr --file1=$f1 --file2=$f2 --drops=$drops

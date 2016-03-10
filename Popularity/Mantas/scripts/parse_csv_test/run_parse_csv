@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#fin=/tmp/w6a1/old_train_clf.csv.gz
+#fout=/tmp/w6a1/old_train_clf_trs.csv.gz
+fin=/tmp/w6a1/new_train_clf.csv.gz
+fout=/tmp/w6a1/new_train_clf_trs.csv.gz
+tiers=AOD,AODSIM,MINIAOD,MINIAODSIM,USER
+#parse_csv --fin=$fin --fout=$fout --tiers=$tiers --tiers-col=tier --mapping=new_tiers.txt --mapping-kval=id,tier
+parse_csv --fin=$fin --fout=$fout --tiers=$tiers --tiers-col=tier --mapping=new_tiers.txt --mapping-kval=hash,tier --verbose=2
