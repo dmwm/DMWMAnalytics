@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Week 6 Assignment 2
+# received    : 2016 03 04
+# description :
+#   perform iterative weekly prediction, record results, and plot
+#   initial training data   : 2015 last 9 months
+#   initial validation data : first 2016 week
+#   iterate : predict, record result, append week to training data
+#             select new week to predict, retrain
+#   until   : there is no data available
+
+old_path=/data/srv/state/dcafpilot/analytics/data
+new_path=/data/srv/state/dcafpilot/analytics/old_data
+train_start=20150601
+train_end=20151231
+prefixes=("old")
+
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+scorer="tpr,tnr,fpr,fnr"
+
+prepare_data() {
+    # prepare_data {old,new}
+    pref=$1
+    echo "[$pref] Preparing training data..."
+    dol='$'
+    path=`eval "echo \"${dol}${pref}_path\""`
+    tfiles=`get_file_list $path $train_start $train_end`
+    merge_csv --fin=$tfiles --fout=${pref}_valid.csv.gz
+    __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+}
+
+predict_and_write() {
+    # predict_and_measure {old,new} package_classifier date_valid_start
+    pref=$1
+    clf=$2
+    valid_start=$3
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer --plain-output`
+    echo "$valid_start,$out" >> "${pref}_${clf}_out.csv"
+}
+
+iteration() {
+    # usage : iteration {old,new} clf date_train_end
+    # first predict and measure performance, then concat
+    pref=$1
+    clf=$2
+    valid_start=`newdate --date=$3`
+    echo "[$pref] Starting iteration $valid_start ..."
+    valid_end=`python -c "print $train_end+13"`
+    path=`eval "echo \"${dol}${pref}_path\""`
+    # usually should be one file
+    vfiles=`get_file_list $path $valid_start $valid_end`
+    # TODO: vfiles ->> finish iteration if list is empty
+    echo "[$pref] Preparing validation data ..."
+    merge_csv --fin=$vfiles --fout=${pref}_train.csv.gz
+    __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+    verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz
+    echo "[$pref] Predicting, writing data ..."
+    predict_and_write $pref $clf $valid_start
+}
+
+get_file_list() {
+    # running slowly because of constant python run
+    if [ $# -ne 3 ]; then echo "ERROR in get_file_list()"; exit 1; fi
+    path=$1
+    start_date=$2
+    end_date=$3
+    files=""
+    for f in `ls $path | egrep "\.csv\.gz$"`; do
+        st=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n-1]}'`
+        en=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
+        diff_st=`python -c "print $st-$start_date"`
+        diff_en=`python -c "print $end_date-$en"`
+        if [ $diff_st -ge 0 -a $diff_en -ge 0 ]; then
+            files="$path/$f,$files"
+        fi       
+    done
+    echo ${files::${#files}-1}
+}
+
+for pref in "${prefixes[@]}"; do
+    prepare_data $pref
+    for clf in "${classifiers[@]}"; do
+        rm ${pref}_${clf}_out.csv 2> /dev/null
+        iteration $pref $clf $train_end
+    done
+done
+
+#echo `get_file_list $path 20160101 20160229`

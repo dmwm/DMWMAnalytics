@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# Week 6 Assignment 1
+# received    : 2016 03 04
+# description :
+#   perform prediction within two cases and provide performance results
+#   case 1 : train model using full dataframe, predict selected tiers
+#   case 2 : train model using selected tiers, predict selected tiers
+#   perform this test using either old and new data
+
+old_path=/data/srv/state/dcafpilot/analytics/old_data
+new_path=/data/srv/state/dcafpilot/analytics/data
+train_start=20150601
+train_end=20151231
+valid_start=20160101
+valid_end=20160113
+prefixes=("new")
+
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1"
+tiers="AOD,AODSIM,MINIAOD,MINIAODSIM,USER"
+classifier="GradientBoostingClassifier"
+
+prepare_data() {
+    # prepare_data {old,new}
+    pref=$1
+    echo "Preparing $pref data..."
+    dol='$'
+    path=`eval "echo \"${dol}${pref}_path\""`
+    tfiles=`get_file_list $path $train_start $train_end`
+    vfiles=`get_file_list $path $valid_start $valid_end`
+    #echo "$pref training files   : $tfiles"
+    #echo "$pref validation files : $vfiles"    
+    merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
+    merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
+    drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+}
+
+predict_and_measure() {
+    # predict_and_measure {old,new} compatible_classifier
+    # TODO: decide in which sequence to use parse_csv
+    pref=$1
+    clf=$2
+    if [ "$pref" == "old" ]; then
+        mkeyval="id,tier"
+    elif [ "$pref" == "new" ]; then
+        mkeyval="hash,tier"
+    fi
+    parse_csv --fin=${pref}_valid_clf.csv.gz --fout=${pref}_valid_dtr.csv.gz --tiers=$tiers --tiers-col=tier --mapping=${pref}_tiers.txt --mapping-kval=$mkeyval
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
+    check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer > "${pref}_${clf}.pred"
+    rm "${pref}_${clf}.txt"
+}
+
+verify_csv() {
+    pref=$1
+pref=$1 #prefix {old, new}
+    verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
+    verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
+    hdiff=`./headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
+    if [ ! "${#hdiff}" -le 0 ]; then
+        endl=$'\n'
+        echo "[$pref] Error: different number of attributes. Difference:$endl$hdiff"
+        exit 1
+    fi
+}
+
+get_file_list() {
+    # running slowly because of constant python run
+    if [ $# -ne 3 ]; then echo "ERROR in get_file_list()"; exit 1; fi
+    path=$1
+    start_date=$2
+    end_date=$3
+    files=""
+    for f in `ls $path | egrep "\.csv\.gz$"`; do
+        st=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n-1]}'`
+        en=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
+        diff_st=`python -c "print $st-$start_date"`
+        diff_en=`python -c "print $end_date-$en"`
+        if [ $diff_st -ge 0 -a $diff_en -ge 0 ]; then
+            files="$path/$f,$files"
+        fi       
+    done
+    echo ${files::${#files}-1}
+}
+
+# make iteration over {old,new}
+# TODO: all required scripts done. finish with sequence of actions
+
+prepare_data old
+parse_csv --fin=old_valid_clf.csv.gz --fout=old_valid_dtr.csv.gz --tiers=$tiers --tiers-col=tier --mapping=old_tiers.txt --mapping-kval=id,tier
+
+
+prepare_data new
+parse_csv --fin=new_valid_clf.csv.gz --fout=new_valid_dtr.csv.gz --tiers=$tiers --tiers-col=tier --mapping=new_tiers.txt --mapping-kval=hash,tier
+
+
+#echo `get_file_list $path 20160101 20160229`

@@ -1,0 +1,48 @@
+2016-02-29 - 2016-03-20
+Analysis of effect of new attributes within new dataframe
+
+===========
+Description
+===========
+Prediction and verification task execution notes :
+* Selected periods:
+ - Training data   : Jan-Mar 2015
+ - Validation data : Apr 2015
+* Models    : all classification models which can be found in model --help
+* Data used :
+ - Old : produced using python "dataframe.py" script
+ - New : produced using newly written Go multithread code, this data contains more attributes comparing to old data
+* Output : this folder contains model performance results for new and old data
+
+=============
+Mean and RMSE
+=============
+RidgeClassifier performed with very low precision (0.24097 in old data, 0.06943 in new data) and recall (0.54335 in old data, 0.08596 in new data), it was removed
+
+Predictors using new data perform significantly worse:
+
+                    new      old
+ - Avg. accuracy  0.97022  0.98357
+ - Avg. precision 0.59152  0.91748
+ - Avg. recall    0.23905  0.88381
+ - Avg. f1        0.31383  0.89520
+ - RMSE accuracy  0.00352  0.00488
+ - RMSE precision 0.12306  0.04309
+ - RMSE recall    0.10141  0.09367
+ - RMSE f1        0.12102  0.04059 
+
+Recall of 0.23905 shows only up to 1/4 well recognized actually popular databases, that means more than 3/4 probability not to recognize popular dataset. Moreover, from positively classified databases only 0.59152 of them would be actually popular, which means it would be produced replica for unpopular dataset with up to 1/2 probability and with such probability we would perform wasting of space.
+
+Best performance within old and new data showed GBC:
+
+                     new                          old
+           GradientBoostingClassifier  GradientBoostingClassifier
+  accuracy         0.97352                      0.98842
+  precision        0.63695                      0.91864
+  recall           0.30994                      0.94118
+  f1               0.41698                      0.92977
+
+===========================
+Conclusion and further work
+===========================
+New dataframes include all old and some new features about datasets. Fact that prediction using new dataframes show worse performance than using old dataframes yields that some of new attributes are biased. Further study by feature selection needs to be done to evaluate and control the impact of new attributes.
