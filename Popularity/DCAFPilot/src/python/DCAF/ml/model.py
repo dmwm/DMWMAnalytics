@@ -175,7 +175,8 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             pass
         if  scorer:
             for scr in scorer.split(','):
-                if  scr.lower() in ['tp', 'tn', 'fp', 'fn']:
+                slist = ['tp', 'tn', 'fp', 'fn', 'tpr', 'tnr', 'fpr', 'fnr']
+                if  scr.lower() in slist:
                     res = rates(y_rest, predictions)
                     print("Score metric (%s): %s" % (scr.upper(), res[scr.lower()]))
                     continue
