@@ -86,11 +86,8 @@ func writeRecords(records []Record, fout string) {
 
 			}
 		}
-<<<<<<< HEAD
-=======
 		// replace possible nil's with -1
 		out = strings.Replace(out, "<nil>", "-1", -1)
->>>>>>> master
 		if _, err := w.Write([]byte(out + "\n")); err != nil {
 			panic(err)
 		}
@@ -149,8 +146,6 @@ func testRecords() []Record {
 	}
 	return records
 }
-<<<<<<< HEAD
-=======
 
 // helper function to get new DBS Records
 func newRecords(start, stop string) []Record {
@@ -162,4 +157,3 @@ func newRecords(start, stop string) []Record {
 	}
 	return records
 }
->>>>>>> master

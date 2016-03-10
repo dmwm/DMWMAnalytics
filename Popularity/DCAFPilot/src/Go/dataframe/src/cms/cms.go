@@ -64,12 +64,9 @@ func Process(start, stop, fout string, newdata bool, dbsExtra, chunkSize int, te
 	}
 	if fout == "" {
 		fout = fmt.Sprintf("dataframe-%s-%s.csv", start, stop)
-<<<<<<< HEAD
-=======
 		if newdata {
 			fout = fmt.Sprintf("new%s", fout)
 		}
->>>>>>> master
 	}
 	if utils.VERBOSE > 0 {
 		fmt.Println("Job started", time.Now())
@@ -80,8 +77,6 @@ func Process(start, stop, fout string, newdata bool, dbsExtra, chunkSize int, te
 		for _, rec := range testRecords() {
 			popdbRecords = append(popdbRecords, rec)
 		}
-<<<<<<< HEAD
-=======
 	} else if newdata {
 		for _, rec := range newRecords(start, stop) {
 			popdbRecords = append(popdbRecords, rec)
@@ -89,7 +84,6 @@ func Process(start, stop, fout string, newdata bool, dbsExtra, chunkSize int, te
 		if utils.VERBOSE > 0 {
 			fmt.Printf("Process %d new DBS records\n", len(popdbRecords))
 		}
->>>>>>> master
 	} else {
 		// get popularity DB records for given time interval
 		popdbRecords = datasetStats(start, stop)

@@ -1,4 +1,8 @@
-GOPATH:=$(PWD):${GOPATH}
+ifeq ($(GOPATH),)
+	GOPATH:=$(PWD)
+else
+	GOPATH:=$(PWD):${GOPATH}
+endif
 export GOPATH
 
 all: build

@@ -74,8 +74,6 @@ func allDatasets() Record {
 	return rdict
 }
 
-<<<<<<< HEAD
-=======
 // helper function to get DBS datasets for given time interval
 func datasetsInTimeWindow(start, stop string) []string {
 	var out []string
@@ -96,7 +94,6 @@ func datasetsInTimeWindow(start, stop string) []string {
 	return out
 }
 
->>>>>>> master
 // helper function to get release information about dataset
 func datasetReleases(dataset string, ch chan Record) {
 	api := "releaseversions"
