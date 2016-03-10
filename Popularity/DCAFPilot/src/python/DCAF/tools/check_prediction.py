@@ -50,6 +50,8 @@ class OptionParser():
             dest="scorer", default="", help="model scorers: %s, default None" % scorers)
         self.parser.add_option("--verbose", action="store_true",
             dest="verbose", default=False, help="verbose mode")
+        self.parser.add_option("--plain-output", action="store_true",
+            dest="plainout", default=False, help="Output result in comma separated format, default False")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
@@ -81,7 +83,7 @@ def loader(ifile, target, sep=','):
             arr.append(val)
     return arr
 
-def checker(predictions, y_true, scorer, verbose=False):
+def checker(predictions, y_true, scorer, verbose=False, plainout=False):
     "Check our model prediction and dump logloss value"
     if  verbose:
         loss = 0
@@ -92,20 +94,29 @@ def checker(predictions, y_true, scorer, verbose=False):
             loss += logloss(pval, yval)
             tot += 1
         print("Final Logloss          :", loss/tot)
+    plain = ''
 
     # sklearn metrics for regression
     if  not scorer:
         print("ERROR: no scorer provided, please see --help for their list")
         sys.exit(1)
     for scr in scorer.split(','):
-        if  scr.lower() in ['tp', 'tn', 'fp', 'fn']:
+        slist = ['tp', 'tn', 'fp', 'fn', 'tpr', 'tnr', 'fpr', 'fnr']
+        if  scr.lower() in slist:
             res = rates(y_true, predictions)
-            print("Score metric (%s): %s" % (scr.upper(), res[scr.lower()]))
+            if  plainout:
+                plain += str(res) + ','
+            else:
+                print("Score metric (%s): %s" % (scr.upper(), res[scr.lower()]))
             continue
         scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
         method = scr_str.split(',')[0]
         res = getattr(metrics, method)(y_true, predictions)
-        print("Score metric (%s): %s" % (method, res))
+        if  plainout:
+            plain += str(res) + ','
+        else:
+            print("Score metric (%s): %s" % (method, res))
+    print(plain[:-1])
 
 def main():
     "Main function"
@@ -114,7 +125,7 @@ def main():
 
     predictions = loader(opts.fpred, opts.fpred_target, opts.fpred_sep)
     real_values = loader(opts.fin, opts.fin_target, opts.fin_sep)
-    checker(predictions, real_values, opts.scorer, opts.verbose)
+    checker(predictions, real_values, opts.scorer, opts.verbose, opts.plainout)
 
 if __name__ == '__main__':
     main()
