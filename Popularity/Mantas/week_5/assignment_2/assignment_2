@@ -9,8 +9,8 @@
 
 
 # data expressions: training 201501*-201509*, validation 2015100*
-train_rx="dataframe(-20150[1-9][0-9]{2}){2}\.csv\.gz$"
-valid_rx="dataframe(-201510(0[1-9]|1[0-5])){2}\.csv\.gz$"
+train_rx="dataframe(-20150[0-9]{3}){2}\.csv\.gz$"
+valid_rx="dataframe(-201510(0[1-9]|1[0-3])){2}\.csv\.gz$"
 
 # data directories
 old_data_path=/data/srv/state/dcafpilot/analytics/old_data
@@ -20,14 +20,16 @@ new_data_path=/data/srv/state/dcafpilot/analytics/data
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 
 # models to use
-classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier" "SVC", "xgboost")
-#classifiers=("vw" "xgboost")
-#classifier="AdaBoostClassifier"
+#classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier" "SVC" "xgboost")
+classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
+#classifier="BaggingClassifier"
+
+scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1"
 
 echo "Starting script..."
 
 # load of path variables to use DCAFPilot functions
-. /data/srv/current/apps/DCAFPilot/etc/profile.d/init.sh
+#. /data/srv/current/apps/DCAFPilot/etc/profile.d/init.sh
 
 
 ## PREPARATION OF DATA
@@ -54,14 +56,14 @@ verify_structure() {
     No output, checks if data is consistent to proceed to prediction
     '
     pref=$1 #prefix {old, new}
+    verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
+    verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
     head_diff=`./headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
     if [ ! "${#head_diff}" -le 0 ]; then
         endl=$'\n'
-        echo "[$pref] Error: different number of attributes. Difference:$endl$_diff"
+        echo "[$pref] Error: different number of attributes. Difference:$endl$head_diff"
         exit 1
     fi
-    #verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
-    #verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
 }
 
 prep_data() {
@@ -76,13 +78,12 @@ prep_data() {
     vfiles=$(find_files $path $valid_rx)
     #echo "$2 training files: $tfiles"
     #echo "$2 validation files: $vfiles"
+    #exit 0
     merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
     merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
-    drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
-    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
-    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
-    #verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
-    #verify_dfr --file2=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
+    drops_=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
 }
 
 predict_and_verify() {
@@ -94,7 +95,8 @@ predict_and_verify() {
     clf=$1 #classifier
     pref=$2 #prefix
     model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
-    check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=tp,tn,fp,fn,accuracy,precision,recall,f1 > "${pref}_${clf}.pred"
+    check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer > "${pref}_${clf}.pred"
+    rm "${pref}_${clf}.txt"
 }
 
 #prep_data $old_data_path old

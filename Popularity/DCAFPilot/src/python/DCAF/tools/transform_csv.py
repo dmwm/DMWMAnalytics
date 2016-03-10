@@ -107,7 +107,6 @@ def transform(fin, fout, target, thr, drops, verbose=0):
 
 def main():
     "Main function"
-    print("debug:::::::")
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
     drops = opts.drops.split(',')

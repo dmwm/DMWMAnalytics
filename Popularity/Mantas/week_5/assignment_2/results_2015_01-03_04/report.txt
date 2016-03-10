@@ -1,38 +1,19 @@
-=============================
-Results using old dataframes
-=============================
-                                        tp       tn       fp          fn accuracy precision  recall      f1
-old_SVC                                120    21790        0        6311  0.77637   1.00000 0.01866 0.03664
-old_AdaBoostClassifier                   0    21790        0        6431  0.77212   0.00000 0.00000 0.00000
-old_BaggingClassifier                  180    21790        0        6251  0.77850   1.00000 0.02799 0.05445
-old_DecisionTreeClassifier               5    21790        0        6426  0.77230   1.00000 0.00078 0.00155
-old_ExtraTreesClassifier                 0    21790        0        6431  0.77212   0.00000 0.00000 0.00000
-old_GradientBoostingClassifier         103    21790        0        6328  0.77577   1.00000 0.01602 0.03153
-old_KNeighborsClassifier              1931    21770       20        4500  0.83984   0.98975 0.30026 0.46075
-old_RandomForestClassifier               0    21790        0        6431  0.77212   0.00000 0.00000 0.00000
-old_RidgeClassifier                   3627    21772       18        2804  0.90000   0.99506 0.56399 0.71993
-old_SGDClassifier                     3770    21731       59        2661  0.90362   0.98459 0.58622 0.73489
-                                                                                                           
-Mean                                   973    21780        9        5457  0.80628   0.69694 0.15139 0.20397
-RMSE                           1,472.25168 18.05547 18.05547 1,472.25168  0.05161   0.45628 0.22893 0.29324
+====================
+Week 5 Assignment 2
+====================
+Description     : train classifiers on old and new data, , predict and verify the results
+Training data   : old and new, 2015 01-09
+Validation data : old and new, first week of 2015 10
+====================
 
-
-=============================
-Results using new dataframes
-=============================
-                                      tp        tn        fp        fn accuracy precision  recall      f1
-new_AdaBoostClassifier               360     39755       484       908  0.96646   0.42654 0.28391 0.34091
-new_BaggingClassifier                302     39586       653       966  0.96099   0.31623 0.23817 0.27170
-new_DecisionTreeClassifier           417     39249       990       851  0.95565   0.29638 0.32886 0.31178
-new_ExtraTreesClassifier             360     39835       404       908  0.96839   0.47120 0.28391 0.35433
-new_GradientBoostingClassifier       446     39916       323       822  0.97241   0.57997 0.35174 0.43790
-new_KNeighborsClassifier             593     39231      1008       675  0.95945   0.37039 0.46767 0.41338
-new_RandomForestClassifier           301     39780       459       967  0.96564   0.39605 0.23738 0.29684
-new_SVC                              329     40006       233       939  0.97176   0.58541 0.25946 0.35956
-new_RidgeClassifier                  141     39975       264      1127  0.96649   0.34815 0.11120 0.16856
-new_SGDClassifier                      6     40229        10      1262  0.96935   0.37500 0.00473 0.00935
-                                                                                                         
-Mean                                 325     39756       482       942  0.96566   0.41653 0.25670 0.29643
-RMSE                           153.00654 304.66047 304.66047 153.00654  0.00516   0.09580 0.12067 0.11943
-
+=========
+Old data
+=========
+                            tp     tn  fp    fn     tpr     tnr     fpr     fnr  accuracy  precision  recall      f1
+AdaBoostClassifier           0  10731   0  2268 0.00000 1.00000 0.00000 1.00000   0.82553    0.00000 0.00000 0.00000
+BaggingClassifier            0  10731   0  2268 0.00000 1.00000 0.00000 1.00000   0.82553    0.00000 0.00000 0.00000
+DecisionTreeClassifier       0  10731   0  2268 0.00000 1.00000 0.00000 1.00000   0.82553    0.00000 0.00000 0.00000
+ExtraTreesClassifier         0  10731   0  2268 0.00000 1.00000 0.00000 1.00000   0.82553    0.00000 0.00000 0.00000
+GradientBoostingClassifier   0  10731   0  2268 0.00000 1.00000 0.00000 1.00000   0.82553    0.00000 0.00000 0.00000
+XGBClassifier                0  10731   0  2268 0.00000 1.00000 0.00000 1.00000   0.82553    0.00000 0.00000 0.00000
 
