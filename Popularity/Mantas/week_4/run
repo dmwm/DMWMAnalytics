@@ -25,7 +25,7 @@ VALIDATE_START=20160101
 VALIDATE_END=20160229
 
 # dataframes directory
-DATA_DIR=/data/srv/state/dcafpilot/analytics/data
+DATA_DIR=/data/srv/state/dcafpilot/analytics/old_data
 
 # ml classifier, full list can be obtained using 'model --help'
 CLASSIFIER="BaggingClassifier"
@@ -37,7 +37,7 @@ OUTPUT_="results.txt.unique"
 echo "Starting script..."
 
 # load of path variables to use DCAFPilot functions
-. /data/srv/current/apps/DCAFPilot/etc/profile.d/init.sh
+#. /data/srv/current/apps/DCAFPilot/etc/profile.d/init.sh
 
 
 #=================== DATA PREPARATION =====================#
@@ -46,15 +46,16 @@ echo "Starting script..."
 echo "Merging training data..."
 flist=""
 for fname in $(ls $DATA_DIR); do
-    if [[ $fname =~ $VALID_RX ]]; then
+    if [[ $fname =~ $TRAIN_RX ]]; then
         flist="$DATA_DIR/$fname,$flist"
     fi
 done
 flist=${flist::${#flist}-1}
-merge_csv --fin=$flist --fout=train.csv.gz
+#echo "training filess: $flist"
+#merge_csv --fin=$flist --fout=train.csv.gz
 echo "Transforming training data..."
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
-transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+#transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
 
 
 # prepare validation data
@@ -66,11 +67,11 @@ for fname in $(ls $DATA_DIR); do
     fi
 done
 flist=${flist::${#flist}-1}
-merge_csv --fin=$flist --fout=valid.csv.gz
+#echo "valid files: $flist"
+#merge_csv --fin=$flist --fout=valid.csv.gz
 echo "Transforming validation data..."
 drops=`find_drops --file1=valid.csv.gz --file2=train_clf.csv.gz --drops=$drops`
-transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
-
+#transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
 
 #====================== PREDICTION ======================#
 
@@ -82,8 +83,9 @@ model --learner=$CLASSIFIER --idcol=id --target=target --train-file=train_clf.cs
 # check prediction
 echo "Scoring prediction..."
 echo "Scores against validation data labels:" > $OUTPUT
-check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=accuracy,precision,recall,f1 >> $OUTPUT
+check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=tpr,tnr,fpr,fnr,accuracy,precision,recall,f1 > $OUTPUT
 
+exit 0
 
 # check prediction according PopDB
 echo "Updating dataset list from DBS..."
@@ -93,12 +95,12 @@ dataframe --config=/data/srv/current/config/dcafpilot/dcaf.cfg --seed-cache
 pred2dataset --fin=pred.txt --fout=pred.predicted
 
 echo "Removing duplicates..."
-./remove_duplicates --fin=pred.predicted --fout=pred.unique --colno=1 --verbose=1
+#./remove_duplicates --fin=pred.predicted --fout=pred.unique --colno=1 --verbose=1
 
 echo "Acquiring PopDB datasets within validation period..."
 popular_datasets --start=$VALIDATE_START --stop=$VALIDATE_END > pred.popdb
 verify_predictions --pred=pred.predicted --popdb=pred.popdb --target='naccess' --target-thr=10 >> $OUTPUT
-verify_predictions --pred=pred.unique --popdb=pred.popdb --target='naccess' --target-thr=10 > $OUTPUT_
+#verify_predictions --pred=pred.unique --popdb=pred.popdb --target='naccess' --target-thr=10 > $OUTPUT_
 
 
 # output results

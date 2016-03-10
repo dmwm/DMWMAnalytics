@@ -1,0 +1,16 @@
+Week 4 Assignment 1
+===================
+Task : varify performance of model
+Train data : old 2015
+Valid data : old 2016 first 2 months
+Classifier : BaggingClassifier
+===================
+
+Score metric (TPR): 0.19533113423
+Score metric (TNR): 1.0
+Score metric (FPR): 0.0
+Score metric (FNR): 0.80466886577
+Score metric (accuracy_score): 0.836746460746
+Score metric (precision_score): 1.0
+Score metric (recall_score): 0.19533113423
+Score metric (f1_score): 0.326823469474
