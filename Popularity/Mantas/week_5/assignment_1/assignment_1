@@ -12,10 +12,10 @@
 #train_rx="dataframe(-2015[0-9]{4}){2}\.csv\.gz$"
 #valid_rx="dataframe(-20160[1-2][0-9]{2}){2}\.csv\.gz$"
 train_rx="dataframe(-2015[0-9]{4}){2}\.csv\.gz$"
-valid_rx="dataframe(-2016[0-9]{4}){2}\.csv\.gz$"
+valid_rx="dataframe(-201601(0[1-9]|1[0-3])){2}\.csv\.gz$"
 
 # data directory
-data_path=/data/srv/state/dcafpilot/analytics/data
+data_path=/data/srv/state/dcafpilot/analytics/old_data
 
 # list atrributes to be dropped due to their bias
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
@@ -33,7 +33,7 @@ echo "Starting script..."
 ## PREPARATION OF DATA
 
 # training data
-echo "Merging training data..."
+echo "1. Merging training data..."
 files=""
 for fn in $(ls $data_path); do
     if [[ $fn =~ $train_rx ]]; then
@@ -41,14 +41,11 @@ for fn in $(ls $data_path); do
     fi
 done
 files=${files::${#files}-1}
-#merge_csv --fin=$files --fout=train.csv.gz
-echo "Transforming training data..."
-drops_=`find_drops --file1=train.csv.gz --file2=valid.csv.gz --drops=$drops`
-transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_ --log-all
-verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz --drops=$drops_
+#echo "Training data: $files"
+merge_csv --fin=$files --fout=train.csv.gz
 
 # validation data
-echo "Merging validation data..."
+echo "2. Merging validation data..."
 files=""
 for fn in $(ls $data_path); do
     if [[ $fn =~ $valid_rx ]]; then
@@ -56,14 +53,21 @@ for fn in $(ls $data_path); do
     fi
 done
 files=${files::${#files}-1}
-#merge_csv --fin=$files --fout=valid.csv.gz
-echo "Transforming validation data..."
-#drops_=`find_drops --file1=train_clf.csv.gz --file2=valid.csv.gz --drops=${drops}`
-transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_ --log-all
+#echo "Validation data: $files"
+#exit 0
+merge_csv --fin=$files --fout=valid.csv.gz
+
+echo "3. Transforming training data..."
+drops_=`find_drops --file1=train.csv.gz --file2=valid.csv.gz --drops=$drops`
+transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz --drops=$drops_
+
+echo "4. Transforming validation data..."
+transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
 verify_dfr --file1=valid.csv.gz --file2=valid_clf.csv.gz --drops=$drops_
 
 # explicitly check for difference in headers between _clf files
-hdiff=`./headers_diff train_clf.csv.gz valid_clf.csv.gz`
+hdiff=`headers_diff train_clf.csv.gz valid_clf.csv.gz`
 if [ ! "${#hdiff}" -le 0 ]; then
     endl=$'\n'
     echo "Error: different number of attributes. Difference:$endl$hdiff"

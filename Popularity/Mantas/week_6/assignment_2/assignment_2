@@ -15,6 +15,7 @@ new_path=/data/srv/state/dcafpilot/analytics/data
 train_start=20150601
 train_end=20151231
 prefixes=("old")
+finished="no" #iteration indicator
 
 #classifiers=("BaggingClassifier GradientBoostingClassifier")
 classifiers=("GradientBoostingClassifier")
@@ -38,7 +39,7 @@ column_count_check() {
     pref=$1
     f1=$2 #usually train_clf.csv.gz
     f2=$3 #usually valid_clf.csv.gz
-    hdiff=`./headers_diff $f1 $f2`
+    hdiff=`headers_diff $f1 $f2`
     if [ ! "${#hdiff}" -le 0 ]; then
         endl=$'\n'
         echo "[$pref] Error: different number of attributes. Difference:$endl$hdiff"
@@ -53,6 +54,7 @@ predict_and_write() {
     valid_start=$3
     model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer --plain-output`
+    echo "[$pref] to csv: $out"
     echo "$valid_start,$out" >> "${pref}_${clf}_out.csv"
 }
 
@@ -65,26 +67,27 @@ iteration() {
     clf=$2
     valid_start=`newdate --date=$3`
     dol='$'
-    echo "[$pref] Starting iteration, date: $valid_start ..."
+    echo "[$pref] Separation date: $valid_start"
     valid_end=`newdate --date=$valid_start --step=12`
     path=`eval "echo \"${dol}${pref}_path\""`
-    # usually should be one file
     vfiles=`get_file_list $path $valid_start $valid_end`
-    echo "[$pref] Validation files: $vfiles"
-    echo "[$pref] Preparing validation, transforming training data..."
-    merge_csv --fin=$vfiles --fout=${pref}_train.csv.gz
-    __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
-    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
-    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
-    echo "[$pref] Data is prepared. Verifying..."
-    verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz
-    verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz
-    column_count_check $pref ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz
-    echo "[$pref] Predicting, writing data ..."
-    predict_and_write $pref $clf $valid_start
+    if [ -n $vfiles ]; then
+        echo "[$pref] Validation files: $vfiles"
+        echo "[$pref] Preparing validation, transforming training data..."
+        merge_csv --fin=$vfiles --fout=${pref}_train.csv.gz
+        __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+        transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+        transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+        echo "[$pref] Data is prepared. Verifying..."
+        verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz
+        verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz
+        column_count_check $pref ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz
+        echo "[$pref] Predicting, writing data ..."
+        predict_and_write $pref $clf $valid_start
+    else
+        finished="yes"
+    fi
 }
-
-
 
 get_file_list() {
     # running slowly because of constant python run
@@ -102,15 +105,24 @@ get_file_list() {
             files="$path/$f,$files"
         fi       
     done
-    echo ${files::${#files}-1}
+    if [ -n "$files" ]; then
+        echo ${files::${#files}-1}
+    else
+        echo ""
+    fi
 }
 
 for pref in "${prefixes[@]}"; do
     #prepare_train_data $pref
     for clf in "${classifiers[@]}"; do
         rm ${pref}_${clf}_out.csv 2> /dev/null
-        iteration $pref $clf $train_end
+        n=1
+        while [ "$finished" == "no" ]; do
+            echo "[$pref] Starting iteration << $n >> ... |`date +'%Y-%m-%d %T'`|"
+            iteration $pref $clf $train_end
+            train_end=`newdate --date=$train_end --step=7`
+            ((n+=1))
+        done
+        echo "Finished == $finished"
     done
 done
-
-#echo `get_file_list $path 20160101 20160229`

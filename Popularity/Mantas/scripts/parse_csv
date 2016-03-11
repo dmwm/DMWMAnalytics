@@ -110,7 +110,12 @@ def __parse_tiers(dfr, col, values, mapping, kval, verbose, convert_to_num):
         mkeycol = kvals[0]
         mvalcol = kvals[1]
         maps, _ = read_data(mapping, verbose, convert_to_num)
-        extr    = maps[mvalcol].isin(values)
+        if  mvalcol in maps.columns:
+            extr    = maps[mvalcol].isin(values)
+        else:
+            print("ERROR: %s column in not in mapping file %s"
+                    % (mvalcol, mapping))
+            sys.exit(1)
         values = maps.loc[maps[mvalcol].isin(values), mkeycol].tolist()
         if  verbose:
             print("Values after mapping: ", values)

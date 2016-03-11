@@ -14,7 +14,6 @@ train_start=20150601
 train_end=20151231
 valid_start=20160101
 valid_end=20160113
-prefixes=("new")
 
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1"
@@ -33,9 +32,9 @@ prepare_data() {
     #echo "$pref validation files : $vfiles"    
     merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
     merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
-    drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
-    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
-    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+    __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
+    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
     verify_csv $pref
 }
 
@@ -71,7 +70,7 @@ verify_csv() {
     pref=$1
     verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
     verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
-    hdiff=`./headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
+    hdiff=`headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
     if [ ! "${#hdiff}" -le 0 ]; then
         endl=$'\n'
         echo "[$pref] Error: different number of attributes. Difference:$endl$hdiff"
@@ -108,9 +107,11 @@ get_file_list() {
 # run_parse_csv {old,new} fin fout
 # predict_and_measure {old,new} classifier train_file valid_file tag
 
-p=new
+p=old
 prepare_data $p
+#exit 0
 run_parse_csv $p "${p}_valid_clf.csv.gz" "${p}_valid_dfr.csv.gz"
 run_parse_csv $p "${p}_train_clf.csv.gz" "${p}_train_dfr.csv.gz"
-predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" wo
-predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" log
+
+predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" fultrain
+predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" septrain
