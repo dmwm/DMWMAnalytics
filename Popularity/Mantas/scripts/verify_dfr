@@ -87,6 +87,7 @@ def main():
     failed = compare(summ1, summ2)
     if  failed:
         print(failed)
+        print("Verification failed with files: %s vs %s" % (opts.file1, opts.file2))
 
 if __name__ == '__main__':
     main()

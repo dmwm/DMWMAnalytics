@@ -110,15 +110,25 @@ class Reporter(object):
                 # values under parentheses
                 r   = re.compile(r"(\([^)]+\))")
                 for l in open(f, 'r').readlines():
-                    sr = r.search(l).groups()[0][1:-1] 
-                    sr = sr.split('_')[0].lower()  #skipping "_score"
-                    scorers.append(sr)
-                    lines_n += 1
+                    sr = l.strip(' \t\n\r')
+                    if  sr:
+                        sr = r.search(l)
+                        if  not sr:
+                            print("ERROR: cannot read scorers. Unresolved line: %s" % l)
+                            sys.exit(1)
+                        sr = sr.groups()[0][1:-1]
+                        sr = sr.split('_')[0].lower()  #skipping "_score"
+                        scorers.append(sr)
+                        lines_n += 1
+                #exit()
             for l in open(f, 'r').readlines():
-                s = l.replace('\n', '').split(' ')[-1]
-                s = self.__to_num(s)
-                if  s is not None:
-                    ss.append(s)
+                s = l.strip(' \t\n\r')
+                if  not s:
+                    continue
+                s = s.split(' ')[-1]
+                v = self.__to_num(s)
+                if  v is not None:
+                    ss.append(v)
                 else:
                     print("Cannot read numeric value: ", s)
                 n += 1

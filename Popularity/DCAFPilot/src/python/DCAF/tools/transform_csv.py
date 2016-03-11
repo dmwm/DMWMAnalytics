@@ -16,6 +16,7 @@ import re
 import sys
 import gzip
 import bz2
+from math import log
 import optparse
 
 # local modules
@@ -45,11 +46,21 @@ class OptionParser():
             dest="drops", default="", help="drops column names (comma separated)")
         self.parser.add_option("--verbose", action="store_true",
             dest="verbose", default=0, help="Turn on verbose output")
+        self.parser.add_option("--log-cols", action="store", type="string",
+            dest="logcols", default="", help="columns to apply log transformation, comma separated")
+        self.parser.add_option("--log-all", action="store_true",
+            dest="logall", default="", help="option to apply log transformation to all columns except 'id' and 'target'")
+        msg  = "amount to increase selected column values before log transformation, "
+        msg += "actual since <nil> values are replaced with -1 during transformation. "
+        msg += "default value is 2"
+        self.parser.add_option("--log-bias", action="store", type="int",
+            dest="logbias", default=2, help=msg)
+
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
 
-def transform(fin, fout, target, thr, drops, verbose=0):
+def transform(fin, fout, target, thr, drops, verbose=0, logcols='', logall=False, logbias=2):
     "Perform transformation on given CSV file"
     istream = fopen(fin, 'r')
     ostream = fopen(fout, 'wb')
@@ -101,6 +112,16 @@ def transform(fin, fout, target, thr, drops, verbose=0):
                 continue
             new_vals.append(str(row[key]))
         new_vals.append(str(tval))
+        if  logcols or logall:
+            if  logall:
+                logcols = new_headers[:]
+                omit = ['id', 'target']
+                for item in omit:
+                    if  item in logcols:
+                        logcols.remove(item)
+            for i in xrange(len(new_headers)):
+                if  new_headers[i] in logcols:
+                    new_vals[i] = str(log(eval(new_vals[i])+logbias))
         ostream.write(','.join(new_vals)+'\n')
     istream.close()
     ostream.close()
@@ -110,7 +131,7 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
     drops = opts.drops.split(',')
-    transform(opts.fin, opts.fout, opts.target, opts.thr, drops, opts.verbose)
+    transform(opts.fin, opts.fout, opts.target, opts.thr, drops, opts.verbose, opts.logcols, opts.logall, opts.logbias)    
 
 if __name__ == '__main__':
     main()
