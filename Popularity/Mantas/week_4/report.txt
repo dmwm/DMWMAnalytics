@@ -6,6 +6,10 @@ Valid data : old 2016 first 2 months
 Classifier : BaggingClassifier
 ===================
 
+Score metric (TP): 3849
+Score metric (TN): 77420
+Score metric (FP): 0
+Score metric (FN): 15856
 Score metric (TPR): 0.19533113423
 Score metric (TNR): 1.0
 Score metric (FPR): 0.0
@@ -14,3 +18,4 @@ Score metric (accuracy_score): 0.836746460746
 Score metric (precision_score): 1.0
 Score metric (recall_score): 0.19533113423
 Score metric (f1_score): 0.326823469474
+

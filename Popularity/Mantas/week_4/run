@@ -31,7 +31,7 @@ DATA_DIR=/data/srv/state/dcafpilot/analytics/old_data
 CLASSIFIER="BaggingClassifier"
 
 # files to write output
-OUTPUT="results.txt"
+OUTPUT="results.pred"
 OUTPUT_="results.txt.unique"
 
 echo "Starting script..."
@@ -83,7 +83,7 @@ model --learner=$CLASSIFIER --idcol=id --target=target --train-file=train_clf.cs
 # check prediction
 echo "Scoring prediction..."
 echo "Scores against validation data labels:" > $OUTPUT
-check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=tpr,tnr,fpr,fnr,accuracy,precision,recall,f1 > $OUTPUT
+check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1 > $OUTPUT
 
 exit 0
 

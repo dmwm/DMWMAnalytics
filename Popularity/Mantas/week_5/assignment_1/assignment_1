@@ -44,7 +44,7 @@ files=${files::${#files}-1}
 #merge_csv --fin=$files --fout=train.csv.gz
 echo "Transforming training data..."
 drops_=`find_drops --file1=train.csv.gz --file2=valid.csv.gz --drops=$drops`
-#transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_ --log-all
 verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz --drops=$drops_
 
 # validation data
@@ -59,7 +59,7 @@ files=${files::${#files}-1}
 #merge_csv --fin=$files --fout=valid.csv.gz
 echo "Transforming validation data..."
 #drops_=`find_drops --file1=train_clf.csv.gz --file2=valid.csv.gz --drops=${drops}`
-#transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_ --log-all
 verify_dfr --file1=valid.csv.gz --file2=valid_clf.csv.gz --drops=$drops_
 
 # explicitly check for difference in headers between _clf files
@@ -76,6 +76,6 @@ fi
 for m in "${classifiers[@]}"; do
     echo "|`date +'%Y-%m-%d %T'`| Running $m..."
     model --learner=$m --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=$m.txt --split=0
-    check_prediction --fin=valid_clf.csv.gz --fpred=$m.txt --scorer=tp,tn,fp,fn,accuracy,precision,recall,f1 > $m.pred
+    check_prediction --fin=valid_clf.csv.gz --fpred=$m.txt --scorer=tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1 > $m.pred
     rm $m.txt
 done

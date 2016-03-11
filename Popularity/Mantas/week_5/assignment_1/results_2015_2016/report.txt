@@ -9,11 +9,10 @@ Validation data : first two months of new 2016
 ===================
 Prediction results
 ===================
-                               tp     tn    fp     fn  accuracy  precision  recall      f1
-AdaBoostClassifier              0  77420     0  19705   0.79712    0.00000 0.00000 0.00000
-BaggingClassifier           10111  76732   688   9594   0.89414    0.93629 0.51312 0.66293
-DecisionTreeClassifier       7048  75866  1554  12657   0.85368    0.81934 0.35768 0.49797
-ExtraTreesClassifier            0  77420     0  19705   0.79712    0.00000 0.00000 0.00000
-GradientBoostingClassifier   4983  77419     1  14722   0.84841    0.99980 0.25288 0.40366
-XGBClassifier                   0  77420     0  19705   0.79712    0.00000 0.00000 0.00000
+                              tp     tn     fp     fn     tpr     tnr     fpr     fnr  accuracy  precision  recall      f1
+AdaBoostClassifier          6823  62471   4184  10685 0.38971 0.93723 0.06277 0.61029   0.82333    0.61988 0.38971 0.47856
+BaggingClassifier           8798  51846  14809   8710 0.50251 0.77783 0.22217 0.49749   0.72055    0.37269 0.50251 0.42797
+GradientBoostingClassifier   705  66523    132  16803 0.04027 0.99802 0.00198 0.95973   0.79878    0.84229 0.04027 0.07686
+RandomForestClassifier      1500  65748    907  16008 0.08568 0.98639 0.01361 0.91432   0.79902    0.62318 0.08568 0.15064
+XGBClassifier                729  66544    111  16779 0.04164 0.99833 0.00167 0.95836   0.79932    0.86786 0.04164 0.07946
 

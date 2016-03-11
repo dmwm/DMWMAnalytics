@@ -22,7 +22,6 @@ drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 # models to use
 #classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier" "SVC" "xgboost")
 classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
-#classifier="BaggingClassifier"
 
 scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1"
 
@@ -99,8 +98,8 @@ predict_and_verify() {
     rm "${pref}_${clf}.txt"
 }
 
-#prep_data $old_data_path old
-#prep_data $new_data_path new
+prep_data $old_data_path old
+prep_data $new_data_path new
 verify_structure old
 verify_structure new
 if [ ! -z "$classifiers" ]; then

@@ -24,7 +24,7 @@ classifier="GradientBoostingClassifier"
 prepare_data() {
     # prepare_data {old,new}
     pref=$1
-    echo "Preparing $pref data..."
+    echo "[$pref] Preparing data..."
     dol='$'
     path=`eval "echo \"${dol}${pref}_path\""`
     tfiles=`get_file_list $path $train_start $train_end`
@@ -36,27 +36,39 @@ prepare_data() {
     drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
     transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
     transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops
+    verify_csv $pref
 }
 
-predict_and_measure() {
-    # predict_and_measure {old,new} compatible_classifier
-    # TODO: decide in which sequence to use parse_csv
+run_parse_csv(){
+    # run_parse_csv {old,new} fin fout
     pref=$1
-    clf=$2
-    if [ "$pref" == "old" ]; then
+    fin=$2
+    fout=$3
+    echo "[$pref] Extracting data $fin -> $fout..."
+    if  [ "$pref" == "old" ]; then
         mkeyval="id,tier"
     elif [ "$pref" == "new" ]; then
         mkeyval="hash,tier"
     fi
-    parse_csv --fin=${pref}_valid_clf.csv.gz --fout=${pref}_valid_dtr.csv.gz --tiers=$tiers --tiers-col=tier --mapping=${pref}_tiers.txt --mapping-kval=$mkeyval
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
-    check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer > "${pref}_${clf}.pred"
-    rm "${pref}_${clf}.txt"
+    parse_csv --fin=$fin --fout=$fout --tiers=$tiers --tiers-col=tier --mapping=${pref}_tiers.txt --mapping-kval=$mkeyval
+}
+
+predict_and_measure() {
+    # predict_and_measure {old,new} classifier train_file valid_file tag
+    pref=$1
+    clf=$2
+    ftrain=$3
+    fvalid=$4
+    tag=$5
+    echo "[$pref] Predicting $tag data..."
+    model --learner=$clf --idcol=id --target=target --train-file=$ftrain --scaler=StandardScaler --newdata=$fvalid --predict="${pref}_${tag}_${clf}.txt" --split=0
+    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer > "${pref}_${tag}_${clf}.pred"
+    rm "${pref}_${tag}_${clf}.txt"
 }
 
 verify_csv() {
+    # verify_csv {old,new}
     pref=$1
-pref=$1 #prefix {old, new}
     verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
     verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
     hdiff=`./headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
@@ -87,14 +99,18 @@ get_file_list() {
 }
 
 # make iteration over {old,new}
-# TODO: all required scripts done. finish with sequence of actions
+: '
+1. prepare full data
+2. validate on selected data
+3. prepare selected data
+4. validate on selected data
+'
+# run_parse_csv {old,new} fin fout
+# predict_and_measure {old,new} classifier train_file valid_file tag
 
-prepare_data old
-parse_csv --fin=old_valid_clf.csv.gz --fout=old_valid_dtr.csv.gz --tiers=$tiers --tiers-col=tier --mapping=old_tiers.txt --mapping-kval=id,tier
-
-
-prepare_data new
-parse_csv --fin=new_valid_clf.csv.gz --fout=new_valid_dtr.csv.gz --tiers=$tiers --tiers-col=tier --mapping=new_tiers.txt --mapping-kval=hash,tier
-
-
-#echo `get_file_list $path 20160101 20160229`
+p=new
+prepare_data $p
+run_parse_csv $p "${p}_valid_clf.csv.gz" "${p}_valid_dfr.csv.gz"
+run_parse_csv $p "${p}_train_clf.csv.gz" "${p}_train_dfr.csv.gz"
+predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" wo
+predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" log

@@ -14,7 +14,7 @@ def gen_report():
     path  = "."
     fout  = "report.txt"
     fbeg1 = "old_"
-    #fbeg2 = "new_"
+    fbeg2 = "new_"
     fend  = ".pred"
     rtit  = "Week 5 Assignment 2"
     desc  = "Description     : train classifiers on old and new data, "
@@ -22,12 +22,12 @@ def gen_report():
     desc += "Training data   : old and new, 2015 01-09\n"
     desc += "Validation data : old and new, first week of 2015 10"
     tit1  = "Old data"
-    #tit2  = "New data"
+    tit2  = "New data"
     #report generation
     repmgr.open(fout)
     repmgr.write_section(rtit, desc)
     repmgr.write_table(path, fbeg=fbeg1, fend=fend, title=tit1)
-    #repmgr.write_table(path, fbeg=fbeg2, fend=fend, title=tit2)
+    repmgr.write_table(path, fbeg=fbeg2, fend=fend, title=tit2)
     repmgr.close()
 
 def main():
