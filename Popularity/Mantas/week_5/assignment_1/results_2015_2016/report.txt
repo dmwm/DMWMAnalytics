@@ -2,8 +2,8 @@
 Week 5 Assignment 1
 ====================
 Description     : train 5 classifiers, predict and verify the results
-Training data   : all new 2015
-Validation data : first two months of new 2016
+Training data   : all old 2015
+Validation data : first week of old 2016
 ====================
 
 ===================
