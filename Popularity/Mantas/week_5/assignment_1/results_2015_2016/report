@@ -16,8 +16,8 @@ def gen_report():
     fend = ".pred"
     rtit = "Week 5 Assignment 1"
     desc  = "Description     : train 5 classifiers, predict and verify the results\n"
-    desc += "Training data   : all new 2015\n"
-    desc += "Validation data : first two months of new 2016"
+    desc += "Training data   : all old 2015\n"
+    desc += "Validation data : first week of old 2016"
     ttit = "Prediction results"
     #report generation
     repmgr.open(fout)
