@@ -30,7 +30,7 @@ class OptionParser(object):
         self.parser.add_option("--tiers", action="store", type="string",
             dest="tiers", default=None, help=msg)
         self.parser.add_option("--tiers-col", action="store", type="string",
-            dest="col", default=None, help="Column name for tiers selection")
+            dest="col", default=None, help="Tier column name in --fin file")
         msg  = "Input file for key-value tiers mapping."
         msg += "Used together with --tiers and --mapping-kval"
         self.parser.add_option("--mapping", action="store", type="string",
@@ -40,11 +40,11 @@ class OptionParser(object):
         self.parser.add_option("--mapping-kval", action="store",
             type="string", dest="kval", default="0,1", help=msg)
         self.parser.add_option("--verbose", action="store",
-            type="int", dest="verbose", default=0, help="Verbose mode, default 0, available 0-2")
+            type="int", dest="verbose", default=0, help="Verbose mode, default 0, values 0-2")
         msg  = "Convert (1) or not (0) data to numeric data before parsing. "
         msg += "Default value is 1. "
         msg += "If 1, non-numeric values are set to -1."
-        self.parser.add_option("--convert-to-num", action="store",
+        self.parser.add_option("--convert-to-num", action="store_true",
             type="int", dest="ctn", default=1, help=msg)
     def options(self):
         return self.parser.parse_args()
@@ -138,7 +138,7 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.options()
     dfr, comp = read_data(opts.fin, verbose=opts.verbose, convert_to_num=opts.ctn)
-    # for now only 'tiers' option is supported
+    # for now only 'tiers' parsing option is supported
     dfr  = parse_data(dfr, 'tiers', opts.col, opts.tiers, opts.tiersmap,
         opts.kval, opts.verbose, convert_to_num=opts.ctn)
     write_data(dfr, opts.fout, comp)
