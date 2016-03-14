@@ -1,11 +1,25 @@
 Intership Workflow (2016, Spring)
 ----------------------
 
+### Week #7
+14 Mar 2016
+* Continuing running prediction scripts
+* Reporting prediction results
+* Continuing working with last week assignments 1 and 2, scripts large, debugging is relatively slow
+* Received new tasks:
+  - Column selection for log-transform using threshold and first 10 rows
+  - Create an emsamble for current 6 classifiers
+  - Add probabilistic metric for classifier
+
 ### Week #6
-Left to do:
-* Finish assignment 1 (prediction with specific tiers)
-* Finish assignment 2 (iterative prediction and plotting of the performance)
-* Logarithm integration into tranform_csv
+11 Mar 2016
+* Continuing developing assignments 1 and 2
+* Fixed "newdata" function in utils/utils.py (--step parameter)
+* Moved log_transform functionality of --log-all and --log-cols to transform_csv and adopted (warning: verify_dfr cannot be used with log transform option since it changes values of dataframe)
+* Updated reporter.py (was not rigid with some *.pred files)
+* Received task to perform other predictions within different periods and data
+* Starting running new predictions
+* Observed solid difference in portion of datasets within same datatiers in old and new data. Appears, new dataframes contain relatively many "0" values which origin is curently unknown
 
 10 Mar 2016
 * Finished parse_csv script. The version of pandas in module is 0.15.1, so it does not support to_csv command "compression" option, which was implement to work with gzip in 0.17.1. Implemented manually.

@@ -45,7 +45,7 @@ class OptionParser(object):
         msg += "Default value is 1. "
         msg += "If 1, non-numeric values are set to -1."
         self.parser.add_option("--convert-to-num", action="store_true",
-            type="int", dest="ctn", default=1, help=msg)
+            dest="ctn", default=False, help=msg)
     def options(self):
         return self.parser.parse_args()
 

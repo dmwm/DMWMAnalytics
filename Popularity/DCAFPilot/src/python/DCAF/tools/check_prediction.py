@@ -109,14 +109,20 @@ def checker(predictions, y_true, scorer, verbose=False, plainout=False):
             else:
                 print("Score metric (%s): %s" % (scr.upper(), res[scr.lower()]))
             continue
+        print("nepraejo: %s" % scr)
+        # print(metrics.SCORERS)
         scr_str = repr(metrics.SCORERS[scr]).replace('make_scorer(', '').replace(')', '')
+        print("scr_str: ", scr_str)
         method = scr_str.split(',')[0]
+        print("method: ", method)
         res = getattr(metrics, method)(y_true, predictions)
+        print("res: ", res)
         if  plainout:
             plain += str(res) + ','
         else:
             print("Score metric (%s): %s" % (method, res))
-    print(plain[:-1])
+    if  plainout:
+        print(plain[:-1])
 
 def main():
     "Main function"

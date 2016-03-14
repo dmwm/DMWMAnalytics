@@ -13,7 +13,7 @@ new_path=/data/srv/state/dcafpilot/analytics/data
 train_start=20150601
 train_end=20151231
 valid_start=20160101
-valid_end=20160113
+valid_end=20160131
 
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1"
@@ -108,10 +108,10 @@ get_file_list() {
 # predict_and_measure {old,new} classifier train_file valid_file tag
 
 p=old
-prepare_data $p
+#prepare_data $p
 #exit 0
-run_parse_csv $p "${p}_valid_clf.csv.gz" "${p}_valid_dfr.csv.gz"
-run_parse_csv $p "${p}_train_clf.csv.gz" "${p}_train_dfr.csv.gz"
+#run_parse_csv $p "${p}_valid_clf.csv.gz" "${p}_valid_dfr.csv.gz"
+#run_parse_csv $p "${p}_train_clf.csv.gz" "${p}_train_dfr.csv.gz"
 
-predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" fultrain
-predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" septrain
+predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" fulltrain
+predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" tiertrain

@@ -54,6 +54,7 @@ predict_and_write() {
     valid_start=$3
     model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer --plain-output`
+    rm "${pref}_${clf}.txt"
     echo "[$pref] to csv: $out"
     echo "$valid_start,$out" >> "${pref}_${clf}_out.csv"
 }
@@ -71,9 +72,9 @@ iteration() {
     valid_end=`newdate --date=$valid_start --step=12`
     path=`eval "echo \"${dol}${pref}_path\""`
     vfiles=`get_file_list $path $valid_start $valid_end`
-    if [ -n $vfiles ]; then
-        echo "[$pref] Validation files: $vfiles"
-        echo "[$pref] Preparing validation, transforming training data..."
+    if [[ ! -z "${vfiles// }" ]]; then
+        echo "[$pref] Validation files: \"$vfiles\""
+        echo "[$pref] Preparing validation, transforming all data..."
         merge_csv --fin=$vfiles --fout=${pref}_train.csv.gz
         __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
         transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
@@ -91,7 +92,7 @@ iteration() {
 
 get_file_list() {
     # running slowly because of constant python run
-    if [ $# -ne 3 ]; then echo "ERROR in get_file_list()"; exit 1; fi
+    if [ $# -ne 3 ]; then echo "ERROR in get_file_list(). Given params: $@"; exit 1; fi
     path=$1
     start_date=$2
     end_date=$3
@@ -113,16 +114,17 @@ get_file_list() {
 }
 
 for pref in "${prefixes[@]}"; do
-    #prepare_train_data $pref
+    prepare_train_data $pref    
     for clf in "${classifiers[@]}"; do
-        rm ${pref}_${clf}_out.csv 2> /dev/null
+        finished="no"
         n=1
+        rm ${pref}_${clf}_out.csv 2> /dev/null
         while [ "$finished" == "no" ]; do
-            echo "[$pref] Starting iteration << $n >> ... |`date +'%Y-%m-%d %T'`|"
+            echo "===== Starting iteration << $n >> ... |`date +'%Y-%m-%d %T'`|"
             iteration $pref $clf $train_end
             train_end=`newdate --date=$train_end --step=7`
             ((n+=1))
         done
-        echo "Finished == $finished"
+        echo "[$pref] Work done."
     done
 done
