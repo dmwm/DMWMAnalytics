@@ -1,0 +1,83 @@
+#!/bin/bash
+#-*- coding: utf-8 -*-
+
+# ASSIGNMENT #1
+# received    : 2016 03 11
+# description :
+#  using 5 classifiers and 2015 training data
+#  predict 2016 first week labels and verify
+# data        : old
+
+# training 20150101-20151231, validation 20160101-20160113
+train_rx="dataframe(-2015[0-9]{4}){2}\.csv\.gz$"
+valid_rx="dataframe(-201601(0[1-9]|1[0-3])){2}\.csv\.gz$"
+
+# data directory
+data_path=/data/srv/state/dcafpilot/analytics/old_data
+
+# list atrributes to be dropped due to their bias
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+
+# classifiers
+classifiers=('AdaBoostClassifier' 'BaggingClassifier'
+    'GradientBoostingClassifier' 'RandomForestClassifier' 'XGBClassifier')
+
+echo "Starting script..."
+
+# load of path variables to use DCAFPilot functions
+#. /data/srv/current/apps/DCAFPilot/etc/profile.d/init.sh
+
+
+## PREPARATION OF DATA
+
+# training data
+echo "1. Merging training data..."
+files=""
+for fn in $(ls $data_path); do
+    if [[ $fn =~ $train_rx ]]; then
+        files="$data_path/$fn,$files"
+    fi
+done
+files=${files::${#files}-1}
+#echo "Training data: $files"
+merge_csv --fin=$files --fout=train.csv.gz
+
+# validation data
+echo "2. Merging validation data..."
+files=""
+for fn in $(ls $data_path); do
+    if [[ $fn =~ $valid_rx ]]; then
+        files="$data_path/$fn,$files"
+    fi
+done
+files=${files::${#files}-1}
+#echo "Validation data: $files"
+#exit 0
+merge_csv --fin=$files --fout=valid.csv.gz
+
+echo "3. Transforming training data..."
+drops_=`find_drops --file1=train.csv.gz --file2=valid.csv.gz --drops=$drops`
+transform_csv --fin=train.csv.gz --fout=train_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+verify_dfr --file1=train.csv.gz --file2=train_clf.csv.gz --drops=$drops_
+
+echo "4. Transforming validation data..."
+transform_csv --fin=valid.csv.gz --fout=valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$drops_
+verify_dfr --file1=valid.csv.gz --file2=valid_clf.csv.gz --drops=$drops_
+
+# explicitly check for difference in headers between _clf files
+hdiff=`headers_diff train_clf.csv.gz valid_clf.csv.gz`
+if [ ! "${#hdiff}" -le 0 ]; then
+    endl=$'\n'
+    echo "Error: different number of attributes. Difference:$endl$hdiff"
+    exit 1
+fi
+
+## PREDICTION
+
+# train model and validate
+for m in "${classifiers[@]}"; do
+    echo "|`date +'%Y-%m-%d %T'`| Running $m..."
+    model --learner=$m --idcol=id --target=target --train-file=train_clf.csv.gz --scaler=StandardScaler --newdata=valid_clf.csv.gz --predict=$m.txt --split=0
+    check_prediction --fin=valid_clf.csv.gz --fpred=$m.txt --scorer=tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1 > $m.pred
+    rm $m.txt
+done

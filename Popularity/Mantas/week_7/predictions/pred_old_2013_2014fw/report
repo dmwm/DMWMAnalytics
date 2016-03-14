@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+from __future__ import print_function
+
+__author__ = "Mantas Briliauskas"
+
+# local modules
+from reporter import Reporter
+
+def gen_report():
+    repmgr = Reporter()
+    #report setup
+    path = "."
+    fout = "report.txt"
+    fend = ".pred"
+    rtit = "Week 7 predictions"
+    desc  = "Description     : train 5 classifiers, predict and verify the results\n"
+    desc += "Training data   : all old 2013\n"
+    desc += "Validation data : first week of old 2014"
+    ttit = "Prediction results"
+    #report generation
+    repmgr.open(fout)
+    repmgr.write_section(rtit, desc)
+    repmgr.write_table(path, fend=fend, title=ttit)
+    repmgr.close()
+
+def main():
+    gen_report()
+
+if __name__ == '__main__':
+    main()

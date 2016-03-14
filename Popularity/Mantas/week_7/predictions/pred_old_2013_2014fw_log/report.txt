@@ -1,0 +1,18 @@
+===================
+Week 7 predictions
+===================
+Description     : train 5 classifiers, predict and verify the results, use log-all
+Training data   : all old 2013
+Validation data : first week of old 2014
+===================
+
+===================
+Prediction results
+===================
+                             tp    tn   fp  fn     tpr     tnr     fpr     fnr  accuracy  precision  recall      f1
+AdaBoostClassifier          625  9961  152   0 1.00000 0.98497 0.01503 0.00000   0.98584    0.80438 1.00000 0.89158
+BaggingClassifier           625  9963  150   0 1.00000 0.98517 0.01483 0.00000   0.98603    0.80645 1.00000 0.89286
+GradientBoostingClassifier  625  9961  152   0 1.00000 0.98497 0.01503 0.00000   0.98584    0.80438 1.00000 0.89158
+RandomForestClassifier      624  9866  247   1 0.99840 0.97558 0.02442 0.00160   0.97690    0.71642 0.99840 0.83422
+XGBClassifier               625  9958  155   0 1.00000 0.98467 0.01533 0.00000   0.98557    0.80128 1.00000 0.88968
+

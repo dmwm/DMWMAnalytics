@@ -1,0 +1,13 @@
+Score metric (TP): 53
+Score metric (TN): 11651
+Score metric (FP): 200
+Score metric (FN): 3643
+Score metric (TPR): 0.0143398268398
+Score metric (TNR): 0.983123787022
+Score metric (FPR): 0.0168762129778
+Score metric (FNR): 0.98566017316
+Score metric (accuracy_score): 0.752814047726
+Score metric (precision_score): 0.209486166008
+Score metric (recall_score): 0.0143398268398
+Score metric (f1_score): 0.0268422385414
+
