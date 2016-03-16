@@ -39,7 +39,7 @@ prepare_train_data() {
 }
 
 get_file_list() {
-    # running slowly because of constant python run
+    # running slowly because of constant python exec
     if [ $# -ne 3 ]; then echo "ERROR in get_file_list(). Given params: $@"; exit 1; fi
     path=$1
     start_date=$2
@@ -107,10 +107,10 @@ iteration() {
     if [[ ! -z "${vfiles// }" ]]; then
         # sanity check if select one file
         if [[ $vfiles == *","* ]]; then
-            echo "ERROR: more than one file selected: $vfiles"
-            finished="yes"
-            halt="yes"
-            exit 1
+            echo "WARNING: more than one file selected: $vfiles"
+            #finished="yes"
+            #halt="yes"
+            #exit 1
         fi
         echo "[$pref] Validation files: \"$vfiles\""
         echo "[$pref] Preparing validation, transforming all data..."

@@ -13,12 +13,14 @@ new_path=/data/srv/state/dcafpilot/analytics/data
 train_start=20150601
 train_end=20151231
 valid_start=20160101
-valid_end=20160131
+valid_end=20160120
 
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
-scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1"
+scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr"
 tiers="AOD,AODSIM,MINIAOD,MINIAODSIM,USER"
-classifier="GradientBoostingClassifier"
+prefixes=("old" "new")
+classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
+#classifiers=("GradientBoostingClassifier")
 
 prepare_data() {
     # prepare_data {old,new}
@@ -59,9 +61,14 @@ predict_and_measure() {
     ftrain=$3
     fvalid=$4
     tag=$5
+    kval=""
+    if   [ "$pref" == "old" ]; then kval="id,tier"
+    elif [ "$pref" == "new" ]; then kval="hash,tier"
+    else echo "Error: unrecognized prefix $pref"; exit 1
+    fi
     echo "[$pref] Predicting $tag data..."
     model --learner=$clf --idcol=id --target=target --train-file=$ftrain --scaler=StandardScaler --newdata=$fvalid --predict="${pref}_${tag}_${clf}.txt" --split=0
-    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer > "${pref}_${tag}_${clf}.pred"
+    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_${clf}.pred"
     rm "${pref}_${tag}_${clf}.txt"
 }
 
@@ -70,7 +77,7 @@ verify_csv() {
     pref=$1
     verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
     verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
-    hdiff=`headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
+    hdiff=`headers_diff ${pref}_train_dfr.csv.gz ${pref}_valid_dfr.csv.gz`
     if [ ! "${#hdiff}" -le 0 ]; then
         endl=$'\n'
         echo "[$pref] Error: different number of attributes. Difference:$endl$hdiff"
@@ -79,7 +86,7 @@ verify_csv() {
 }
 
 get_file_list() {
-    # running slowly because of constant python run
+    # running 10-30 secs because of constant python execution
     if [ $# -ne 3 ]; then echo "ERROR in get_file_list()"; exit 1; fi
     path=$1
     start_date=$2
@@ -107,11 +114,13 @@ get_file_list() {
 # run_parse_csv {old,new} fin fout
 # predict_and_measure {old,new} classifier train_file valid_file tag
 
-p=old
-#prepare_data $p
-#exit 0
-#run_parse_csv $p "${p}_valid_clf.csv.gz" "${p}_valid_dfr.csv.gz"
-#run_parse_csv $p "${p}_train_clf.csv.gz" "${p}_train_dfr.csv.gz"
-
-predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" fulltrain
-predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" tiertrain
+for p in "${prefixes[@]}"; do
+    prepare_data $p
+    run_parse_csv $p "${p}_train_clf.csv.gz" "${p}_train_dfr.csv.gz"
+    run_parse_csv $p "${p}_valid_clf.csv.gz" "${p}_valid_dfr.csv.gz"
+    for classifier in "${classifiers[@]}"; do
+        predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_clf.csv.gz" normal
+        predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" fulltrain
+        predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" tiertrain
+    done
+done

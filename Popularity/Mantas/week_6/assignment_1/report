@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+from __future__ import print_function
+
+__author__ = "Mantas Briliauskas"
+
+# local modules
+from reporter import Reporter
+
+def gen_report():
+    repmgr = Reporter()
+    #report setup
+    path  = "."
+    fout  = "report.txt"
+    fbeg1 = "old_normal_"
+    fbeg2 = "old_fulltrain_"
+    fbeg3 = "old_tiertrain_"
+    fbeg4 = "new_normal_"
+    fbeg5 = "new_fulltrain_"
+    fbeg6 = "new_tiertrain_"
+    fend  = ".pred"
+    rtit  = "Week 6 Assignment 1"
+    desc  = "Description    : train and predict classifiers in combination with filtered dataframes\n"
+    desc += "   Data filter : only datasets from tiers AOD, AODSIM, MINIAOD, MINIAODSIM, USER\n"
+    desc += "   Subtask 1   : train on full data, predict on full data\n"
+    desc += "   Subtask 2   : train on full data, predict on filtered data \n"
+    desc += "   Subtask 3   : train on filtered data, predict on filtered data\n"
+    desc += "Train period   : old, new 2015 second half\n"
+    desc += "Valid period   : old, new 2016 first two weeks"
+    tit1  = "Old full data"
+    tit2  = "Old filtered validation"
+    tit3  = "Old filtered training and validation"
+    tit4  = "New full data"
+    tit5  = "New filtered validation"
+    tit6  = "New filtered training and validation"
+    #report generation
+    repmgr.open(fout)
+    repmgr.write_section(rtit, desc)
+    repmgr.write_table(path, fbeg=fbeg1, fend=fend, title=tit1)
+    repmgr.write_table(path, fbeg=fbeg2, fend=fend, title=tit2)
+    repmgr.write_table(path, fbeg=fbeg3, fend=fend, title=tit3)
+    repmgr.write_table(path, fbeg=fbeg4, fend=fend, title=tit4)
+    repmgr.write_table(path, fbeg=fbeg5, fend=fend, title=tit5)
+    repmgr.write_table(path, fbeg=fbeg6, fend=fend, title=tit6)
+    repmgr.close()
+
+def main():
+    gen_report()
+
+if __name__ == '__main__':
+    main()

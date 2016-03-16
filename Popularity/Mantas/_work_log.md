@@ -2,6 +2,30 @@ Intership Workflow (2016, Spring)
 ----------------------
 
 ### Week #7
+Priorities:
+1. Finish assignments
+2. Add --log-thr option to select columns for log-transform (using first 10 data lines) and apply it
+3. Run previous assignments using --log-thr and 6 classifiers
+4. Perform ensemble of predictions
+5. Enable probability results
+
+
+16 Mar 2016
+* Adopting check_prediction.py to return aggregated data by tiers. It was not convenient to use verify_predictions.py functions, written new ones using pandas [works fast]. Added new options --tiers_break(use or not output tier breaking), --tiers_col(provide column name for tier), --tiers_map(mapping file of tier id and tier name, since we need names, not ids/hashes), --tiers_map_kval(provide mapping key and value: column names in mapping file for tier id/hash column and tier name column, e.g. 'id,tier' or 'hash,tier'). Already returns result devided by tiers in plain CSV format. Of course, when not using --tiers_break, script works as earlier.
+* Assignment 2 script was left working. Small bug fixed, will leave tonight to work. Script with 2 classifiers setting finished in a little more then 2 hours. There are 6 classifiers, 2 dataframe types, so should work about 10-16 hours.
+* Again, 2016 old data does not work well. Lots of 0 TP weekly results from assignment 2. Tomorrow hope to see full results for this script.
+* Left for assignment 1: add new function to Reporter to read csv to report. Test check_prediction.py --tiers_break performance. From first sight works fine.
+* Left fot assignment 2: finish csv_to_graph to draw #scorer plots with each classifier performance
+* Later assignment 2 iterative script may be adopted to analyze all old or all new data performance
+
+15 Mar 2016
+* Working with assignments 1 and 2
+* Assignment 1 in fulltrain/tiervalid setting return 0 TP with 2015sh/2016fw period. Investigated, no errors found
+* Assignment 1 return very poor (0TP) results within old 2015sh/2016fw period. Investigated. No errors in script found. Same setting with 2013sh/2014fw old data returns very good (90%+ for T rates) results
+* Output iterative results of assignment 2 to csv
+* Adopted check_prediction.py to output prediction in plain csv format
+* Script csv_to_plot to draw a plot from csv results, already works, need to adopt to draw data from many clfs in one graph, perhaps one graph for one scorer
+
 14 Mar 2016
 * Continuing running prediction scripts
 * Reporting prediction results

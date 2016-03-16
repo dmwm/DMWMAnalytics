@@ -83,7 +83,7 @@ model --learner=$CLASSIFIER --idcol=id --target=target --train-file=train_clf.cs
 # check prediction
 echo "Scoring prediction..."
 echo "Scores against validation data labels:" > $OUTPUT
-check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1 > $OUTPUT
+check_prediction --fin=valid_clf.csv.gz --fpred=pred.txt --scorer=tp,tn,fp,fn,tpr,tnr,fpr,fnr,accuracy,precision,recall,f1 --verbose > $OUTPUT
 
 exit 0
 
