@@ -14,13 +14,16 @@ old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
 train_start=20150601
 train_end=20151231
-prefixes=("old")
+prefixes=("old" "new")
 finished="no" #iteration indicator
+halt="no" #stop iteration flag
+result_file="result_out.csv"
 
 #classifiers=("BaggingClassifier GradientBoostingClassifier")
-classifiers=("GradientBoostingClassifier")
+#classifiers=("GradientBoostingClassifier")
+classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
-scorer="tpr,tnr,fpr,fnr"
+scorer="tpr,tnr"
 
 prepare_train_data() {
     # prepare_train_data {old,new}
@@ -29,9 +32,33 @@ prepare_train_data() {
     dol='$'
     path=`eval "echo \"${dol}${pref}_path\""`
     tfiles=`get_file_list $path $train_start $train_end`
-    merge_csv --fin=$tfiles --fout=${pref}_valid.csv.gz
+    #echo "old training files   : $tfiles"
+    merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
     # transformation is performed after validation data is known
     echo "[$pref] Finished merging training data."
+}
+
+get_file_list() {
+    # running slowly because of constant python run
+    if [ $# -ne 3 ]; then echo "ERROR in get_file_list(). Given params: $@"; exit 1; fi
+    path=$1
+    start_date=$2
+    end_date=$3
+    files=""
+    for f in `ls $path | egrep "\.csv\.gz$"`; do
+        st=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n-1]}'`
+        en=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
+        diff_st=`python -c "print $st-$start_date"`
+        diff_en=`python -c "print $end_date-$en"`
+        if [ $diff_st -ge 0 -a $diff_en -ge 0 ]; then
+            files="$path/$f,$files"
+        fi
+    done
+    if [ -n "$files" ]; then
+        echo ${files::${#files}-1}
+    else
+        echo ""
+    fi
 }
 
 column_count_check() {
@@ -56,7 +83,11 @@ predict_and_write() {
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer --plain-output`
     rm "${pref}_${clf}.txt"
     echo "[$pref] to csv: $out"
-    echo "$valid_start,$out" >> "${pref}_${clf}_out.csv"
+    echo "$pref,$clf,$valid_start,$out" >> "$result_file"
+}
+
+prepare_out_csv() {
+    echo "dftype,clf,date,$scorer" > "$result_file"
 }
 
 ##### MAIN ITERATION #####
@@ -72,10 +103,18 @@ iteration() {
     valid_end=`newdate --date=$valid_start --step=12`
     path=`eval "echo \"${dol}${pref}_path\""`
     vfiles=`get_file_list $path $valid_start $valid_end`
+    #echo "old training files   : $vfiles"
     if [[ ! -z "${vfiles// }" ]]; then
+        # sanity check if select one file
+        if [[ $vfiles == *","* ]]; then
+            echo "ERROR: more than one file selected: $vfiles"
+            finished="yes"
+            halt="yes"
+            exit 1
+        fi
         echo "[$pref] Validation files: \"$vfiles\""
         echo "[$pref] Preparing validation, transforming all data..."
-        merge_csv --fin=$vfiles --fout=${pref}_train.csv.gz
+        merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
         __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
         transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
         transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
@@ -90,41 +129,27 @@ iteration() {
     fi
 }
 
-get_file_list() {
-    # running slowly because of constant python run
-    if [ $# -ne 3 ]; then echo "ERROR in get_file_list(). Given params: $@"; exit 1; fi
-    path=$1
-    start_date=$2
-    end_date=$3
-    files=""
-    for f in `ls $path | egrep "\.csv\.gz$"`; do
-        st=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n-1]}'`
-        en=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
-        diff_st=`python -c "print $st-$start_date"`
-        diff_en=`python -c "print $end_date-$en"`
-        if [ $diff_st -ge 0 -a $diff_en -ge 0 ]; then
-            files="$path/$f,$files"
-        fi       
-    done
-    if [ -n "$files" ]; then
-        echo ${files::${#files}-1}
-    else
-        echo ""
-    fi
-}
+#./csv_to_graph --fbeg=$pref --fend=".csv"
+#exit 0
 
 for pref in "${prefixes[@]}"; do
     prepare_train_data $pref    
     for clf in "${classifiers[@]}"; do
         finished="no"
         n=1
-        rm ${pref}_${clf}_out.csv 2> /dev/null
+        __train_end=$train_end
+        prepare_out_csv ${pref}_${clf}_out.csv
         while [ "$finished" == "no" ]; do
-            echo "===== Starting iteration << $n >> ... |`date +'%Y-%m-%d %T'`|"
-            iteration $pref $clf $train_end
-            train_end=`newdate --date=$train_end --step=7`
+            echo "===== Starting iteration << $n >> ===== |`date +'%Y-%m-%d %T'`|"
+            iteration $pref $clf $__train_end
+            __train_end=`newdate --date=$__train_end --step=7`
             ((n+=1))
         done
-        echo "[$pref] Work done."
+        if [ "$halt" == "yes" ]; then
+            exit 1
+        else
+            echo "[$pref] Work done."
+        fi
     done
+    #./plot --fbeg=$pref --fend=".pred"
 done
