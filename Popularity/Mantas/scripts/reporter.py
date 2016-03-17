@@ -10,7 +10,6 @@ import sys
 import glob
 import optparse
 import pandas as pd
-from math import sqrt
 
 class Reporter(object):
     def __init__(self):
@@ -39,7 +38,7 @@ class Reporter(object):
             self.__write(text + "\n")
             self.__write(bor  + "\n\n")
         else:
-            raise Exception("Error: writing in closed mode.")
+            raise Exception("Error: open file for writing first")
 
     def write_table(self, path, fbeg="", fend="", title="", totals=[]):
         """

@@ -1,0 +1,620 @@
+[old] Merging training data...
+[old] Finished merging training data.
+===== Starting iteration << 1 >> ===== |2016-03-16 17:47:09|
+[old] Separation date: 20160101
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160107-20160113.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 2 >> ===== |2016-03-16 17:56:00|
+[old] Separation date: 20160108
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160114-20160120.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 3 >> ===== |2016-03-16 18:05:07|
+[old] Separation date: 20160115
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160121-20160127.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 4 >> ===== |2016-03-16 18:14:08|
+[old] Separation date: 20160122
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160128-20160203.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 5 >> ===== |2016-03-16 18:24:07|
+[old] Separation date: 20160129
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160204-20160210.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 6 >> ===== |2016-03-16 18:33:32|
+[old] Separation date: 20160205
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160211-20160217.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 7 >> ===== |2016-03-16 18:42:46|
+[old] Separation date: 20160212
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160218-20160224.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 8 >> ===== |2016-03-16 18:52:11|
+[old] Separation date: 20160219
+[old] Work done.
+===== Starting iteration << 1 >> ===== |2016-03-16 18:52:28|
+[old] Separation date: 20160101
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160107-20160113.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 2 >> ===== |2016-03-16 19:00:51|
+[old] Separation date: 20160108
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160114-20160120.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 3 >> ===== |2016-03-16 19:09:10|
+[old] Separation date: 20160115
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160121-20160127.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 4 >> ===== |2016-03-16 19:17:27|
+[old] Separation date: 20160122
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160128-20160203.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 5 >> ===== |2016-03-16 19:25:31|
+[old] Separation date: 20160129
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160204-20160210.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 6 >> ===== |2016-03-16 19:33:40|
+[old] Separation date: 20160205
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160211-20160217.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 7 >> ===== |2016-03-16 19:42:00|
+[old] Separation date: 20160212
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160218-20160224.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 8 >> ===== |2016-03-16 19:50:14|
+[old] Separation date: 20160219
+[old] Work done.
+===== Starting iteration << 1 >> ===== |2016-03-16 19:50:30|
+[old] Separation date: 20160101
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160107-20160113.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 2 >> ===== |2016-03-16 19:58:13|
+[old] Separation date: 20160108
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160114-20160120.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 3 >> ===== |2016-03-16 20:05:47|
+[old] Separation date: 20160115
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160121-20160127.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 4 >> ===== |2016-03-16 20:13:17|
+[old] Separation date: 20160122
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160128-20160203.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 5 >> ===== |2016-03-16 20:20:48|
+[old] Separation date: 20160129
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160204-20160210.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 6 >> ===== |2016-03-16 20:28:18|
+[old] Separation date: 20160205
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160211-20160217.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 7 >> ===== |2016-03-16 20:35:54|
+[old] Separation date: 20160212
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160218-20160224.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 8 >> ===== |2016-03-16 20:43:30|
+[old] Separation date: 20160219
+[old] Work done.
+===== Starting iteration << 1 >> ===== |2016-03-16 20:43:45|
+[old] Separation date: 20160101
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160107-20160113.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 2 >> ===== |2016-03-16 20:50:52|
+[old] Separation date: 20160108
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160114-20160120.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0969945355191,1.0
+===== Starting iteration << 3 >> ===== |2016-03-16 20:58:16|
+[old] Separation date: 20160115
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160121-20160127.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.641936916926,0.996509104633
+===== Starting iteration << 4 >> ===== |2016-03-16 21:05:43|
+[old] Separation date: 20160122
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160128-20160203.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.117973629424,0.999823243482
+===== Starting iteration << 5 >> ===== |2016-03-16 21:13:09|
+[old] Separation date: 20160129
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160204-20160210.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.533609958506,0.998890019425
+===== Starting iteration << 6 >> ===== |2016-03-16 21:20:27|
+[old] Separation date: 20160205
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160211-20160217.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0880566801619,1.0
+===== Starting iteration << 7 >> ===== |2016-03-16 21:27:37|
+[old] Separation date: 20160212
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160218-20160224.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 8 >> ===== |2016-03-16 21:35:10|
+[old] Separation date: 20160219
+[old] Work done.
+===== Starting iteration << 1 >> ===== |2016-03-16 21:35:26|
+[old] Separation date: 20160101
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160107-20160113.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 2 >> ===== |2016-03-16 21:49:06|
+[old] Separation date: 20160108
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160114-20160120.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.00364298724954,1.0
+===== Starting iteration << 3 >> ===== |2016-03-16 22:02:55|
+[old] Separation date: 20160115
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160121-20160127.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.00666370501999,1.0
+===== Starting iteration << 4 >> ===== |2016-03-16 22:17:10|
+[old] Separation date: 20160122
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160128-20160203.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.00277585010409,1.0
+===== Starting iteration << 5 >> ===== |2016-03-16 22:31:04|
+[old] Separation date: 20160129
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160204-20160210.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0124481327801,1.0
+===== Starting iteration << 6 >> ===== |2016-03-16 22:45:10|
+[old] Separation date: 20160205
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160211-20160217.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.00101214574899,1.0
+===== Starting iteration << 7 >> ===== |2016-03-16 22:59:15|
+[old] Separation date: 20160212
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160218-20160224.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 8 >> ===== |2016-03-16 23:13:16|
+[old] Separation date: 20160219
+[old] Work done.
+===== Starting iteration << 1 >> ===== |2016-03-16 23:13:31|
+[old] Separation date: 20160101
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160107-20160113.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 2 >> ===== |2016-03-16 23:21:33|
+[old] Separation date: 20160108
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160114-20160120.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 3 >> ===== |2016-03-16 23:29:40|
+[old] Separation date: 20160115
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160121-20160127.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 4 >> ===== |2016-03-16 23:37:35|
+[old] Separation date: 20160122
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160128-20160203.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 5 >> ===== |2016-03-16 23:45:30|
+[old] Separation date: 20160129
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160204-20160210.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 6 >> ===== |2016-03-16 23:53:35|
+[old] Separation date: 20160205
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160211-20160217.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 7 >> ===== |2016-03-17 00:01:41|
+[old] Separation date: 20160212
+[old] Validation files: "/data/srv/state/dcafpilot/analytics/old_data/dataframe-20160218-20160224.csv.gz"
+[old] Preparing validation, transforming all data...
+[old] Data is prepared. Verifying...
+[old] Predicting, writing data ...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] to csv: 0.0,1.0
+===== Starting iteration << 8 >> ===== |2016-03-17 00:09:45|
+[old] Separation date: 20160219
+[old] Work done.
+[new] Merging training data...
+[new] Finished merging training data.
+===== Starting iteration << 1 >> ===== |2016-03-17 00:11:08|
+[new] Separation date: 20160101
+[new] Validation files: "/data/srv/state/dcafpilot/analytics/data/dataframe-20160107-20160113.csv.gz"
+[new] Preparing validation, transforming all data...
+[new] Data is prepared. Verifying...
+[new] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] to csv: 0.0627705627706,0.73023373555
+===== Starting iteration << 2 >> ===== |2016-03-17 00:21:44|
+[new] Separation date: 20160108
+[new] Validation files: "/data/srv/state/dcafpilot/analytics/data/dataframe-20160114-20160120.csv.gz"
+[new] Preparing validation, transforming all data...
+[new] Data is prepared. Verifying...
+[new] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] to csv: 0.186321626617,0.792451105831
+===== Starting iteration << 3 >> ===== |2016-03-17 00:32:22|
+[new] Separation date: 20160115
+[new] Validation files: "/data/srv/state/dcafpilot/analytics/data/dataframe-20160121-20160127.csv.gz"
+[new] Preparing validation, transforming all data...
+[new] Data is prepared. Verifying...
+[new] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] to csv: 0.147766323024,0.850665167697
+===== Starting iteration << 4 >> ===== |2016-03-17 00:42:58|
+[new] Separation date: 20160122
+[new] Validation files: "/data/srv/state/dcafpilot/analytics/data/dataframe-20160128-20160203.csv.gz"
+[new] Preparing validation, transforming all data...
+[new] Data is prepared. Verifying...
+[new] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] to csv: 0.0939510939511,0.816804650343
+===== Starting iteration << 5 >> ===== |2016-03-17 00:53:30|
+[new] Separation date: 20160129
+[new] Validation files: "/data/srv/state/dcafpilot/analytics/data/dataframe-20160204-20160210.csv.gz"
+[new] Preparing validation, transforming all data...
+[new] Data is prepared. Verifying...
+[new] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] to csv: 0.0398340248963,0.970669874167
+===== Starting iteration << 6 >> ===== |2016-03-17 01:04:07|
+[new] Separation date: 20160205
+[new] Validation files: "/data/srv/state/dcafpilot/analytics/data/dataframe-20160211-20160217.csv.gz"
+[new] Preparing validation, transforming all data...
+[new] Data is prepared. Verifying...
+[new] Predicting, writing data ...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] to csv: 0.112121212121,0.789588245964
+===== Starting iteration << 7 >> ===== |2016-03-17 01:14:51|
+[new] Separation date: 20160212
+[new] Validation files: "/data/srv/state/dcafpilot/analytics/data/dataframe-20160218-20160224.csv.gz"
+[new] Preparing validation, transforming all data...
+[new] Data is prepared. Verifying...
+[new] Error: different number of attributes. Difference:
+1a2,3
+> cpu
+> creator
+2a5,12
+> dbs
+> dtype
+> era
+> nblk
+> nevt
+> nfiles
+> nlumis
+> nrel
+4a15
+> proc_evts
+5a17
+> rel1_0
+58a71,74
+> relt_0
+> relt_1
+> relt_2
+> size

@@ -9,6 +9,10 @@ Priorities:
 4. Perform ensemble of predictions
 5. Enable probability results
 
+17 Mar 2016
+* Assignment 2 (iterative) script run into failure during night run. The reason - headers dismatch raised in headers_diff script. The mismatch occured between iteratively appended and already transformed training data and transformed validation - one week - data. Such random errors are very rare and confusing. This time I think one of 'those' responsible functions may have been found and updated: find_drops function did not perform well in case both training and validation data have disjoint columns, then one file tend to have more columns. Updated.
+* Finished csv_to_graph script for assignment 2, but need to wait for data in order to draw and the asignment 2 algorithm, as stated yesterday, should run approximately 10-16 hours. An excercise was to think of data structure to load and plot the data. After solution the script was finished quickly. Hope to produce results tomorow before video conversation.
+* Assignment 1 script finished, left to adopt Reporter to print out tier-separated data. Also, need to think of logics how to output it, but first simplest approach may be chosen.
 
 16 Mar 2016
 * Adopting check_prediction.py to return aggregated data by tiers. It was not convenient to use verify_predictions.py functions, written new ones using pandas [works fast]. Added new options --tiers_break(use or not output tier breaking), --tiers_col(provide column name for tier), --tiers_map(mapping file of tier id and tier name, since we need names, not ids/hashes), --tiers_map_kval(provide mapping key and value: column names in mapping file for tier id/hash column and tier name column, e.g. 'id,tier' or 'hash,tier'). Already returns result devided by tiers in plain CSV format. Of course, when not using --tiers_break, script works as earlier.

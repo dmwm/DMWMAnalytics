@@ -132,13 +132,13 @@ iteration() {
 #./csv_to_graph --fbeg=$pref --fend=".csv"
 #exit 0
 
+prepare_out_csv $result_file
 for pref in "${prefixes[@]}"; do
     prepare_train_data $pref    
     for clf in "${classifiers[@]}"; do
         finished="no"
         n=1
         __train_end=$train_end
-        prepare_out_csv ${pref}_${clf}_out.csv
         while [ "$finished" == "no" ]; do
             echo "===== Starting iteration << $n >> ===== |`date +'%Y-%m-%d %T'`|"
             iteration $pref $clf $__train_end
