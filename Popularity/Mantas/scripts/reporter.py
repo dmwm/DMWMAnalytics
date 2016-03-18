@@ -9,6 +9,7 @@ import re
 import sys
 import glob
 import optparse
+import operator
 import pandas as pd
 
 class Reporter(object):
@@ -40,6 +41,15 @@ class Reporter(object):
         else:
             raise Exception("Error: open file for writing first")
 
+    def write_csv_table(self, path, fbeg="", fend=".csv"):
+        data = self.__read_csv_data(path, fbeg, fend)
+        out  = ""
+        for clf in sorted(data.keys()):
+            title = (" ".join(clf.split("_"))).capitalize()
+            out += self.__pd_table(title, data[clf]['slist'], data[clf]['tlist'], data[clf]['sdata'])
+            out += "\n"
+        self.__write(out)
+
     def write_table(self, path, fbeg="", fend="", title="", totals=[]):
         """
         Selects prediction files in path using fbeg and fend.
@@ -48,11 +58,14 @@ class Reporter(object):
         Full list available in stots keys, where each value corresponds to
             function fnk(row_names, col_names, data)
         Use fbeg as prefix (e.g. 'old' or 'new') if data from files with
-            specific beginning is needed
+            specific beginning is needed.
+        Data type (dtype) can be:
+            'pred'  (descriptive output of check_prediction)
+            'csv'   (plain csv output of check_prediction)
         """
         #supported 'total' functions
-        stots = {'mean':'__get_mean', 'rmse':'__get_rmse'}
-        clfs, scorers, data = self.__read_data(path, fbeg, fend)
+        stots = dict(mean='__get_mean', rmse='__get_rmse')
+        clfs, scorers, data = self.__read_pred_data(path, fbeg, fend)
         _tnames = []
         _tdata  = []
         if  totals is not None and len(totals) > 0:
@@ -89,10 +102,56 @@ class Reporter(object):
                     and (len(fbeg) == 0 or f.startswith(fbeg))
                     and (len(fend) == 0 or f.endswith(fend))]
         return files
+    def __sort_csv_data(self, data):
+        def getKey(item):
+            # hardcoded for now : sorting by tpr
+            return item[1][4]
+        for clf in data.iterkeys():
+            rows = dict(zip(data[clf]['tlist'], data[clf]['sdata']))
+            # tprp = data[clf]['slist'].index('tpr')
+            sorted_r = sorted(rows.items(), key=getKey, reverse=True)
+            ntlist = []
+            nsdata = []
+            for item in sorted_r:
+                ntlist.append(item[0])
+                nsdata.append(item[1])
+            data[clf]['tlist'] = ntlist
+            data[clf]['sdata'] = nsdata
+        return data
 
-    def __read_data(self, path, fbeg="", fend="*.pred"):
+    def __read_csv_data(self, path, fbeg="", fend="*.pred"):
         """
-        Reads scorers data from files
+        Reads scorer data from ".csv" type files
+        """
+        files = self.__get_file_list(path, fbeg, fend)
+        if  len(files) == 0:
+            print("Warning: no files collected from %s with beginning %s and end %s" % (path, fbeg, fend))
+            return None
+        data = {}
+        for f in files:
+            clf = os.path.basename(f).replace(fbeg,"").replace(fend,"")
+            if  clf not in data: data[clf] = {}
+            slist = []
+            tlist = []
+            sdata = []
+            for line in open(f,'r').readlines():
+                line = line.strip(' \r\n').split(',')
+                if  not slist:
+                    if  not line[0] == 'tier':
+                        print("Error: first header is not 'tier' in file %s" % clf)
+                        sys.exit(1)
+                    slist = line[1:]
+                    continue
+                tlist.append(line[0])
+                sdata.append(line[1:])
+            data[clf]['slist'] = slist
+            data[clf]['tlist'] = tlist
+            data[clf]['sdata'] = sdata
+        return self.__sort_csv_data(data)
+
+    def __read_pred_data(self, path, fbeg="", fend="*.pred"):
+        """
+        Reads scorer data from ".pred" type files
         """
         files = self.__get_file_list(path, fbeg, fend)
         if  len(files) == 0:

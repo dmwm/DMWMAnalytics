@@ -37,42 +37,48 @@ def plot(data, dates):
     if len(data) == 0:
         print("Error: no data provided.")
         sys.exit(1)
-    x = [date2num(datetime.datetime.strptime(str(d), "%Y%m%d")) for d in dates]
     #number of plots in width
     nx = max([len(data[t]) for t in data.iterkeys()])
     #number of plots in height
     ny = len(data)
     ni = 0
     matplotlib.rcParams.update({'font.size': 10})
-    fig = plt.figure()
-    fig.subplots_adjust(wspace=0.3, hspace=0.3)
-    for dftype in data.iterkeys():
+    fig = plt.figure(figsize=(10,10))
+    fig.subplots_adjust(wspace=0.3, hspace=0.8)
+    for dftype in sorted(data.keys(), reverse=True):
+        # result range within new and old data may differ
+        x = [date2num(datetime.datetime.strptime(str(d), "%Y%m%d")) for d in dates[dftype]]
         for s in data[dftype]:
             ni += 1
             pls = []
+            lab = []
             g = fig.add_subplot(ny, nx, ni)
             for clf in data[dftype][s]:
                 y = data[dftype][s][clf]
-                if  len(dates) != len(y):
+                if  len(dates[dftype]) != len(y):
                     print("Error: misaligned data")
+                    print("%d vs %d" % (len(dates[dftype]), len(y)))
+                    print(dates[dftype])
                     sys.exit(1)
                 plot, = g.plot_date(x=x, y=y, label=clf, fmt="-", marker='o')
                 for i, yv in enumerate(y):
                     g.annotate("(%.2f%%)" % (yv*100) \
-                            if  yv<=0.95 and yv>=0.05 else "", xy=(x[i],yv), textcoords='data')
+                            if  yv<=0.90 and yv>=0.10 else "", xy=(x[i],yv), textcoords='data')
                 g.grid(True)
                 g.set_xticks(x)
-                g.set_ylim(0, 1.01)
+                g.set_ylim(0, 1.003)
                 g.set_yticks([0.2*t for t in xrange(0,6)])
-                g.set_xticklabels(dates, rotation=45)
+                g.set_xticklabels(dates[dftype], rotation=45)
                 g.set_yticklabels(["{:3.2f}%".format(v*100) for v in g.get_yticks()])
-                g.set_title("%s data, %s (%%)" % (dftype.capitalize(), s.upper()))
+                g.set_title("%s data, %s (%%)" % (dftype.capitalize(), s.upper()), fontsize=10, y=1.01)
                 pls.append(plot)
+                lab.append("%s (%.2f%%)" % (clf, 100*np.mean(data[dftype][s][clf])))
             # checking avg of data to adjust legend position
             ssum = sum([sum(data[dftype][s][clf]) for clf in data[dftype][s]])
             snum = sum([len(data[dftype][s][clf]) for clf in data[dftype][s]])
-            lloc = 'upper right' if ssum/snum < 0.5 else 'lower right'
-            g.legend(pls, data[dftype][s], loc=lloc, prop={'size':7})
+            # TODO: adjust left-right also against averages
+            lloc = 'upper left' if ssum/snum < 0.5 else 'lower right'
+            g.legend(pls, lab, loc=lloc, prop={'size':8})
     fig.tight_layout()
     fig.savefig("graph.png", bbox_inches='tight')
 
@@ -107,7 +113,7 @@ def read_data(fin, fbeg, fend):
     #   are stored respectfully in same order for all dftype and
     #   classifier combinations
     data    = {}
-    dates   = []
+    dates   = {}
     scorers = []
     headers = []
     for f in files:
@@ -133,8 +139,10 @@ def read_data(fin, fbeg, fend):
                 row = dict(zip(headers, vals))
                 if  not row['dftype'] in data:
                     data[row['dftype']] = {}
-                if  not row['date'] in dates:
-                    dates.append(row['date'])
+                if  not row['dftype'] in dates:
+                    dates[row['dftype']] = []
+                if  not row['date'] in dates[row['dftype']]:
+                    dates[row['dftype']].append(row['date'])
                 for s in scorers:
                     if  not s in data[row['dftype']]:
                         data[row['dftype']][s] = {}

@@ -1,0 +1,228 @@
+[old] Preparing data...
+[old] Extracting data old_train_clf.csv.gz -> old_train_dfr.csv.gz...
+[old] Extracting data old_valid_clf.csv.gz -> old_valid_dfr.csv.gz...
+[old] Predicting normal data...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting fulltrain data...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting tiertrain data...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting normal data...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting fulltrain data...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting tiertrain data...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting normal data...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting fulltrain data...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting tiertrain data...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting normal data...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting fulltrain data...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting tiertrain data...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting normal data...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting fulltrain data...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting tiertrain data...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting normal data...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting fulltrain data...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[old] Predicting tiertrain data...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Preparing data...
+[new] Extracting data new_train_clf.csv.gz -> new_train_dfr.csv.gz...
+[new] Extracting data new_valid_clf.csv.gz -> new_valid_dfr.csv.gz...
+[new] Predicting normal data...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting fulltrain data...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting tiertrain data...
+AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+          learning_rate=1.0, n_estimators=50, random_state=123)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting normal data...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting fulltrain data...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting tiertrain data...
+BaggingClassifier(base_estimator=None, bootstrap=True,
+         bootstrap_features=False, max_features=1.0, max_samples=1.0,
+         n_estimators=10, n_jobs=1, oob_score=False, random_state=123,
+         verbose=0)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting normal data...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting fulltrain data...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting tiertrain data...
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None, min_samples_leaf=1,
+            min_samples_split=2, min_weight_fraction_leaf=0.0,
+            random_state=123, splitter='best')
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting normal data...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting fulltrain data...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting tiertrain data...
+ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features='auto', max_leaf_nodes=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=123, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting normal data...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting fulltrain data...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting tiertrain data...
+GradientBoostingClassifier(init=None, learning_rate=0.1, loss='deviance',
+              max_depth=3, max_features=None, max_leaf_nodes=None,
+              min_samples_leaf=1, min_samples_split=2,
+              min_weight_fraction_leaf=0.0, n_estimators=100,
+              random_state=123, subsample=1.0, verbose=0, warm_start=False)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting normal data...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting fulltrain data...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown
+[new] Predicting tiertrain data...
+XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=1,
+       gamma=0, learning_rate=0.1, max_delta_step=0, max_depth=3,
+       min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+       objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+       scale_pos_weight=1, seed=0, silent=True, subsample=1)
+Since there is no train/validation splitting, no prediction metrics will be shown

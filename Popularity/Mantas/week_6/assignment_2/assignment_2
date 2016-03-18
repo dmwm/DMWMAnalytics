@@ -129,10 +129,9 @@ iteration() {
     fi
 }
 
-#./csv_to_graph --fbeg=$pref --fend=".csv"
-#exit 0
 
 prepare_out_csv $result_file
+
 for pref in "${prefixes[@]}"; do
     prepare_train_data $pref    
     for clf in "${classifiers[@]}"; do
@@ -151,5 +150,6 @@ for pref in "${prefixes[@]}"; do
             echo "[$pref] Work done."
         fi
     done
-    #./plot --fbeg=$pref --fend=".pred"
 done
+
+csv_to_graph --fin=$result_file
