@@ -1,13 +1,24 @@
 Intership Workflow (2016, Spring)
 ----------------------
 
-### Week #7
-Priorities:
-1. Finish assignments
-2. Add --log-thr option to select columns for log-transform (using first 10 data lines) and apply it
-3. Run previous assignments using --log-thr and 6 classifiers
-4. Perform ensemble of predictions
-5. Enable probability results
+### Week 8
+
+21 Mar 2016
+* Corrected tags for week 6 assignment 1
+* Collected new dataframes
+* Implemented prediction ensemble "ensemble_predictions"
+* Implemented --log-thr in transform_csv
+* Implemented model running recording
+* Testing of changes
+
+### Week 7
+
+18 Mar 2016
+* Collected results for assignment 1 and 2
+* Working with assignment 1 report to find and output all data-tiers sorted prediction results
+* Working with assignment 2 graph: to dinamically output plots and draw them correctly
+* Collecting data, Friday reporting, video conference
+* Preparing to work with new tasks, projecting and writing out implementations
 
 17 Mar 2016
 * Assignment 2 (iterative) script run into failure during night run. The reason - headers dismatch raised in headers_diff script. The mismatch occured between iteratively appended and already transformed training data and transformed validation - one week - data. Such random errors are very rare and confusing. This time I think one of 'those' responsible functions may have been found and updated: find_drops function did not perform well in case both training and validation data have disjoint columns, then one file tend to have more columns. Updated.
