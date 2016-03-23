@@ -3,6 +3,17 @@ Intership Workflow (2016, Spring)
 
 ### Week 8
 
+23 Mar 2016
+* Assignment 2 script is still running (already ~26 hours. running looks fine, without errors, seems about ~5-10h left)
+* Reporter generator updated in order to use file name and interpret it in table captions
+* Began working with probabilities in cloned file, the original one is still in use
+* Updated assignment 1 to output ensemble results. Ensembler works not as any other classifier, but it performs on top of them. Ensembler prediction results were outputted as of any other classifier
+* Ran scripts to train for 2015, 2016 and predict last two weeks for 2016, mixed with log. Left one script to run overnight to predict 2016 last two weeks and split results by tiers
+
+22 Mar 2016
+* Testing using --log-thr=100000 and ensemble. Errors produced. Prediction and verification files before ensemble were incorrect. Found that log was applied also to fields like 'id' or 'dataframe'. It was fixed by adding --log-ignore option with default value 'id,target,tier,dataframe'.
+* Debugging assignment 1 and 2. Work is very slow. Appearent shortcomings throughout the day fixed. Leaving scripts overnight.
+
 21 Mar 2016
 * Corrected tags for week 6 assignment 1
 * Collected new dataframes
