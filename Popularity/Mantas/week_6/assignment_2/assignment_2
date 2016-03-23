@@ -12,14 +12,15 @@
 
 old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
-train_start=20150601
+train_start=20150101
 train_end=20151231
 prefixes=("old" "new")
 finished="no" #iteration indicator
 halt="no" #stop iteration flag
 result_file="result_out.csv"
+running_time_file="model_running.csv"
 
-#classifiers=("BaggingClassifier GradientBoostingClassifier")
+#classifiers=("BaggingClassifier" "GradientBoostingClassifier" "XGBClassifier")
 #classifiers=("GradientBoostingClassifier")
 classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
@@ -79,7 +80,7 @@ predict_and_write() {
     pref=$1
     clf=$2
     valid_start=$3
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0 --rt-out=$running_time_file
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer --plain-output`
     rm "${pref}_${clf}.txt"
     echo "[$pref] to csv: $out"
@@ -151,5 +152,8 @@ for pref in "${prefixes[@]}"; do
         fi
     done
 done
+
+### TODO: collect new data
+### TODO: rerun, record
 
 csv_to_graph --fin=$result_file

@@ -10,10 +10,10 @@
 
 old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
-train_start=20150601
-train_end=20151231
-valid_start=20160101
-valid_end=20160120
+train_start=20150101
+train_end=20160224
+valid_start=20160225
+valid_end=20160315
 
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr"
@@ -31,12 +31,14 @@ prepare_data() {
     tfiles=`get_file_list $path $train_start $train_end`
     vfiles=`get_file_list $path $valid_start $valid_end`
     #echo "$pref training files   : $tfiles"
-    #echo "$pref validation files : $vfiles"    
+    echo "$pref validation files : $vfiles"    
     merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
     merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
     __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
-    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
-    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+    #transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+    #transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops --log-thr=100000
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops --log-thr=100000
     verify_csv $pref
 }
 
@@ -54,7 +56,7 @@ run_parse_csv(){
     parse_csv --fin=$fin --fout=$fout --tiers=$tiers --tiers-col=tier --mapping=${pref}_tiers.txt --mapping-kval=$mkeyval
 }
 
-predict_and_measure() {
+predict_and_verify() {
     # predict_and_measure {old,new} classifier train_file valid_file tag
     pref=$1
     clf=$2
@@ -67,22 +69,39 @@ predict_and_measure() {
     else echo "Error: unrecognized prefix $pref"; exit 1
     fi
     echo "[$pref] Predicting $tag data..."
-    model --learner=$clf --idcol=id --target=target --train-file=$ftrain --scaler=StandardScaler --newdata=$fvalid --predict="${pref}_${tag}_${clf}.txt" --split=0
-    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_${clf}.pred"
-    rm "${pref}_${tag}_${clf}.txt"
+    model --learner=$clf --idcol=id --target=target --train-file=$ftrain --scaler=StandardScaler --newdata=$fvalid --predict="${pref}_${tag}_${clf}.txt" --split=0 --rt-out=model_running.csv
+    check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_${clf}.pred"
+    #check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer > "${pref}_${tag}_${clf}.pred"
+    #do not remove, ensembler uses this file
+    #rm "${pref}_${tag}_${clf}.txt"
 }
 
 verify_csv() {
     # verify_csv {old,new}
     pref=$1
-    verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
-    verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
-    hdiff=`headers_diff ${pref}_train_dfr.csv.gz ${pref}_valid_dfr.csv.gz`
+    #verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
+    #verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
+    hdiff=`headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
     if [ ! "${#hdiff}" -le 0 ]; then
         endl=$'\n'
         echo "[$pref] Error: different number of attributes. Difference:$endl$hdiff"
         exit 1
     fi
+}
+
+ensemble_and_verify() {
+    # ensemble_and_check (old|new) tag
+    pref=$1
+    tag=$2
+    fvalid=$3
+    kval=""
+    if   [ "$pref" == "old" ]; then kval="id,tier"
+    elif [ "$pref" == "new" ]; then kval="hash,tier"
+    else echo "Error: unrecognized prefix $pref"; exit 1
+    fi
+    ensemble_predictions --fbeg="${pref}_${tag}_" --fout="${pref}_${tag}_Ensemble.txt"
+    #check_prediction --fin=$fvalid --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer > "${pref}_${tag}_Ensemble.pred"
+    check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_Ensemble.pred"
 }
 
 get_file_list() {
@@ -104,23 +123,28 @@ get_file_list() {
     echo ${files::${#files}-1}
 }
 
-# make iteration over {old,new}
+# make iterative process over combinations of (old|new) and clf
 : '
-1. prepare full data
-2. validate on selected data
-3. prepare selected data
-4. validate on selected data
+1. prepare training data
+2. train on validation data only from selected tiers
+3. prepare training data only from selected tiers
+4. train on same data from 2nd step
 '
 # run_parse_csv {old,new} fin fout
 # predict_and_measure {old,new} classifier train_file valid_file tag
+
+# last run -> log, train 2015-2016, valid 2016 ltweeks, tiers-isskirstyt
 
 for p in "${prefixes[@]}"; do
     prepare_data $p
     run_parse_csv $p "${p}_train_clf.csv.gz" "${p}_train_dfr.csv.gz"
     run_parse_csv $p "${p}_valid_clf.csv.gz" "${p}_valid_dfr.csv.gz"
     for classifier in "${classifiers[@]}"; do
-        predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_clf.csv.gz" normal
-        predict_and_measure $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" fulltrain
-        predict_and_measure $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" tiertrain
+        predict_and_verify $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_clf.csv.gz" normal
+        predict_and_verify $p $classifier "${p}_train_clf.csv.gz" "${p}_valid_dfr.csv.gz" valid_data_-_only_selected_tiers
+        predict_and_verify $p $classifier "${p}_train_dfr.csv.gz" "${p}_valid_dfr.csv.gz" train_and_valid_only_selected_tiers
     done
+    ensemble_and_verify $p normal "${p}_valid_clf.csv.gz"
+    ensemble_and_verify $p valid_data_-_only_selected_tiers "${p}_valid_dfr.csv.gz"
+    ensemble_and_verify $p train_and_valid_only_selected_tiers "${p}_valid_dfr.csv.gz"
 done

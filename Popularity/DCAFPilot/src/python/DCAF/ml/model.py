@@ -86,7 +86,7 @@ def factorize(col, xdf, sdf=None):
 def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         drops=None, split=0.3, scorer=None,
         scaler=None, ofile=None, idx=0, limit=-1,
-        gsearch=None, crossval=None, seed=123, verbose=False):
+        gsearch=None, crossval=None, seed=123, verbose=False, rtout=None):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
@@ -158,10 +158,12 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         x_train = getattr(preprocessing, scaler)().fit_transform(x_train)
     time0 = time.time()
     fit = clf.fit(x_train, y_train)
+    rtime = time.time()-time0
     if  verbose:
         print("Train elapsed time", time.time()-time0)
     if  split:
         predictions = fit.predict(x_rest)
+        rtime = time.time()-time0
         try:
             importances = clf.feature_importances_
             if  importances.any():
@@ -219,11 +221,35 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         dbses = [int(i) for i in list(tdf[dbs_h])]
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
+        time0 = time.time()
         predictions = fit.predict(tdf)
+        rtime += time0-time.time()
         data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
         out = pd.DataFrame(data=data)
         if  ofile:
             out.to_csv(ofile, header=True, index=False)
+        if  rtout: #writing running time
+            data = {}
+            if  os.path.isfile(rtout):
+                headers=[]
+                for line in open(rtout, 'r'):
+                    line = line.strip(" \r\n").split(',')
+                    if  not headers:
+                        headers = line
+                        if  line[0] != 'model' or line[1] != 'running_time_s':
+                            print("Error while writing model running score: unrecognized output file found.")
+                        continue
+                    else:
+                        data[line[0]] = float(line[1])
+            if  learner in data:
+                data[learner] += rtime
+            else:
+                data[learner] = rtime
+            fstream = open(rtout, 'w')
+            fstream.write("model,running_time_s\n")
+            for key in sorted(data.keys()):
+                fstream.write("%s,%.3f\n" % (key,data[key]))
+            fstream.close()
 
 def model_iter(train_file_list, newdata_file, idcol, tcol,
     learner, lparams=None, drops=None, split=0.1, scaler=None, ofile=None, seed=123, verbose=False):
@@ -347,7 +373,8 @@ def main():
                 drops=opts.drops, split=opts.split,
                 scorer=opts.scorer, scaler=opts.scaler, ofile=ofile,
                 idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,
-                crossval=opts.cv, seed=opts.seed, verbose=opts.verbose)
+                crossval=opts.cv, seed=opts.seed, verbose=opts.verbose,
+                rtout=opts.rtout)
 
 if __name__ == '__main__':
     main()

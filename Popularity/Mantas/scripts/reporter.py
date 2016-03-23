@@ -97,11 +97,15 @@ class Reporter(object):
             print("Error: writing in closed mode.")
 
     def __get_file_list(self, path, fbeg, fend):
-        files = [os.path.join(path, f) for f in os.listdir(path)
+        files = [f for f in os.listdir(path)
                 if os.path.isfile(os.path.join(path, f))
                     and (len(fbeg) == 0 or f.startswith(fbeg))
                     and (len(fend) == 0 or f.endswith(fend))]
+        if  path != '.':
+            files = [os.path.join(path, f) for f in files]
+        files = sorted(files)
         return files
+    
     def __sort_csv_data(self, data):
         def getKey(item):
             # hardcoded for now : sorting by tpr
@@ -125,7 +129,7 @@ class Reporter(object):
         """
         files = self.__get_file_list(path, fbeg, fend)
         if  len(files) == 0:
-            print("Warning: no files collected from %s with beginning %s and end %s" % (path, fbeg, fend))
+            print("WARNING: no files collected from '%s' with beginning '%s' and end '%s'" % (path, fbeg, fend))
             return None
         data = {}
         for f in files:
@@ -147,7 +151,8 @@ class Reporter(object):
             data[clf]['slist'] = slist
             data[clf]['tlist'] = tlist
             data[clf]['sdata'] = sdata
-        return self.__sort_csv_data(data)
+        #return self.__sort_csv_data(data)
+        return data
 
     def __read_pred_data(self, path, fbeg="", fend="*.pred"):
         """
@@ -201,6 +206,8 @@ class Reporter(object):
                     % (f, n, lines_n))
         # clfs - file names witout extension, scorers - list of scorers,
         # scores - scores respectfully
+        #print(clfs,scorers,scores)
+        #exit()
         return clfs, scorers, scores
     
     def __border(self, n, sign="="):

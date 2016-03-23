@@ -1,0 +1,84 @@
+====================
+Week 6 Assignment 1
+====================
+Description    : train and predict classifiers in combination with filtered dataframes
+   Data filter : only datasets from tiers AOD, AODSIM, MINIAOD, MINIAODSIM, USER
+   Subtask 1   : train on full data, predict on full data
+   Subtask 2   : train on full data, predict on filtered data 
+   Subtask 3   : train on filtered data, predict on filtered data
+Train period   : old, new 2015 second half
+Valid period   : old, new 2016 first two weeks
+====================
+
+==============
+Old full data
+==============
+                            tp     tn  fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier           0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+BaggingClassifier            0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+DecisionTreeClassifier       0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+Ensemble                     0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+ExtraTreesClassifier         0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+GradientBoostingClassifier   0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+XGBClassifier                0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+
+========================
+Old filtered validation
+========================
+                            tp     tn  fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier           0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+BaggingClassifier            0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+DecisionTreeClassifier       0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+Ensemble                     0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+ExtraTreesClassifier         0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+GradientBoostingClassifier   0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+XGBClassifier                0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+
+=====================================
+Old filtered training and validation
+=====================================
+                            tp     tn  fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier           0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+BaggingClassifier            0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+DecisionTreeClassifier       0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+Ensemble                     0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+ExtraTreesClassifier         0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+GradientBoostingClassifier   0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+XGBClassifier                0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+
+==============
+New full data
+==============
+                              tp     tn    fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier          1326  16921  5872  5075 0.20716 0.74238 0.25762 0.79284
+BaggingClassifier           3006  18520  4273  3395 0.46961 0.81253 0.18747 0.53039
+DecisionTreeClassifier      3172  14214  8579  3229 0.49555 0.62361 0.37639 0.50445
+Ensemble                    1933  21005  1788  4468 0.30198 0.92155 0.07845 0.69802
+ExtraTreesClassifier        1416  21644  1149  4985 0.22122 0.94959 0.05041 0.77878
+GradientBoostingClassifier  1283  21834   959  5118 0.20044 0.95793 0.04207 0.79956
+XGBClassifier               1794  21792  1001  4607 0.28027 0.95608 0.04392 0.71973
+
+========================
+New filtered validation
+========================
+                             tp    tn    fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier          543  3991  1426  2477 0.17980 0.73675 0.26325 0.82020
+BaggingClassifier           290  4787   630  2730 0.09603 0.88370 0.11630 0.90397
+DecisionTreeClassifier      905  2831  2586  2115 0.29967 0.52261 0.47739 0.70033
+Ensemble                    301  4846   571  2719 0.09967 0.89459 0.10541 0.90033
+ExtraTreesClassifier         64  5385    32  2956 0.02119 0.99409 0.00591 0.97881
+GradientBoostingClassifier  219  5197   220  2801 0.07252 0.95939 0.04061 0.92748
+XGBClassifier               237  5093   324  2783 0.07848 0.94019 0.05981 0.92152
+
+=====================================
+New filtered training and validation
+=====================================
+                             tp    tn   fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier          549  4971  446  2471 0.18179 0.91767 0.08233 0.81821
+BaggingClassifier           434  5035  382  2586 0.14371 0.92948 0.07052 0.85629
+DecisionTreeClassifier      684  4751  666  2336 0.22649 0.87705 0.12295 0.77351
+Ensemble                    743  5071  346  2277 0.24603 0.93613 0.06387 0.75397
+ExtraTreesClassifier        237  5286  131  2783 0.07848 0.97582 0.02418 0.92152
+GradientBoostingClassifier  969  5137  280  2051 0.32086 0.94831 0.05169 0.67914
+XGBClassifier               710  5230  187  2310 0.23510 0.96548 0.03452 0.76490
+

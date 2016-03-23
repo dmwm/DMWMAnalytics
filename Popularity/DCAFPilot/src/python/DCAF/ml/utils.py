@@ -158,6 +158,9 @@ class OptionParser(object):
         self.parser.add_option("--predict", action="store", type="string",
             default=None, dest="predict",
             help="Prediction file name, default None")
+        self.parser.add_option("--rt-out", action="store", type="string",
+            default=None, dest="rtout",
+            help="Provide a filename to record model running time, default=None. If record for model in output file already made, running times will be added. To avoid such behaviour, delete the file first")
     def options(self):
         "Returns parse list of options"
         return self.parser.parse_args()
