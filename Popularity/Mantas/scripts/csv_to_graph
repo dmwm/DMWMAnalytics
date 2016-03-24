@@ -30,20 +30,26 @@ class OptionParser(object):
             dest="fbeg", default="", help="Filter files by beginning")
         self.parser.add_option("--fend", action="store", type="string",
             dest="fend", default="", help="Filter files by ending")
+        self.parser.add_option("--timing", action="store", type="string",
+            dest="timing", default=None, help="File name of models running time csv")
     def options(self):
         return self.parser.parse_args()
 
-def plot(data, dates):
+def plot(data, dates, rundata):
     if len(data) == 0:
         print("Error: no data provided.")
         sys.exit(1)
     #number of plots in width
     nx = max([len(data[t]) for t in data.iterkeys()])
+    #plot running time of models
+    if  rundata:
+        nx += 1
     #number of plots in height
     ny = len(data)
     ni = 0
     matplotlib.rcParams.update({'font.size': 10})
-    fig = plt.figure(figsize=(10,10))
+    if  rundata:
+        fig = plt.figure(figsize=(15,10))
     fig.subplots_adjust(wspace=0.3, hspace=0.8)
     for dftype in sorted(data.keys(), reverse=True):
         # result range within new and old data may differ
@@ -52,7 +58,10 @@ def plot(data, dates):
             ni += 1
             pls = []
             lab = []
-            g = fig.add_subplot(ny, nx, ni)
+            if  rundata:
+                g = fig.add_subplot(ny, nx, ni+ni/nx)
+            else:
+                g = fig.add_subplot(ny, nx, ni)
             for clf in data[dftype][s]:
                 y = data[dftype][s][clf]
                 if  len(dates[dftype]) != len(y):
@@ -79,6 +88,17 @@ def plot(data, dates):
             # TODO: adjust left-right also against averages
             lloc = 'upper left' if ssum/snum < 0.5 else 'lower right'
             g.legend(pls, lab, loc=lloc, prop={'size':8})
+    if  rundata:
+        g = fig.add_subplot(1, nx, nx)
+        c = rundata.keys()
+        x = np.arange(len(c))
+        y = rundata.values()
+        g.grid()
+        g.set_xticklabels(c, rotation=45)
+        g.set_title("Running time (s)", fontsize=10, y=1.01)
+        for ix, iy in zip(x, y):
+            g.annotate("%.0fs" % (iy), xy=(ix-.3,iy+100), textcoords='data')
+        g.bar(x, y, align='center', alpha=0.5)
     fig.tight_layout()
     fig.savefig("graph.png", bbox_inches='tight')
 
@@ -91,7 +111,7 @@ def str_to_num(v):
         except:
             raise Exception("Error: Not possible to convert value %s to num" % v)
 
-def read_data(fin, fbeg, fend):
+def read_data(fin, fbeg, fend, timing):
     if  fin == ".":
         files = [f for f in os.listdir('.') \
                     if (len(fbeg) == 0 or f.startswith(fbeg))
@@ -116,6 +136,7 @@ def read_data(fin, fbeg, fend):
     dates   = {}
     scorers = []
     headers = []
+    rundata = {}
     for f in files:
         first = True
         for line in fopen(f).readlines():
@@ -149,13 +170,21 @@ def read_data(fin, fbeg, fend):
                     if  not row['clf'] in data[row['dftype']][s]:
                         data[row['dftype']][s][row['clf']] = []
                     data[row['dftype']][s][row['clf']].append(str_to_num(row[s]))
-    return data, dates
+    if  timing:
+        head = []
+        for line in open(timing, 'r').readlines():
+            if  not head:
+                head = line
+                continue
+            line = line.strip(" \r\n").split(',')
+            rundata[line[0]] = float(line[1])
+    return data, dates, rundata
 
 def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.options()
-    data, dates = read_data(opts.fin, opts.fbeg, opts.fend)
-    plot(data, dates)
+    data, dates, rundata = read_data(opts.fin, opts.fbeg, opts.fend, opts.timing)
+    plot(data, dates, rundata)
 
 if __name__ == '__main__':
     main()
