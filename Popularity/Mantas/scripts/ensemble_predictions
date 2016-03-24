@@ -50,8 +50,6 @@ def get_file_list(fin, fbeg, fend):
     if  len(filelist) < 2:
         print("ERROR in ensembling: please provide directory or file list to process. Less than 2 files found. Received:\n%s" % fin)
         sys.exit(1)
-    #print(filelist)
-    #exit()
     return filelist
 
 def ensemble_manual(fin, fbeg, fend, fout):
@@ -63,7 +61,6 @@ def ensemble_manual(fin, fbeg, fend, fout):
     ostream  = open(fout, 'w')
     headers  = []
     n        = 0
-    ### isveda ne tuos columnus, o siaip veikia gerai LYG
     while True:
         lines = [i.readline().strip(" \n\r").split(',') for i in istreams]
         if  not any([line[0] for line in lines]):
@@ -86,9 +83,6 @@ def ensemble_manual(fin, fbeg, fend, fout):
             print(msg, lines)
             sys.exit(1)
         val = round(np.mean([float(line[2]) for line in lines]), 0)
-        #print(lines[0])
-        #print(filelist[0])
-        #exit()
         ostream.write(",".join([lines[0][0],lines[0][1],str(val)]) + "\n")
     for i in istreams:
         i.close()
