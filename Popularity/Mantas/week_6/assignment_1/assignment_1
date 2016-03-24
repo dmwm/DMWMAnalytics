@@ -10,15 +10,15 @@
 
 old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
-train_start=20150101
-train_end=20160224
-valid_start=20160225
-valid_end=20160315
+train_start=20130601
+train_end=20131231
+valid_start=20140101
+valid_end=20140120
 
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr"
 tiers="AOD,AODSIM,MINIAOD,MINIAODSIM,USER"
-prefixes=("old" "new")
+prefixes=("old")
 classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
 #classifiers=("GradientBoostingClassifier")
 
@@ -70,8 +70,8 @@ predict_and_verify() {
     fi
     echo "[$pref] Predicting $tag data..."
     model --learner=$clf --idcol=id --target=target --train-file=$ftrain --scaler=StandardScaler --newdata=$fvalid --predict="${pref}_${tag}_${clf}.txt" --split=0 --rt-out=model_running.csv
-    check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_${clf}.pred"
-    #check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer > "${pref}_${tag}_${clf}.pred"
+    #check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_${clf}.pred"
+    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer > "${pref}_${tag}_${clf}.pred"
     #do not remove, ensembler uses this file
     #rm "${pref}_${tag}_${clf}.txt"
 }
@@ -100,8 +100,8 @@ ensemble_and_verify() {
     else echo "Error: unrecognized prefix $pref"; exit 1
     fi
     ensemble_predictions --fbeg="${pref}_${tag}_" --fout="${pref}_${tag}_Ensemble.txt"
-    #check_prediction --fin=$fvalid --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer > "${pref}_${tag}_Ensemble.pred"
-    check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_Ensemble.pred"
+    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer > "${pref}_${tag}_Ensemble.pred"
+    #check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_Ensemble.pred"
 }
 
 get_file_list() {
