@@ -1,0 +1,7 @@
+model,running_time_s
+AdaBoostClassifier,3003.924
+BaggingClassifier,2412.752
+DecisionTreeClassifier,338.869
+ExtraTreesClassifier,303.425
+GradientBoostingClassifier,12357.479
+XGBClassifier,923.573
