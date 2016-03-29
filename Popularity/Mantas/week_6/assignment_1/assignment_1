@@ -10,16 +10,17 @@
 
 old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
-train_start=20130601
-train_end=20131231
-valid_start=20140101
-valid_end=20140120
+train_start=20150101
+train_end=20160224
+valid_start=20160225
+valid_end=20160309
 
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr"
 tiers="AOD,AODSIM,MINIAOD,MINIAODSIM,USER"
-prefixes=("old")
+prefixes=("new")
 classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
+running_time_data="model_running.csv"
 #classifiers=("GradientBoostingClassifier")
 
 prepare_data() {
@@ -32,13 +33,13 @@ prepare_data() {
     vfiles=`get_file_list $path $valid_start $valid_end`
     #echo "$pref training files   : $tfiles"
     echo "$pref validation files : $vfiles"    
-    merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
-    merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
+    #merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
+    #merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
     __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
-    #transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
-    #transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
-    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops --log-thr=100000
-    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops --log-thr=100000
+    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+    #transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops --log-thr=100000
+    #transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops --log-thr=100000
     verify_csv $pref
 }
 
@@ -69,16 +70,17 @@ predict_and_verify() {
     else echo "Error: unrecognized prefix $pref"; exit 1
     fi
     echo "[$pref] Predicting $tag data..."
-    model --learner=$clf --idcol=id --target=target --train-file=$ftrain --scaler=StandardScaler --newdata=$fvalid --predict="${pref}_${tag}_${clf}.txt" --split=0 --rt-out=model_running.csv
-    #check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_${clf}.pred"
-    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer > "${pref}_${tag}_${clf}.pred"
-    #do not remove, ensembler uses this file
+    model --learner=$clf --idcol=id --target=target --train-file=$ftrain --scaler=StandardScaler --newdata=$fvalid --predict="${pref}_${tag}_${clf}.txt" --split=0 --rt-out=$running_time_data
+    check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_${clf}.pred"
+    #check_prediction --fin=$fvalid --fpred="${pref}_${tag}_${clf}.txt" --scorer=$scorer > "${pref}_${tag}_${clf}.pred"
+    # ensembler uses predictions
     #rm "${pref}_${tag}_${clf}.txt"
 }
 
 verify_csv() {
     # verify_csv {old,new}
     pref=$1
+    # verify checks column statistics, use if log not in use
     #verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz --drops=$drops
     #verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz --drops=$drops
     hdiff=`headers_diff ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz`
@@ -90,7 +92,7 @@ verify_csv() {
 }
 
 ensemble_and_verify() {
-    # ensemble_and_check (old|new) tag
+    # ensemble_and_check (old|new) tag validation_file
     pref=$1
     tag=$2
     fvalid=$3
@@ -100,8 +102,8 @@ ensemble_and_verify() {
     else echo "Error: unrecognized prefix $pref"; exit 1
     fi
     ensemble_predictions --fbeg="${pref}_${tag}_" --fout="${pref}_${tag}_Ensemble.txt"
-    check_prediction --fin=$fvalid --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer > "${pref}_${tag}_Ensemble.pred"
-    #check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_Ensemble.pred"
+    #check_prediction --fin=$fvalid --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer > "${pref}_${tag}_Ensemble.pred"
+    check_prediction --fin="$fvalid" --fpred="${pref}_${tag}_Ensemble.txt" --scorer=$scorer --tiers-break --tiers-map=${pref}_tiers.txt --tiers-map-kval=$kval --plain-output > "${pref}_${tag}_Ensemble.pred"
 }
 
 get_file_list() {
@@ -134,6 +136,8 @@ get_file_list() {
 # predict_and_measure {old,new} classifier train_file valid_file tag
 
 # last run -> log, train 2015-2016, valid 2016 ltweeks, tiers-isskirstyt
+
+rm $running_time_data
 
 for p in "${prefixes[@]}"; do
     prepare_data $p

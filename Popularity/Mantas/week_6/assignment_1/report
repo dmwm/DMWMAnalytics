@@ -26,8 +26,9 @@ def gen_report():
     desc += "   Subtask 1   : train on full data, predict on full data\n"
     desc += "   Subtask 2   : train on full data, predict on filtered data \n"
     desc += "   Subtask 3   : train on filtered data, predict on filtered data\n"
-    desc += "Train period   : old, new 2015.01.01-2016.02.24\n"
-    desc += "Valid period   : old, new 2016.02.25-2016.03.09"
+    desc += "Train period   : old, new 2015.01.01-2015.02.24\n"
+    desc += "Valid period   : old, new 2016.02.25-2016.03.09\n"
+    desc += "Log            : no"
     tit1  = "Old full data"
     tit2  = "Old filtered validation"
     tit3  = "Old filtered training and validation"
@@ -37,11 +38,11 @@ def gen_report():
     #report generation
     repmgr.open(fout)
     repmgr.write_section(rtit, desc)
-    #repmgr.write_csv_table(path, fbeg="old_", fend=".pred")
-    #repmgr.write_csv_table(path, fbeg="new_", fend=".pred")
-    repmgr.write_table(path, fbeg=fbeg1, fend=fend, title=tit1)
-    repmgr.write_table(path, fbeg=fbeg2, fend=fend, title=tit2)
-    repmgr.write_table(path, fbeg=fbeg3, fend=fend, title=tit3)
+    repmgr.write_csv_table(path, fbeg="old_", fend=".pred")
+    repmgr.write_csv_table(path, fbeg="new_", fend=".pred")
+    #repmgr.write_table(path, fbeg=fbeg1, fend=fend, title=tit1)
+    #repmgr.write_table(path, fbeg=fbeg2, fend=fend, title=tit2)
+    #repmgr.write_table(path, fbeg=fbeg3, fend=fend, title=tit3)
     #repmgr.write_table(path, fbeg=fbeg4, fend=fend, title=tit4)
     #repmgr.write_table(path, fbeg=fbeg5, fend=fend, title=tit5)
     #repmgr.write_table(path, fbeg=fbeg6, fend=fend, title=tit6)
