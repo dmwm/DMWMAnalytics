@@ -14,15 +14,14 @@ old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
 train_start=20150101
 train_end=20151231
-prefixes=("old" "new")
+prefixes=("new")
 finished="no" #iteration indicator
 halt="no" #stop iteration flag
 result_file="result_out.csv"
 running_time_file="model_running.csv"
 
-#classifiers=("BaggingClassifier" "GradientBoostingClassifier" "XGBClassifier")
-#classifiers=("GradientBoostingClassifier")
-classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
+#classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
+classifiers=("KNeighborsClassifier", "RandomForestClassifier", "RidgeClassifier", "SGDClassifier")
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tpr,tnr"
 
@@ -76,7 +75,7 @@ column_count_check() {
 }
 
 predict_and_write() {
-    # predict_and_measure {old,new} package_classifier date_valid_start
+    # predict_and_measure {old,new} package_classifier validation_start_date
     pref=$1
     clf=$2
     valid_start=$3
@@ -88,6 +87,18 @@ predict_and_write() {
     echo "$pref,$clf,$valid_start,$out" >> "$result_file"
 }
 
+ensemble_and_write() {
+    # ensemble_and_write (old|new) validation_file validation_start_date
+    pref=$1
+    fvalid=$2
+    valid_start=$3
+    echo "[$pref] Collecting ensemble..."
+    ensemble_predictions --fbeg="${pref}_" --fout="${pref}_Ensemble.txt"
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_Ensemble.txt" --scorer=$scorer --plain-output`
+    echo "[$pref] to csv: $out"
+    echo "$pref,Ensemble,$valid_start,$out" >> "$result_file"
+}
+
 prepare_out_csv() {
     echo "dftype,clf,date,$scorer" > "$result_file"
 }
@@ -95,11 +106,10 @@ prepare_out_csv() {
 ##### MAIN ITERATION #####
 
 iteration() {
-    # usage : iteration {old,new} clf date_train_end
-    # first predict and measure performance, then concat
+    # usage : iteration {old,new} date_train_end
+    # first predict and measure performance, then concat train and valid data
     pref=$1
-    clf=$2
-    valid_start=`newdate --date=$3`
+    valid_start=`newdate --date=$2`
     dol='$'
     echo "[$pref] Separation date: $valid_start"
     valid_end=`newdate --date=$valid_start --step=12`
@@ -107,7 +117,7 @@ iteration() {
     vfiles=`get_file_list $path $valid_start $valid_end`
     #echo "old training files   : $vfiles"
     if [[ ! -z "${vfiles// }" ]]; then
-        # sanity check if select one file
+        # sanity check if one file selected
         if [[ $vfiles == *","* ]]; then
             echo "WARNING: more than one file selected: $vfiles"
             #finished="yes"
@@ -125,7 +135,13 @@ iteration() {
         verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz
         column_count_check $pref ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz
         echo "[$pref] Predicting, writing data ..."
-        predict_and_write $pref $clf $valid_start
+        for clf in "${classifiers[@]}"; do
+            if [ "$halt" == "yes" ]; then
+                exit 1
+            fi
+            predict_and_write $pref $clf $valid_start
+        done
+        ensemble_and_write $pref ${pref}_valid_clf.csv.gz $valid_start
     else
         finished="yes"
     fi
@@ -136,25 +152,19 @@ prepare_out_csv $result_file
 
 for pref in "${prefixes[@]}"; do
     prepare_train_data $pref    
-    for clf in "${classifiers[@]}"; do
-        finished="no"
-        n=1
-        __train_end=$train_end
-        while [ "$finished" == "no" ]; do
-            echo "===== Starting iteration << $n >> ===== |`date +'%Y-%m-%d %T'`|"
-            iteration $pref $clf $__train_end
-            __train_end=`newdate --date=$__train_end --step=7`
-            ((n+=1))
-        done
-        if [ "$halt" == "yes" ]; then
-            exit 1
-        else
-            echo "[$pref] Work done."
-        fi
+    finished="no"
+    n=1
+    __train_end=$train_end
+    while [ "$finished" == "no" ]; do
+        echo "===== Starting iteration << $n >> ===== |`date +'%Y-%m-%d %T'`|"
+        iteration $pref $__train_end
+        __train_end=`newdate --date=$__train_end --step=7`
+        ((n+=1))
     done
+    echo "[$pref] Work done."
 done
 
 ### TODO: collect new data
 ### TODO: rerun, record
 
-csv_to_graph --fin=$result_file
+#csv_to_graph --fin=$result_file --timing=$running_time_file
