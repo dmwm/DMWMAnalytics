@@ -12,7 +12,7 @@ Log            : no
 ====================
 
 ==========================
-Normal adaboostclassifier
+Old normal adaboostclassifier
 ==========================
                                  tp    tn fp    fn              tpr  tnr  fpr             fnr
 ALCAPROMPT                        0    20  0     0                0  1.0  0.0               0
@@ -50,7 +50,7 @@ RECO                              4   407  0    92  0.0416666666667  1.0  0.0  0
 USER                             17  7151  0  1338  0.0125461254613  1.0  0.0  0.987453874539
 
 =========================
-Normal baggingclassifier
+Old normal baggingclassifier
 =========================
                                  tp    tn  fp   fn             tpr             tnr               fpr              fnr
 ALCAPROMPT                        0    20   0    0               0             1.0               0.0                0
@@ -88,7 +88,7 @@ RECO                             48   407   0   48             0.5             1
 USER                            651  7140  11  704  0.480442804428  0.998461753601  0.00153824639911   0.519557195572
 
 ==============================
-Normal decisiontreeclassifier
+Old normal decisiontreeclassifier
 ==============================
                                  tp    tn   fp    fn              tpr             tnr               fpr             fnr
 ALCAPROMPT                        0    20    0     0                0             1.0               0.0               0
@@ -126,7 +126,7 @@ RECO                             71   407    0    25   0.739583333333           
 USER                            302  7103   48  1053   0.222878228782  0.993287652077  0.00671234792337  0.777121771218
 
 ================
-Normal ensemble
+Old normal ensemble
 ================
                                  tp    tn fp    fn              tpr  tnr  fpr             fnr
 ALCAPROMPT                        0    20  0     0                0  1.0  0.0               0
@@ -164,7 +164,7 @@ RECO                             34   407  0    62   0.354166666667  1.0  0.0  0
 USER                             39  7151  0  1316  0.0287822878229  1.0  0.0  0.971217712177
 
 ============================
-Normal extratreesclassifier
+Old normal extratreesclassifier
 ============================
                                tp    tn fp    fn  tpr  tnr  fpr  fnr
 ALCAPROMPT                      0    20  0     0    0  1.0  0.0    0
@@ -202,7 +202,7 @@ RECO                            0   407  0    96  0.0  1.0  0.0  1.0
 USER                            0  7151  0  1355  0.0  1.0  0.0  1.0
 
 ==================================
-Normal gradientboostingclassifier
+Old normal gradientboostingclassifier
 ==================================
                                  tp    tn fp   fn              tpr  tnr  fpr             fnr
 ALCAPROMPT                        0    20  0    0                0  1.0  0.0               0
@@ -240,7 +240,7 @@ RECO                             54   407  0   42           0.5625  1.0  0.0    
 USER                            447  7151  0  908   0.329889298893  1.0  0.0  0.670110701107
 
 =====================
-Normal xgbclassifier
+Old normal xgbclassifier
 =====================
                                tp    tn fp    fn  tpr  tnr  fpr  fnr
 ALCAPROMPT                      0    20  0     0    0  1.0  0.0    0
@@ -278,7 +278,7 @@ RECO                            0   407  0    96  0.0  1.0  0.0  1.0
 USER                            0  7151  0  1355  0.0  1.0  0.0  1.0
 
 =======================================================
-Train and valid only selected tiers adaboostclassifier
+Old train and valid only selected tiers adaboostclassifier
 =======================================================
            tp    tn fp    fn  tpr  tnr  fpr  fnr
 AOD         0   265  0   214  0.0  1.0  0.0  1.0
@@ -288,7 +288,7 @@ MINIAODSIM  0  2891  0  1350  0.0  1.0  0.0  1.0
 USER        0  7151  0  1355  0.0  1.0  0.0  1.0
 
 ======================================================
-Train and valid only selected tiers baggingclassifier
+Old train and valid only selected tiers baggingclassifier
 ======================================================
              tp    tn  fp   fn             tpr             tnr                fpr             fnr
 AOD         139   265   0   75   0.64953271028             1.0                0.0   0.35046728972
@@ -298,7 +298,7 @@ MINIAODSIM  795  2859  32  555  0.588888888889  0.988931165687    0.011068834313
 USER        771  7144   7  584  0.569003690037  0.999021115928  0.000978884072158  0.430996309963
 
 ===========================================================
-Train and valid only selected tiers decisiontreeclassifier
+Old train and valid only selected tiers decisiontreeclassifier
 ===========================================================
              tp    tn  fp   fn             tpr             tnr               fpr             fnr
 AOD          88   264   1  126  0.411214953271  0.996226415094  0.00377358490566  0.588785046729
@@ -308,7 +308,7 @@ MINIAODSIM  393  2848  43  957  0.291111111111  0.985126253891   0.0148737461086
 USER        658  7140  11  697  0.485608856089  0.998461753601  0.00153824639911  0.514391143911
 
 =============================================
-Train and valid only selected tiers ensemble
+Old train and valid only selected tiers ensemble
 =============================================
              tp    tn fp    fn              tpr  tnr  fpr             fnr
 AOD          47   265  0   167   0.219626168224  1.0  0.0  0.780373831776
@@ -318,7 +318,7 @@ MINIAODSIM   34  2891  0  1316  0.0251851851852  1.0  0.0  0.974814814815
 USER        166  7151  0  1189   0.122509225092  1.0  0.0  0.877490774908
 
 =========================================================
-Train and valid only selected tiers extratreesclassifier
+Old train and valid only selected tiers extratreesclassifier
 =========================================================
            tp    tn fp    fn  tpr  tnr  fpr  fnr
 AOD         0   265  0   214  0.0  1.0  0.0  1.0
@@ -328,7 +328,7 @@ MINIAODSIM  0  2891  0  1350  0.0  1.0  0.0  1.0
 USER        0  7151  0  1355  0.0  1.0  0.0  1.0
 
 ===============================================================
-Train and valid only selected tiers gradientboostingclassifier
+Old train and valid only selected tiers gradientboostingclassifier
 ===============================================================
              tp    tn fp   fn             tpr  tnr  fpr             fnr
 AOD         144   265  0   70  0.672897196262  1.0  0.0  0.327102803738
@@ -338,7 +338,7 @@ MINIAODSIM  590  2891  0  760  0.437037037037  1.0  0.0  0.562962962963
 USER        387  7151  0  968  0.285608856089  1.0  0.0  0.714391143911
 
 ==================================================
-Train and valid only selected tiers xgbclassifier
+Old train and valid only selected tiers xgbclassifier
 ==================================================
            tp    tn fp    fn  tpr  tnr  fpr  fnr
 AOD         0   265  0   214  0.0  1.0  0.0  1.0
@@ -348,7 +348,7 @@ MINIAODSIM  0  2891  0  1350  0.0  1.0  0.0  1.0
 USER        0  7151  0  1355  0.0  1.0  0.0  1.0
 
 ====================================================
-Valid data - only selected tiers adaboostclassifier
+Old valid data - only selected tiers adaboostclassifier
 ====================================================
            tp    tn fp    fn  tpr  tnr  fpr  fnr
 AOD         0   265  0   214  0.0  1.0  0.0  1.0
@@ -358,7 +358,7 @@ MINIAODSIM  0  2891  0  1350  0.0  1.0  0.0  1.0
 USER        0  7151  0  1355  0.0  1.0  0.0  1.0
 
 ===================================================
-Valid data - only selected tiers baggingclassifier
+Old valid data - only selected tiers baggingclassifier
 ===================================================
              tp    tn  fp   fn             tpr             tnr                fpr             fnr
 AOD          83   265   0  131   0.38785046729             1.0                0.0   0.61214953271
@@ -368,7 +368,7 @@ MINIAODSIM  719  2874  17  631  0.532592592593  0.994119681771   0.0058803182289
 USER        720  7147   4  635  0.531365313653  0.999440637673  0.000559362326947  0.468634686347
 
 ========================================================
-Valid data - only selected tiers decisiontreeclassifier
+Old valid data - only selected tiers decisiontreeclassifier
 ========================================================
               tp    tn   fp   fn             tpr             tnr               fpr             fnr
 AOD          152   261    4   62  0.710280373832  0.984905660377   0.0150943396226  0.289719626168
@@ -378,7 +378,7 @@ MINIAODSIM  1102  2709  182  248  0.816296296296  0.937046004843   0.06295399515
 USER         986  7135   16  369  0.727675276753  0.997762550692  0.00223744930779  0.272324723247
 
 ==========================================
-Valid data - only selected tiers ensemble
+Old valid data - only selected tiers ensemble
 ==========================================
              tp    tn fp    fn             tpr  tnr  fpr             fnr
 AOD          49   265  0   165  0.228971962617  1.0  0.0  0.771028037383
@@ -388,7 +388,7 @@ MINIAODSIM  365  2891  0   985   0.27037037037  1.0  0.0   0.72962962963
 USER        180  7151  0  1175  0.132841328413  1.0  0.0  0.867158671587
 
 ======================================================
-Valid data - only selected tiers extratreesclassifier
+Old valid data - only selected tiers extratreesclassifier
 ======================================================
            tp    tn fp    fn  tpr  tnr  fpr  fnr
 AOD         0   265  0   214  0.0  1.0  0.0  1.0
@@ -398,7 +398,7 @@ MINIAODSIM  0  2891  0  1350  0.0  1.0  0.0  1.0
 USER        0  7151  0  1355  0.0  1.0  0.0  1.0
 
 ============================================================
-Valid data - only selected tiers gradientboostingclassifier
+Old valid data - only selected tiers gradientboostingclassifier
 ============================================================
              tp    tn fp    fn             tpr  tnr  fpr             fnr
 AOD          94   265  0   120  0.439252336449  1.0  0.0  0.560747663551
@@ -408,7 +408,7 @@ MINIAODSIM  457  2891  0   893  0.338518518519  1.0  0.0  0.661481481481
 USER        288  7151  0  1067  0.212546125461  1.0  0.0  0.787453874539
 
 ===============================================
-Valid data - only selected tiers xgbclassifier
+Old valid data - only selected tiers xgbclassifier
 ===============================================
            tp    tn fp    fn  tpr  tnr  fpr  fnr
 AOD         0   265  0   214  0.0  1.0  0.0  1.0
@@ -418,7 +418,7 @@ MINIAODSIM  0  2891  0  1350  0.0  1.0  0.0  1.0
 USER        0  7151  0  1355  0.0  1.0  0.0  1.0
 
 ==========================
-Normal adaboostclassifier
+New normal adaboostclassifier
 ==========================
                                  tp    tn    fp    fn              tpr             tnr               fpr             fnr
 0                                34  9763  1351  2154  0.0155393053016  0.878441605183    0.121558394817  0.984460694698
@@ -459,7 +459,7 @@ RECO                             21   256    19    46   0.313432835821  0.930909
 USER                             17   865   285   162  0.0949720670391  0.752173913043    0.247826086957  0.905027932961
 
 =========================
-Normal baggingclassifier
+New normal baggingclassifier
 =========================
                                  tp    tn    fp    fn             tpr             tnr               fpr             fnr
 0                               644  9503  1611  1544  0.294332723949  0.855047687601    0.144952312399  0.705667276051
@@ -500,7 +500,7 @@ RECO                             16   263    12    51  0.238805970149  0.9563636
 USER                             61  1033   117   118  0.340782122905  0.898260869565    0.101739130435  0.659217877095
 
 ==============================
-Normal decisiontreeclassifier
+New normal decisiontreeclassifier
 ==============================
                                  tp    tn    fp    fn             tpr             tnr              fpr             fnr
 0                               949  7678  3436  1239  0.433729433272  0.690840381501   0.309159618499  0.566270566728
@@ -541,7 +541,7 @@ RECO                             15   234    41    52  0.223880597015  0.8509090
 USER                             39   985   165   140  0.217877094972   0.85652173913    0.14347826087  0.782122905028
 
 ================
-Normal ensemble
+New normal ensemble
 ================
                                  tp     tn  fp    fn              tpr             tnr               fpr             fnr
 0                                68  11052  62  2120  0.0310786106033  0.994421450423  0.00557854957711  0.968921389397
@@ -582,7 +582,7 @@ RECO                             17    267   8    50   0.253731343284  0.9709090
 USER                              6   1118  32   173  0.0335195530726  0.972173913043   0.0278260869565  0.966480446927
 
 ============================
-Normal extratreesclassifier
+New normal extratreesclassifier
 ============================
                                  tp     tn   fp    fn              tpr             tnr                fpr             fnr
 0                                94  10975  139  2094  0.0429616087751  0.987493251755    0.0125067482455  0.957038391225
@@ -623,7 +623,7 @@ RECO                             17    271    4    50   0.253731343284  0.985454
 USER                              5   1149    1   174  0.0279329608939  0.999130434783  0.000869565217391  0.972067039106
 
 ==================================
-Normal gradientboostingclassifier
+New normal gradientboostingclassifier
 ==================================
                                  tp     tn  fp    fn              tpr             tnr               fpr             fnr
 0                                53  11072  42  2135  0.0242230347349  0.996220982545  0.00377901745546  0.975776965265
@@ -664,7 +664,7 @@ RECO                             16    267   8    51   0.238805970149  0.9709090
 USER                              3   1105  45   176  0.0167597765363  0.960869565217   0.0391304347826  0.983240223464
 
 =====================
-Normal xgbclassifier
+New normal xgbclassifier
 =====================
                                  tp     tn  fp    fn               tpr             tnr                fpr             fnr
 0                                15  11103  11  2173  0.00685557586837  0.999010257333  0.000989742666907  0.993144424132
@@ -705,7 +705,7 @@ RECO                             15    271   4    52    0.223880597015  0.985454
 USER                              5   1116  34   174   0.0279329608939  0.970434782609    0.0295652173913  0.972067039106
 
 =======================================================
-Train and valid only selected tiers adaboostclassifier
+New train and valid only selected tiers adaboostclassifier
 =======================================================
              tp    tn   fp   fn              tpr             tnr              fpr             fnr
 AOD          45   172   22  113   0.284810126582  0.886597938144   0.113402061856  0.715189873418
@@ -715,7 +715,7 @@ MINIAODSIM  148  1789   51  760   0.162995594714  0.972282608696  0.027717391304
 USER         16   824  326  163  0.0893854748603   0.71652173913    0.28347826087   0.91061452514
 
 ======================================================
-Train and valid only selected tiers baggingclassifier
+New train and valid only selected tiers baggingclassifier
 ======================================================
              tp    tn  fp   fn             tpr             tnr              fpr             fnr
 AOD          39   177  17  119  0.246835443038  0.912371134021  0.0876288659794  0.753164556962
@@ -725,7 +725,7 @@ MINIAODSIM  101  1804  36  807  0.111233480176  0.980434782609  0.0195652173913 
 USER         18  1114  36  161  0.100558659218  0.968695652174  0.0313043478261  0.899441340782
 
 ===========================================================
-Train and valid only selected tiers decisiontreeclassifier
+New train and valid only selected tiers decisiontreeclassifier
 ===========================================================
              tp    tn   fp   fn             tpr             tnr              fpr             fnr
 AOD          38   177   17  120  0.240506329114  0.912371134021  0.0876288659794  0.759493670886
@@ -735,7 +735,7 @@ MINIAODSIM  170  1505  335  738  0.187224669604  0.817934782609   0.182065217391
 USER         22  1021  129  157  0.122905027933  0.887826086957   0.112173913043  0.877094972067
 
 =============================================
-Train and valid only selected tiers ensemble
+New train and valid only selected tiers ensemble
 =============================================
              tp    tn  fp   fn              tpr             tnr              fpr             fnr
 AOD          34   179  15  124   0.215189873418  0.922680412371  0.0773195876289  0.784810126582
@@ -745,7 +745,7 @@ MINIAODSIM  145  1785  55  763   0.159691629956  0.970108695652  0.0298913043478
 USER          9  1104  46  170  0.0502793296089            0.96             0.04  0.949720670391
 
 =========================================================
-Train and valid only selected tiers extratreesclassifier
+New train and valid only selected tiers extratreesclassifier
 =========================================================
              tp    tn  fp   fn              tpr             tnr               fpr             fnr
 AOD          42   185   9  116    0.26582278481  0.953608247423   0.0463917525773   0.73417721519
@@ -755,7 +755,7 @@ MINIAODSIM  129  1798  42  779   0.142070484581  0.977173913043   0.022826086956
 USER          3  1147   3  176  0.0167597765363  0.997391304348  0.00260869565217  0.983240223464
 
 ===============================================================
-Train and valid only selected tiers gradientboostingclassifier
+New train and valid only selected tiers gradientboostingclassifier
 ===============================================================
              tp    tn  fp   fn              tpr             tnr              fpr             fnr
 AOD          28   178  16  130   0.177215189873  0.917525773196  0.0824742268041  0.822784810127
@@ -765,7 +765,7 @@ MINIAODSIM  163  1777  63  745   0.179515418502  0.965760869565  0.0342391304348
 USER         11  1081  69  168  0.0614525139665            0.94             0.06  0.938547486034
 
 ==================================================
-Train and valid only selected tiers xgbclassifier
+New train and valid only selected tiers xgbclassifier
 ==================================================
              tp    tn  fp   fn              tpr             tnr              fpr             fnr
 AOD          31   178  16  127   0.196202531646  0.917525773196  0.0824742268041  0.803797468354
@@ -775,7 +775,7 @@ MINIAODSIM  128  1794  46  780   0.140969162996           0.975            0.025
 USER          8  1117  33  171  0.0446927374302  0.971304347826  0.0286956521739   0.95530726257
 
 ====================================================
-Valid data - only selected tiers adaboostclassifier
+New valid data - only selected tiers adaboostclassifier
 ====================================================
             tp    tn   fp   fn              tpr             tnr               fpr             fnr
 AOD         36   168   26  122   0.227848101266  0.865979381443    0.134020618557  0.772151898734
@@ -785,7 +785,7 @@ MINIAODSIM  21  1834    6  887   0.023127753304  0.996739130435  0.0032608695652
 USER        17   326  824  162  0.0949720670391   0.28347826087     0.71652173913  0.905027932961
 
 ===================================================
-Valid data - only selected tiers baggingclassifier
+New valid data - only selected tiers baggingclassifier
 ===================================================
              tp    tn   fp   fn             tpr             tnr             fpr             fnr
 AOD          35   148   46  123  0.221518987342  0.762886597938  0.237113402062  0.778481012658
@@ -795,7 +795,7 @@ MINIAODSIM  373  1098  742  535  0.410792951542  0.596739130435  0.403260869565 
 USER         43  1053   97  136  0.240223463687  0.915652173913  0.084347826087  0.759776536313
 
 ========================================================
-Valid data - only selected tiers decisiontreeclassifier
+New valid data - only selected tiers decisiontreeclassifier
 ========================================================
              tp   tn    fp   fn             tpr             tnr             fpr             fnr
 AOD          52  138    56  106  0.329113924051  0.711340206186  0.288659793814  0.670886075949
@@ -805,7 +805,7 @@ MINIAODSIM  478  529  1311  430  0.526431718062          0.2875          0.7125 
 USER         69  514   636  110  0.385474860335  0.446956521739  0.553043478261  0.614525139665
 
 ==========================================
-Valid data - only selected tiers ensemble
+New valid data - only selected tiers ensemble
 ==========================================
             tp    tn  fp   fn              tpr             tnr               fpr             fnr
 AOD         42   175  19  116    0.26582278481   0.90206185567   0.0979381443299   0.73417721519
@@ -815,7 +815,7 @@ MINIAODSIM  49  1833   7  859  0.0539647577093  0.996195652174  0.00380434782609
 USER        10  1100  50  169  0.0558659217877   0.95652173913   0.0434782608696  0.944134078212
 
 ======================================================
-Valid data - only selected tiers extratreesclassifier
+New valid data - only selected tiers extratreesclassifier
 ======================================================
              tp    tn   fp   fn               tpr             tnr                fpr             fnr
 AOD          16   193    1  142    0.101265822785  0.994845360825   0.00515463917526  0.898734177215
@@ -825,7 +825,7 @@ MINIAODSIM   94  1815   25  814    0.103524229075  0.986413043478    0.013586956
 USER          1  1149    1  178  0.00558659217877  0.999130434783  0.000869565217391  0.994413407821
 
 ============================================================
-Valid data - only selected tiers gradientboostingclassifier
+New valid data - only selected tiers gradientboostingclassifier
 ============================================================
             tp    tn  fp   fn              tpr             tnr              fpr             fnr
 AOD         40   174  20  118   0.253164556962  0.896907216495   0.103092783505  0.746835443038
@@ -835,7 +835,7 @@ MINIAODSIM  53  1840   0  855  0.0583700440529             1.0              0.0 
 USER        13  1089  61  166   0.072625698324  0.946956521739  0.0530434782609  0.927374301676
 
 ===============================================
-Valid data - only selected tiers xgbclassifier
+New valid data - only selected tiers xgbclassifier
 ===============================================
             tp    tn  fp   fn              tpr             tnr               fpr             fnr
 AOD         40   175  19  118   0.253164556962   0.90206185567   0.0979381443299  0.746835443038

@@ -7,7 +7,8 @@ Description    : train and predict classifiers in combination with filtered data
    Subtask 2   : train on full data, predict on filtered data 
    Subtask 3   : train on filtered data, predict on filtered data
 Train period   : old, new 2015.01.01-2016.02.24
-Valid period   : old, new 2016.02.25-2016.03.09 (two weeks)
+Valid period   : old, new 2016.02.25-2016.03.09
+Log            : no
 ====================
 
 ==============
