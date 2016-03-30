@@ -1,0 +1,50 @@
+====================
+Week 6 Assignment 1
+====================
+Description    : train and predict classifiers in combination with filtered dataframes
+   Data filter : only datasets from tiers AOD, AODSIM, MINIAOD, MINIAODSIM, USER
+   Subtask 1   : train on full data, predict on full data
+   Subtask 2   : train on full data, predict on filtered data 
+   Subtask 3   : train on filtered data, predict on filtered data
+Train period   : old, new 2015.01.01-2015.12.31
+Valid period   : old, new 2016.01.01-2016.01.20
+Log            : no
+AdaBoost params: learning_rate=0.1, n_estimators=200
+====================
+
+==============
+Old full data
+==============
+                    tp     tn  fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier   0  22938   0  5904 0.00000 1.00000 0.00000 1.00000
+
+========================
+Old filtered validation
+========================
+                    tp     tn  fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier   0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+
+=====================================
+Old filtered training and validation
+=====================================
+                    tp     tn  fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier   0  13791   0  4938 0.00000 1.00000 0.00000 1.00000
+
+==============
+New full data
+==============
+                     tp     tn    fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier  590  19147  3646  5811 0.09217 0.84004 0.15996 0.90783
+
+========================
+New filtered validation
+========================
+                     tp    tn    fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier  431  4142  1275  2589 0.14272 0.76463 0.23537 0.85728
+
+=====================================
+New filtered training and validation
+=====================================
+                     tp    tn   fp    fn     tpr     tnr     fpr     fnr
+AdaBoostClassifier  731  4507  910  2289 0.24205 0.83201 0.16799 0.75795
+
