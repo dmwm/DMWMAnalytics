@@ -136,7 +136,7 @@ class OptionParser(object):
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
         self.parser.add_option("--newdata", action="store", type="string",
-            default="", dest="newdata", help="new data file, default None")
+            default="", dest="newdata", help="new data file or provide comma separated file list (then --predict must contain '(id)' to be replaced by file index). Default None")
         self.parser.add_option("--idx", action="store", type="int",
             default=0, dest="idx",
             help="initial index counter, default 0")
@@ -157,10 +157,12 @@ class OptionParser(object):
             help="perform grid search, gsearch=<parameters>")
         self.parser.add_option("--predict", action="store", type="string",
             default=None, dest="predict",
-            help="Prediction file name, default None")
+            help="Prediction file name, default None. Use '(model)' for model name or '(id)' for file number if --newdata contains file list")
         self.parser.add_option("--rt-out", action="store", type="string",
             default=None, dest="rtout",
-            help="Provide a filename to record model running time, default=None. If record for model in output file already made, running times will be added. To avoid such behaviour, delete the file first")
+            help="A filename to record model running time, default=None. If record for model in output file already exist running times will be added. To avoid this, delete the file first")
+        self.parser.add_option("--proba", action="store_true",
+            default=False, dest="proba", help="probabilities prediction mode")
     def options(self):
         "Returns parse list of options"
         return self.parser.parse_args()

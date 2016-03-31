@@ -200,56 +200,68 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
 
     # new data file for which we want to predict
     if  newdata_file:
-        tdf = read_data(newdata_file, drops, scaler=scaler)
-        if  tcol in tdf.columns:
-            tdf = tdf.drop(tcol, axis=1)
-        if  verbose:
-            print("New data file", newdata_file)
-            print("Columns:", ','.join(tdf.columns))
-            print("test shapes:", tdf.shape)
-        datasets = [int(i) for i in list(tdf['dataset'])]
-        #20160301 'dbs' header changed to 'dbsinst'
-        dfkeys = tdf.keys()
-        if  'dbsinst' in dfkeys:
-            dbs_h = 'dbsinst'
-        elif 'dbs' in dfkeys:
-            dbs_h = 'dbs'
+        nfiles = []
+        if  not ',' in newdata_file:
+            nfiles = [newdata_file]
         else:
-            msg = "ERROR: file %s does not contain neither 'dbs' nor 'dbsinst' column"
-            print(msg % newdata_file)
-            sys.exit(1)
-        dbses = [int(i) for i in list(tdf[dbs_h])]
-        if  scaler:
-            tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
-        time0 = time.time()
-        predictions = fit.predict(tdf)
-        rtime += time0-time.time()
-        data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
-        out = pd.DataFrame(data=data)
-        if  ofile:
-            out.to_csv(ofile, header=True, index=False)
-        if  rtout: #writing running time
-            data = {}
-            if  os.path.isfile(rtout):
-                headers=[]
-                for line in open(rtout, 'r'):
-                    line = line.strip(" \r\n").split(',')
-                    if  not headers:
-                        headers = line
-                        if  line[0] != 'model' or line[1] != 'running_time_s':
-                            print("Error while writing model running score: unrecognized output file found.")
-                        continue
-                    else:
-                        data[line[0]] = float(line[1])
-            if  learner in data:
-                data[learner] += rtime
+            if '(id)' not in ofile:
+                print("ERROR in model.py: file list in --newdata provided, --predict has to contain '(id)' which will be replaced by file index")
+                sys.exit(1)
+            nfiles = newdata_file.split(',')
+        for ni, nfile in enumerate(nfiles):
+            tdf = read_data(nfile, drops, scaler=scaler)
+            if  tcol in tdf.columns:
+                tdf = tdf.drop(tcol, axis=1)
+            if  verbose:
+                print("New data file", nfile)
+                print("Columns:", ','.join(tdf.columns))
+                print("test shapes:", tdf.shape)
+            datasets = [int(i) for i in list(tdf['dataset'])]
+            #20160301 'dbs' header changed to 'dbsinst'
+            dfkeys = tdf.keys()
+            if  'dbsinst' in dfkeys:
+                dbs_h = 'dbsinst'
+            elif 'dbs' in dfkeys:
+                dbs_h = 'dbs'
             else:
-                data[learner] = rtime
-            fstream = open(rtout, 'w')
-            fstream.write("model,running_time_s\n")
-            for key in sorted(data.keys()):
-                fstream.write("%s,%.3f\n" % (key,data[key]))
-            fstream.close()
+                msg = "ERROR: file %s does not contain neither 'dbs' nor 'dbsinst' column"
+                print(msg % nfile)
+                sys.exit(1)
+            dbses = [int(i) for i in list(tdf[dbs_h])]
+            if  scaler:
+                tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
+            time0 = time.time()
+            if  verbose:
+                print(tdf)
+                #sys.exit(1)
+            predictions = fit.predict(tdf)
+            rtime += time0-time.time()
+            data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
+            out = pd.DataFrame(data=data)
+            if  ofile:
+                out.to_csv(ofile.replace("(clf)", learner).replace("(id)", str(ni)), header=True, index=False)
+            if  rtout: #writing running time
+                data = {}
+                if  os.path.isfile(rtout):
+                    headers=[]
+                    for line in open(rtout, 'r'):
+                        line = line.strip(" \r\n").split(',')
+                        if  not headers:
+                            headers = line
+                            if  line[0] != 'model' or line[1] != 'running_time_s':
+                                print("Error while writing model running score: unrecognized output file found.")
+                            continue
+                        else:
+                            data[line[0]] = float(line[1])
+                if  learner in data:
+                    data[learner] += rtime
+                else:
+                    data[learner] = rtime
+                fstream = open(rtout, 'w')
+                fstream.write("model,running_time_s\n")
+                for key in sorted(data.keys()):
+                    fstream.write("%s,%.3f\n" % (key,data[key]))
+                fstream.close()
 
 def model_iter(train_file_list, newdata_file, idcol, tcol,
     learner, lparams=None, drops=None, split=0.1, scaler=None, ofile=None, seed=123, verbose=False):
