@@ -30,6 +30,8 @@ class OptionParser(object):
             dest="fbeg", default="", help="Filter files by beginning")
         self.parser.add_option("--fend", action="store", type="string",
             dest="fend", default="", help="Filter files by ending")
+        self.parser.add_option("--fout", action="store", type="string",
+            dest="fout", default="graph.png", help="File name to store graph, default 'graph.png'")
         self.parser.add_option("--timing", action="store", type="string",
             dest="timing", default=None, help="File name of models running time csv")
     def options(self):
@@ -48,8 +50,7 @@ def plot(data, dates, rundata):
     ny = len(data)
     ni = 0
     matplotlib.rcParams.update({'font.size': 10})
-    if  rundata:
-        fig = plt.figure(figsize=(15,10))
+    fig = plt.figure(figsize=(15,10)) if rundata else plt.figure(figsize=(10,10))
     fig.subplots_adjust(wspace=0.3, hspace=0.8)
     for dftype in sorted(data.keys(), reverse=True):
         # result range within new and old data may differ
@@ -86,19 +87,28 @@ def plot(data, dates, rundata):
             ssum = sum([sum(data[dftype][s][clf]) for clf in data[dftype][s]])
             snum = sum([len(data[dftype][s][clf]) for clf in data[dftype][s]])
             # TODO: adjust left-right also against averages
-            lloc = 'upper left' if ssum/snum < 0.5 else 'lower right'
-            g.legend(pls, lab, loc=lloc, prop={'size':8})
+            lloc = 'upper left' if ssum/snum < 0.35 else 'lower right'
+            leg = g.legend(pls, lab, loc=lloc, prop={'size':8}, fancybox=True)
+            leg.get_frame().set_alpha(0.7)
+            #g.set_frame_on(False)
     if  rundata:
         g = fig.add_subplot(1, nx, nx)
         c = rundata.keys()
         x = np.arange(len(c))
         y = rundata.values()
         g.grid()
-        g.set_xticklabels(c, rotation=45)
+        g.set_xticks(x)
+        g.set_xticklabels(c, rotation=30, fontsize=8)
         g.set_title("Running time (s)", fontsize=10, y=1.01)
-        for ix, iy in zip(x, y):
-            g.annotate("%.0fs" % (iy), xy=(ix-.3,iy+100), textcoords='data')
-        g.bar(x, y, align='center', alpha=0.5)
+        g.set_xlim(-1, len(c))
+        ax = g.bar(x, y, width=0.5, align='center', alpha=0.5)
+        y_bottom, y_top = g.get_ylim()
+        y_height = y_top - y_bottom
+        for i, child in enumerate(g.containers[0].get_children()):
+            h = child.get_y() + child.get_height() + y_height * 0.01
+            g.text(child.get_x() + child.get_width()/2., h,
+                "(%.2fs)" % y[i],
+                ha='center', va='bottom')
     fig.tight_layout()
     fig.savefig("graph.png", bbox_inches='tight')
 

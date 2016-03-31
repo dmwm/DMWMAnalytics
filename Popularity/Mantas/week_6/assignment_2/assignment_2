@@ -17,11 +17,11 @@ train_end=20151231
 prefixes=("new")
 finished="no" #iteration indicator
 halt="no" #stop iteration flag
-result_file="result_out.csv"
+result_file="new_result_out.csv"
 running_time_file="model_running.csv"
 
 #classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
-classifiers=("KNeighborsClassifier", "RandomForestClassifier", "RidgeClassifier", "SGDClassifier")
+classifiers=("KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tpr,tnr"
 
