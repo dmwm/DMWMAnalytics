@@ -22,11 +22,11 @@ class OptionParser(object):
     def __init__(self):
         self.parser = optparse.OptionParser()
         self.parser.add_option("--fin", action="store", type="string",
-            dest="fin", default=None, help="Input file, usually dataframe")
+            dest="fin", default=None, help="Input file, usually a dataframe *.csv.gz")
         self.parser.add_option("--fout", action="store", type="string",
             dest="fout", default=None, help="Output file")
         msg  = "Provide list of tiers to parse. Default None." 
-        msg += "Use --tiers-mapping if key-value list is used"
+        msg += "Use --tiers-mapping if provide string names and dataframe contains tiers id"
         self.parser.add_option("--tiers", action="store", type="string",
             dest="tiers", default=None, help=msg)
         self.parser.add_option("--tiers-col", action="store", type="string",
@@ -35,17 +35,18 @@ class OptionParser(object):
         msg += "Used together with --tiers and --mapping-kval"
         self.parser.add_option("--mapping", action="store", type="string",
             dest="tiersmap", default=None, help=msg)
-        msg  = "Position for key and value columns in mapping file."
-        msg += "Default 0,1. Used together with --tiers and --mapping"
+        msg  = "Comma separated names for id and value columns names in tier mapping file. "
+        msg += "Default 'id,tier'. "
+        msg += "Used together with --tiers and --mapping"
         self.parser.add_option("--mapping-kval", action="store",
-            type="string", dest="kval", default="0,1", help=msg)
+            type="string", dest="kval", default="id,tier", help=msg)
         self.parser.add_option("--verbose", action="store",
             type="int", dest="verbose", default=0, help="Verbose mode, default 0, values 0-2")
-        msg  = "Convert (1) or not (0) data to numeric data before parsing. "
-        msg += "Default value is 1. "
-        msg += "If 1, non-numeric values are set to -1."
+        msg  = "Convert data to numeric data before parsing. "
+        msg += "Default value is False. "
+        msg += "If option is active, non-numeric values are set to -1."
         self.parser.add_option("--convert-to-num", action="store_true",
-            dest="ctn", default=False, help=msg)
+            dest="ctn", help=msg)
     def options(self):
         return self.parser.parse_args()
 
@@ -53,8 +54,8 @@ def read_data(fname, verbose, convert_to_num):
     if  fname is None or not fname:
         msg  = "ERROR in parse_csv. "
         msg += "Usage: parse_csv --fin=train.csv.gz --fout=train_.csv.gz "
-        msg += "--tiers=AOD,AODSIM,MINIAOD --mapping=tiers.txt "
-        msg += "--mapping-kval=1,3"
+        msg += "--tiers=AOD,AODSIM,MINIAOD --mapping=old_tiers.txt "
+        msg += "--mapping-kval=id,tier"
         print(msg)
         sys.exit(1)
     # must check before stderr redirect

@@ -87,7 +87,7 @@ def plot(data, dates, rundata):
             ssum = sum([sum(data[dftype][s][clf]) for clf in data[dftype][s]])
             snum = sum([len(data[dftype][s][clf]) for clf in data[dftype][s]])
             # TODO: adjust left-right also against averages
-            lloc = 'upper left' if ssum/snum < 0.35 else 'lower right'
+            lloc = 'upper left' if ssum/snum < 0.30 else 'lower right'
             leg = g.legend(pls, lab, loc=lloc, prop={'size':8}, fancybox=True)
             leg.get_frame().set_alpha(0.7)
             #g.set_frame_on(False)
@@ -95,11 +95,11 @@ def plot(data, dates, rundata):
         g = fig.add_subplot(1, nx, nx)
         c = rundata.keys()
         x = np.arange(len(c))
-        y = rundata.values()
+        y = [v/3600. for v in rundata.values()]
         g.grid()
         g.set_xticks(x)
-        g.set_xticklabels(c, rotation=30, fontsize=8)
-        g.set_title("Running time (s)", fontsize=10, y=1.01)
+        g.set_xticklabels(c, rotation=45, ha='right', fontsize=8)
+        g.set_title("Running time (hours)", fontsize=10, y=1.01)
         g.set_xlim(-1, len(c))
         ax = g.bar(x, y, width=0.5, align='center', alpha=0.5)
         y_bottom, y_top = g.get_ylim()
@@ -107,7 +107,7 @@ def plot(data, dates, rundata):
         for i, child in enumerate(g.containers[0].get_children()):
             h = child.get_y() + child.get_height() + y_height * 0.01
             g.text(child.get_x() + child.get_width()/2., h,
-                "(%.2fs)" % y[i],
+                "(%.2fh)" % y[i],
                 ha='center', va='bottom')
     fig.tight_layout()
     fig.savefig("graph.png", bbox_inches='tight')

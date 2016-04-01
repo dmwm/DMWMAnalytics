@@ -2,6 +2,7 @@
 
 # Week 6 Assignment 2
 # received    : 2016 03 04
+# author      : Mantas Briliauskas
 # description :
 #   perform iterative weekly prediction, record results, and plot
 #   initial training data   : 2015 last 9 months
@@ -10,21 +11,32 @@
 #             select new week to predict, retrain
 #   until   : there is no data available
 
+# main script settings
+use_log=1
+use_ensemble=1
+plot_result=0
+
+# dataframe selection options
+data=("new")
 old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
 train_start=20150101
 train_end=20151231
-prefixes=("new")
-finished="no" #iteration indicator
-halt="no" #stop iteration flag
+
+# other script options
+#classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
+#classifiers=("KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
+classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
+
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+scorer="tpr,tnr"
+plot_file="graph.png"
 result_file="new_result_out.csv"
 running_time_file="model_running.csv"
 
-#classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
-classifiers=("KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
-drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
-scorer="tpr,tnr"
+finished="no" #iteration indicator
 
+# prepares initial training data
 prepare_train_data() {
     # prepare_train_data {old,new}
     pref=$1
@@ -38,12 +50,11 @@ prepare_train_data() {
     echo "[$pref] Finished merging training data."
 }
 
+# produces a list of dataframes to work with
 get_file_list() {
     # running slowly because of constant python exec
     if [ $# -ne 3 ]; then echo "ERROR in get_file_list(). Given params: $@"; exit 1; fi
-    path=$1
-    start_date=$2
-    end_date=$3
+    path=$1; start_date=$2; end_date=$3
     files=""
     for f in `ls $path | egrep "\.csv\.gz$"`; do
         st=`echo $f | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n-1]}'`
@@ -61,6 +72,7 @@ get_file_list() {
     fi
 }
 
+# checks consistency of train and valid data
 column_count_check() {
     # column_count_check {old,new} train_clf_file valid_clf_file
     pref=$1
@@ -74,11 +86,10 @@ column_count_check() {
     fi
 }
 
+# predicts, verifies, and stores the result
 predict_and_write() {
     # predict_and_measure {old,new} package_classifier validation_start_date
-    pref=$1
-    clf=$2
-    valid_start=$3
+    pref=$1; clf=$2; valid_start=$3
     model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0 --rt-out=$running_time_file
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer --plain-output`
     # do not remove in case of ensembler
@@ -87,11 +98,10 @@ predict_and_write() {
     echo "$pref,$clf,$valid_start,$out" >> "$result_file"
 }
 
+# ensemble part
 ensemble_and_write() {
     # ensemble_and_write (old|new) validation_file validation_start_date
-    pref=$1
-    fvalid=$2
-    valid_start=$3
+    pref=$1; fvalid=$2; valid_start=$3
     echo "[$pref] Collecting ensemble..."
     ensemble_predictions --fbeg="${pref}_" --fout="${pref}_Ensemble.txt"
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_Ensemble.txt" --scorer=$scorer --plain-output`
@@ -99,6 +109,7 @@ ensemble_and_write() {
     echo "$pref,Ensemble,$valid_start,$out" >> "$result_file"
 }
 
+# result file preparation
 prepare_out_csv() {
     echo "dftype,clf,date,$scorer" > "$result_file"
 }
@@ -108,8 +119,7 @@ prepare_out_csv() {
 iteration() {
     # usage : iteration {old,new} date_train_end
     # first predict and measure performance, then concat train and valid data
-    pref=$1
-    valid_start=`newdate --date=$2`
+    pref=$1; valid_start=`newdate --date=$2`
     dol='$'
     echo "[$pref] Separation date: $valid_start"
     valid_end=`newdate --date=$valid_start --step=12`
@@ -121,50 +131,50 @@ iteration() {
         if [[ $vfiles == *","* ]]; then
             echo "WARNING: more than one file selected: $vfiles"
             #finished="yes"
-            #halt="yes"
             #exit 1
         fi
         echo "[$pref] Validation files: \"$vfiles\""
         echo "[$pref] Preparing validation, transforming all data..."
         merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
         __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
-        transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
-        transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops
+        logstr=""; if [ $use_log -eq 1 ]; then logstr="--log-thr=100000"; fi
+        transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
+        transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
         echo "[$pref] Data is prepared. Verifying..."
-        verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz
-        verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz
+        if [ $use_log -ne 1 ]; then
+            verify_dfr --file1=${pref}_train.csv.gz --file2=${pref}_train_clf.csv.gz
+            verify_dfr --file1=${pref}_valid.csv.gz --file2=${pref}_valid_clf.csv.gz
+        fi
         column_count_check $pref ${pref}_train_clf.csv.gz ${pref}_valid_clf.csv.gz
         echo "[$pref] Predicting, writing data ..."
         for clf in "${classifiers[@]}"; do
-            if [ "$halt" == "yes" ]; then
-                exit 1
-            fi
             predict_and_write $pref $clf $valid_start
         done
-        ensemble_and_write $pref ${pref}_valid_clf.csv.gz $valid_start
+        if [ $use_ensemble -eq 1 ]; then
+            ensemble_and_write $pref ${pref}_valid_clf.csv.gz $valid_start
+        fi
     else
         finished="yes"
     fi
 }
 
-
+# prepares result file
 prepare_out_csv $result_file
 
-for pref in "${prefixes[@]}"; do
-    prepare_train_data $pref    
+for d in "${data[@]}"; do
+    prepare_train_data $d    
     finished="no"
     n=1
     __train_end=$train_end
     while [ "$finished" == "no" ]; do
         echo "===== Starting iteration << $n >> ===== |`date +'%Y-%m-%d %T'`|"
-        iteration $pref $__train_end
+        iteration $d $__train_end
         __train_end=`newdate --date=$__train_end --step=7`
         ((n+=1))
     done
-    echo "[$pref] Work done."
+    echo "[$d] Work done."
 done
 
-### TODO: collect new data
-### TODO: rerun, record
-
-#csv_to_graph --fin=$result_file --timing=$running_time_file
+if [ $plot_result -eq 1 ]; then
+    csv_to_graph --fin=$result_file --fout=$plot_file --timing=$running_time_file;
+fi

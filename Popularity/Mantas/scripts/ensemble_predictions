@@ -78,8 +78,8 @@ def ensemble_manual(fin, fbeg, fend, fout):
         n += 1
         if  not all([(lines[0][0] == l[0] and lines[0][1] == l[1]) \
                 for l in lines[1:]]):
-            msg  = "Error: inconsistent data, first two columns must be equal "
-            msg += "in all files. Mismatch in lines: "
+            msg  = "Error in ensemble_predictions: inconsistent data privided. First two columns prediction file must be equal "
+            msg += "in all given files. Mismatching lines: "
             print(msg, lines)
             sys.exit(1)
         val = round(np.mean([float(line[2]) for line in lines]), 0)
