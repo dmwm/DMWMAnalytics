@@ -63,7 +63,6 @@ class OptionParser():
         self.parser.add_option("--log-ignore", action="store", type="string",
             dest="logignore", default="id,target,tier,dataset",
             help="Columns to ignore for log transform, default='id,target,tier,dataset'")
-
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()

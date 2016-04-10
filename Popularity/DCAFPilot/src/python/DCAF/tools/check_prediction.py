@@ -63,14 +63,22 @@ class OptionParser():
             dest="tiers_map", default="", help="Mapping file for tier names, default None")
         self.parser.add_option("--tiers-map-kval", action="store", type="string",
             dest="tiers_map_kval", default="id,tier", help="Comma separated key and tier column names in mapping file, default 'id,tier'")
+        self.parser.add_option("--threshold", action="store", type="float",
+            dest="threshold", default=None, help="Threshold for step function to interpret probabilistic prediction as 1 or 0; e.g. 0.5, default=None")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
 
-FLT_PAT = re.compile(r'(^[-]?\d+\.\d*$|^\d*\.{1,1}\d+$)')
-INT_PAT = re.compile(r'(^[0-9-]$|^[0-9-][0-9]*$)')
+def str_to_num(s):
+    try:
+        return int(s)
+    except:
+        try:
+            return float(s)
+        except:
+            raise Exception("Parsed value '%s' has unknown data-type" % s)
 
-def loader(ifile, target, sep=','):
+def loader(ifile, target, sep=',', threshold=None):
     "Load prediction from given file"
     headers = None
     tidx  = None
@@ -84,23 +92,20 @@ def loader(ifile, target, sep=','):
                 continue
             if  len(row) < 2:
                 break
-            val  = row[tidx]
-            if  INT_PAT.match(val):
-                val = int(val)
-            elif FLT_PAT.match(val):
-                val = float(val)
-            else:
-                raise Exception("Parsed value '%s' has unknown data-type" % val)
+            # changed since previous approach did not recognice scientific notation
+            val  = str_to_num(row[tidx])
+            if  threshold:
+                val = 1 if val >= threshold else 0
             arr.append(val)
     return arr
 
-def checker(predictions, y_true, scorer, verbose=False, plainout=False, tierflag=""):
+def checker(predictions, y_true, probabilities, scorer, verbose=False, plainout=False, tier=""):
     "Check our model prediction and dump logloss value"
     if  verbose:
         loss = 0
         tot = 0
         if  tierflag:
-            print("Predictions for tier : %s" % tierflag)
+            print("Predictions for tier : %s" % tier)
         for pval, yval in zip(predictions, y_true):
             if  verbose:
                 print("predict value %s, real value %s" % (pval, yval))
@@ -112,10 +117,12 @@ def checker(predictions, y_true, scorer, verbose=False, plainout=False, tierflag
     if  not scorer:
         print("ERROR: no scorer provided, please see --help for their list")
         sys.exit(1)
+    slist = ['tp', 'tn', 'fp', 'fn', 'tpr', 'tnr', 'fpr', 'fnr', 'auc']
+    res = None
     for scr in scorer.split(','):
-        slist = ['tp', 'tn', 'fp', 'fn', 'tpr', 'tnr', 'fpr', 'fnr']
         if  scr.lower() in slist:
-            res = rates(y_true, predictions)
+            if  not res:
+                res = rates(y_true, predictions, probabilities)
             if  plainout:
                 plain += str(res[scr.lower()]) + ','
             else:
@@ -129,8 +136,8 @@ def checker(predictions, y_true, scorer, verbose=False, plainout=False, tierflag
         else:
             print("Score metric (%s): %s" % (method, res))
     if  plainout:
-        if  tierflag:
-            print("%s,%s" % (tierflag, plain[:-1]))
+        if  tier:
+            print("%s,%s" % (tier, plain[:-1]))
         else:
             print(plain[:-1])
 
@@ -158,29 +165,33 @@ def dataframe2tiers(tiers, predictions):
             data[tiers[i]] = [predictions[i]]
     return data
 
-def checker_with_tiers(predictions, real_values, fin, scorer, tiers_col, tiers_map, tiers_map_kval, plainout, verbose):
+def checker_with_tiers(predictions, real_values, probabilities, fin, scorer, tiers_col, tiers_map, tiers_map_kval, plainout, verbose):
     dfr, _     = read_data(fin, verbose, False)
     tiers      = get_tiers(dfr, tiers_col, tiers_map, tiers_map_kval, verbose)
     tiers_pred = dataframe2tiers(tiers, predictions)
     tiers_real = dataframe2tiers(tiers, real_values)
+    tiers_prob = dataframe2tiers(tiers, probabilities)
     print("tier," + scorer)
     for tier in sorted(tiers_pred.keys()):
         # checker(predictions, y_true, scorer, verbose=False, plainout=False, tierflag="")
-        checker(tiers_pred[tier], tiers_real[tier], scorer, verbose, plainout, tier)
+        checker(tiers_pred[tier], tiers_real[tier], tiers_prob[tier], scorer, verbose, plainout, tier)
 
 def main():
     "Main function"
     optmgr  = OptionParser(SCORERS.keys())
     opts, _ = optmgr.get_opt()
-    predictions = loader(opts.fpred, opts.fpred_target, opts.fpred_sep)
-    real_values = loader(opts.fin, opts.fin_target, opts.fin_sep)
+    predictions = loader(opts.fpred, opts.fpred_target, opts.fpred_sep, opts.threshold)
+    real_values = loader(opts.fin, opts.fin_target, opts.fin_sep, None)
+    probabilities = None
+    if  opts.threshold:
+        probabilities = loader(opts.fpred, opts.fpred_target, opts.fpred_sep, None)
     if  len(predictions) != len(real_values):
         print("Error: input file and prediction file lengths are different")
         sys.exit(1)
     if  opts.tiers_break:
-        checker_with_tiers(predictions, real_values, opts.fin, opts.scorer, opts.tiers_col, opts.tiers_map, opts.tiers_map_kval, opts.plainout, opts.verbose)
+        checker_with_tiers(predictions, real_values, probabilities, opts.fin, opts.scorer, opts.tiers_col, opts.tiers_map, opts.tiers_map_kval, opts.plainout, opts.verbose)
     else:
-        checker(predictions, real_values, opts.scorer, opts.verbose, opts.plainout)
+        checker(predictions, real_values, probabilities, opts.scorer, opts.verbose, opts.plainout)
 
 if __name__ == '__main__':
     main()

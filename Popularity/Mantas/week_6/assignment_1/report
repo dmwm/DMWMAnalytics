@@ -29,7 +29,7 @@ def gen_report():
     desc += "Train period   : old, new 2015.01.01-2015.12.31\n"
     desc += "Valid period   : old, new 2016.01.01-2016.01.20\n"
     desc += "Log            : no\n"
-    desc += "AdaBoost params: learning_rate=0.5, n_estimators=100"
+    desc += "AdaBoost params: learning_rate=1.5, n_estimators=200"
     tit1  = "Old full data"
     tit2  = "Old filtered validation"
     tit3  = "Old filtered training and validation"

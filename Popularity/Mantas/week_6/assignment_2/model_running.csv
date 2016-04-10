@@ -1,5 +1,11 @@
 model,running_time_s
-KNeighborsClassifier,8380.887
-RandomForestClassifier,478.624
-RidgeClassifier,147.319
-SGDClassifier,47.306
+AdaBoostClassifier,4510.130
+BaggingClassifier,4417.406
+DecisionTreeClassifier,390.153
+ExtraTreesClassifier,348.996
+GradientBoostingClassifier,9125.818
+KNeighborsClassifier,90345.220
+RandomForestClassifier,530.660
+RidgeClassifier,142.665
+SGDClassifier,40.857
+XGBClassifier,2913.506

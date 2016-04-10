@@ -84,15 +84,17 @@ def factorize(col, xdf, sdf=None):
     return out
 
 def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
-        drops=None, split=0.3, scorer=None,
-        scaler=None, ofile=None, idx=0, limit=-1,
-        gsearch=None, crossval=None, seed=123, verbose=False, rtout=None):
+        drops=None, split=0.3, scorer=None, scaler=None, ofile=None,
+        idx=0, limit=-1,  gsearch=None, crossval=None, seed=123,
+        verbose=False, timeout=None, proba=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
     in DCAF.ml.clf module.
     """
     clf = learners()[learner]
+    if  proba and not (hasattr(clf, 'predict_proba') and callable(getattr(clf, 'predict_proba'))):
+        raise Exception("ERROR: model %s does not provide method 'predict_proba'" % learner)
     if  lparams:
         if  isinstance(lparams, str):
             lparams = json.loads(lparams)
@@ -162,8 +164,12 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
     if  verbose:
         print("Train elapsed time", time.time()-time0)
     if  split:
+        if  proba:
+            print("ERROR in model.py: probabilities not supported in split mode")
+            sys.exit(1)
+        time0 = time.time()
         predictions = fit.predict(x_rest)
-        rtime = time.time()-time0
+        rtime += time.time()-time0
         try:
             importances = clf.feature_importances_
             if  importances.any():
@@ -205,7 +211,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             nfiles = [newdata_file]
         else:
             if '(id)' not in ofile:
-                print("ERROR in model.py: file list in --newdata provided, --predict has to contain '(id)' which will be replaced by file index")
+                print("ERROR in model.py: file list is provided, --predict has to contain '(id)'")
                 sys.exit(1)
             nfiles = newdata_file.split(',')
         for ni, nfile in enumerate(nfiles):
@@ -233,18 +239,20 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             time0 = time.time()
             if  verbose:
                 print(tdf)
-                #sys.exit(1)
-            predictions = fit.predict(tdf)
-            rtime += time0-time.time()
+            predictions = fit.predict(tdf) if not proba else np.asarray(fit.predict_proba(tdf))[:,list(fit.classes_).index(1)]
+            rtime += time.time()-time0
             data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
+            #if proba:
+            #    print(predictions)
+            #    exit()
             out = pd.DataFrame(data=data)
             if  ofile:
                 out.to_csv(ofile.replace("(clf)", learner).replace("(id)", str(ni)), header=True, index=False)
-            if  rtout: #writing running time
+            if  timeout: #writing running time
                 data = {}
-                if  os.path.isfile(rtout):
+                if  os.path.isfile(timeout):
                     headers=[]
-                    for line in open(rtout, 'r'):
+                    for line in open(timeout, 'r'):
                         line = line.strip(" \r\n").split(',')
                         if  not headers:
                             headers = line
@@ -257,7 +265,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
                     data[learner] += rtime
                 else:
                     data[learner] = rtime
-                fstream = open(rtout, 'w')
+                fstream = open(timeout, 'w')
                 fstream.write("model,running_time_s\n")
                 for key in sorted(data.keys()):
                     fstream.write("%s,%.3f\n" % (key,data[key]))
@@ -386,7 +394,7 @@ def main():
                 scorer=opts.scorer, scaler=opts.scaler, ofile=ofile,
                 idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,
                 crossval=opts.cv, seed=opts.seed, verbose=opts.verbose,
-                rtout=opts.rtout)
+                timeout=opts.timeout, proba=opts.proba)
 
 if __name__ == '__main__':
     main()

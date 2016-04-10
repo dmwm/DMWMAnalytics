@@ -32,12 +32,14 @@ class OptionParser(object):
             dest="fend", default="", help="Filter files by ending")
         self.parser.add_option("--fout", action="store", type="string",
             dest="fout", default="graph.png", help="File name to store graph, default 'graph.png'")
-        self.parser.add_option("--timing", action="store", type="string",
-            dest="timing", default=None, help="File name of models running time csv")
+        self.parser.add_option("--timein", action="store", type="string",
+            dest="timein", default=None, help="File name of models running time, *.csv, default=None")
+        self.parser.add_option("--dlabels", action="store", type="int",
+            dest="dlabels", default=1, help="Show or not data labels, 0 for no, 1 for yes, default=1")
     def options(self):
         return self.parser.parse_args()
 
-def plot(data, dates, rundata):
+def plot(data, dates, fout, rundata, dlabels):
     if len(data) == 0:
         print("Error: no data provided.")
         sys.exit(1)
@@ -71,8 +73,9 @@ def plot(data, dates, rundata):
                     print(dates[dftype])
                     sys.exit(1)
                 plot, = g.plot_date(x=x, y=y, label=clf, fmt="-", marker='o')
-                for i, yv in enumerate(y):
-                    g.annotate("(%.2f%%)" % (yv*100) \
+                if  dlabels:
+                    for i, yv in enumerate(y):
+                        g.annotate("(%.2f%%)" % (yv*100) \
                             if  yv<=0.90 and yv>=0.10 else "", xy=(x[i],yv), textcoords='data')
                 g.grid(True)
                 g.set_xticks(x)
@@ -84,11 +87,12 @@ def plot(data, dates, rundata):
                 pls.append(plot)
                 lab.append("%s (%.2f%%)" % (clf, 100*np.mean(data[dftype][s][clf])))
             # checking avg of data to adjust legend position
-            ssum = sum([sum(data[dftype][s][clf]) for clf in data[dftype][s]])
-            snum = sum([len(data[dftype][s][clf]) for clf in data[dftype][s]])
+            #ssum = sum([sum(data[dftype][s][clf]) for clf in data[dftype][s]])
+            #snum = sum([len(data[dftype][s][clf]) for clf in data[dftype][s]])
             # TODO: adjust left-right also against averages
-            lloc = 'upper left' if ssum/snum < 0.30 else 'lower right'
-            leg = g.legend(pls, lab, loc=lloc, prop={'size':8}, fancybox=True)
+            #lloc = 'upper left' if ssum/snum < 0.30 else 'lower right'
+            #if  ni == 2:
+            leg = g.legend(pls, lab, loc='best', prop={'size':8}, fancybox=True)
             leg.get_frame().set_alpha(0.7)
             #g.set_frame_on(False)
     if  rundata:
@@ -110,9 +114,11 @@ def plot(data, dates, rundata):
                 "(%.2fh)" % y[i],
                 ha='center', va='bottom')
     fig.tight_layout()
-    fig.savefig("graph.png", bbox_inches='tight')
+    fig.savefig(fout, bbox_inches='tight')
 
 def str_to_num(v):
+    if v.lower() == "n/a" or v.lower == "nan":
+        return 0
     try:
         return int(v)
     except:
@@ -121,7 +127,7 @@ def str_to_num(v):
         except:
             raise Exception("Error: Not possible to convert value %s to num" % v)
 
-def read_data(fin, fbeg, fend, timing):
+def read_data(fin, fbeg, fend, timein):
     if  fin == ".":
         files = [f for f in os.listdir('.') \
                     if (len(fbeg) == 0 or f.startswith(fbeg))
@@ -180,9 +186,9 @@ def read_data(fin, fbeg, fend, timing):
                     if  not row['clf'] in data[row['dftype']][s]:
                         data[row['dftype']][s][row['clf']] = []
                     data[row['dftype']][s][row['clf']].append(str_to_num(row[s]))
-    if  timing:
+    if  timein:
         head = []
-        for line in open(timing, 'r').readlines():
+        for line in open(timein, 'r').readlines():
             if  not head:
                 head = line
                 continue
@@ -193,8 +199,8 @@ def read_data(fin, fbeg, fend, timing):
 def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.options()
-    data, dates, rundata = read_data(opts.fin, opts.fbeg, opts.fend, opts.timing)
-    plot(data, dates, rundata)
+    data, dates, rundata = read_data(opts.fin, opts.fbeg, opts.fend, opts.timein)
+    plot(data, dates, opts.fout, rundata, opts.dlabels)
 
 if __name__ == '__main__':
     main()

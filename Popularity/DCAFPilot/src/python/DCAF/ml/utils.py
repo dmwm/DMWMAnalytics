@@ -12,6 +12,7 @@ from __future__ import print_function
 import itertools
 import optparse
 from math import log, exp
+from sklearn import metrics
 
 # B. Bounded logloss
 # INPUT:
@@ -158,21 +159,24 @@ class OptionParser(object):
         self.parser.add_option("--predict", action="store", type="string",
             default=None, dest="predict",
             help="Prediction file name, default None. Use '(model)' for model name or '(id)' for file number if --newdata contains file list")
-        self.parser.add_option("--rt-out", action="store", type="string",
-            default=None, dest="rtout",
-            help="A filename to record model running time, default=None. If record for model in output file already exist running times will be added. To avoid this, delete the file first")
+        self.parser.add_option("--timeout", action="store", type="string",
+            default=None, dest="timeout",
+            help="A file to record models running time, default=None. In case a record for model in output file exist, running times are sumed. To obviate this, delete the file first")
         self.parser.add_option("--proba", action="store_true",
             default=False, dest="proba", help="probabilities prediction mode")
+        #self.parser.add_option("--auc-score", action="store_true",
+         #   default=False, dest="auc", help="Returns area under curve value of ROC for probabilistic classifier")
     def options(self):
         "Returns parse list of options"
         return self.parser.parse_args()
 
-def rates(y_true, predictions):
-    "Return TP/TN/FP/FN TPR/TNR/FPR/FNR rates for given vectors"
+def rates(y_true, predictions, probs=False):
+    "Return TP/TN/FP/FN TPR/TNR/FPR/FNR/AUC rates for given vectors"
     tp = 0
     tn = 0
     fp = 0
     fn = 0
+    auc = "N/A"
     for lhs, rhs in itertools.izip(y_true, predictions):
         if  lhs == rhs:
             if  lhs == 1:
@@ -200,4 +204,7 @@ def rates(y_true, predictions):
         fnr = float(fn)/(fn+tp)
     except:
         fnr = 0
-    return dict(tp=tp, tn=tn, fp=fp, fn=fn, tpr=tpr, tnr=tnr, fpr=fpr, fnr=fnr)
+    if  probs:
+        xfpr, xtpr, thresholds = metrics.roc_curve(y_true, probs, pos_label=1)
+        auc = metrics.auc(xfpr,xtpr)
+    return dict(tp=tp, tn=tn, fp=fp, fn=fn, tpr=tpr, tnr=tnr, fpr=fpr, fnr=fnr, auc=auc)
