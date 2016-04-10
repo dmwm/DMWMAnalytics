@@ -11,7 +11,7 @@
 
 # main script settings
 use_log=0
-output_tiers=0
+output_tiers=1
 use_ensemble=0
 
 # dataframe selection options
@@ -28,7 +28,7 @@ drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tp,tn,fp,fn,tpr,tnr,fpr,fnr"
 tiers="AOD,AODSIM,MINIAOD,MINIAODSIM,USER"
 classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier")
-classifiers=("AdaBoostClassifier")
+#classifiers=("AdaBoostClassifier")
 
 running_time_data="model_running.csv"
 
@@ -43,12 +43,12 @@ prepare_data() {
     vfiles=`get_file_list $path $valid_start $valid_end`
     #echo "$pref training files   : $tfiles"
     echo "$pref validation files : $vfiles"    
-    #merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
-    #merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
+    merge_csv --fin=$tfiles --fout=${pref}_train.csv.gz
+    merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
     __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
     logstr=""; if [ $use_log -eq 1 ]; then logstr="--log-thr=100000"; fi
-    #transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
-    #transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
+    transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
+    transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
     verify_csv $pref
 }
 
