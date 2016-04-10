@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+# file : file_name
+
+from __future__ import print_function
+
+__author__ = "Mantas Briliauskas"
+
+# system modules
+import os
+import sys
+import numpy as np
+import pandas as pd
+import optparse
+from subprocess import check_call
+
+# package modules
+from DCAF.utils.utils import fopen
+
+class OptionParser(object):
+    def __init__(self):
+        self.parser = optparse.OptionParser()
+        self.parser.add_option("--fin", action="store", type="string",
+            dest="fin", default=None, help="Input file")
+        self.parser.add_option("--fout", action="store", type="string",
+            dest="fout", default=None, help="Output file (optional), default=None")
+    def options(self):
+        return self.parser.parse_args()
+
+def shuffle(data):
+    #print(data.loc[10,:])
+    #adata = data.iloc[np.random.permutation(len(data))]
+    data = data.apply(np.random.permutation)
+    #print(adata.loc[10,:])
+    #exit()
+
+def save_data(data, fout):
+        fstem = '.'.join(fout.split('.')[0:-1])
+        data.to_csv(fstem, index=False)
+        if  fout.endswith('.gz'):
+            check_call(['gzip', '-f ' + fstem])
+        elif fin.endswith('.bz2'):
+            check_call(['bzip2', '-f ' + fstem])
+        elif not fin.endswith('.csv'):
+            print("Error in shuffle_csv: compression %s not supported" % comp)
+
+def read_data(fin):
+    if  not os.path.isfile(fin):
+        print("ERROR: file %s does not exist" % fin)
+        sys.exit(1)
+    xdf  = None
+    comp = None
+    if  fin.endswith('.gz'):
+        comp = 'gzip'
+    elif fin.endswith('.bz2'):
+        comp = 'bz2'
+    xdf = pd.read_csv(fin, compression=comp)
+    return xdf
+
+def main():
+    optmgr  = OptionParser()
+    opts, _ = optmgr.options()
+    data    = read_data(opts.fin)
+    shuffle(data)
+    if  opts.fout:
+        save_data(data, opts.fout)
+    else:
+        save_data(data, opts.fin)
+
+if __name__ == '__main__':
+    main()
