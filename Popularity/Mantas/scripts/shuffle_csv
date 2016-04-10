@@ -29,11 +29,8 @@ class OptionParser(object):
         return self.parser.parse_args()
 
 def shuffle(data):
-    #print(data.loc[10,:])
-    #adata = data.iloc[np.random.permutation(len(data))]
     data = data.apply(np.random.permutation)
-    #print(adata.loc[10,:])
-    #exit()
+    #data = data.iloc[np.random.permutation(len(data))]
 
 def save_data(data, fout):
         fstem = '.'.join(fout.split('.')[0:-1])
@@ -47,7 +44,7 @@ def save_data(data, fout):
 
 def read_data(fin):
     if  not os.path.isfile(fin):
-        print("ERROR: file %s does not exist" % fin)
+        print("ERROR: input file %s does not exist" % fin)
         sys.exit(1)
     xdf  = None
     comp = None
