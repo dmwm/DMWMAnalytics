@@ -48,7 +48,7 @@ def save_data(dfr, fout):
 def read_data(fin):
     "Reads data to dfr"
     if  not os.path.isfile(fin):
-        print("ERROR: file %s does not exist" % fin)
+        print("ERROR: input file %s does not exist" % fin)
         sys.exit(1)
     dfr  = None
     comp = None
