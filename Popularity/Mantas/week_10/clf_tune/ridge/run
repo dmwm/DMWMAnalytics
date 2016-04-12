@@ -29,7 +29,7 @@ classifiers=("RidgeClassifier")
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tpr,tnr"
 plot_file="graph.png"
-result_file="result_out_normal.csv"
+result_file="result_out.csv"
 running_time_file="model_running.csv"
 
 finished="no" #iteration indicator
@@ -105,37 +105,55 @@ predict_and_write() {
     # predict_and_measure {old,new} package_classifier validation_start_date
     pref=$1; clf=$2; valid_start=$3
     
-    c="${clf}_a0.5_spars"
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":0.5,"solver":"sparse_sg"}'
+    c="${clf}_a0.1_lsqr"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":0.1,"solver":"lsqr"}'
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     echo "[$pref] to csv: $out"
     echo "$pref,$c,$valid_start,$out" >> "$result_file"
     
-    c="${clf}_svd"
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"solver":"svd"}'
+    c="${clf}_a0.5_lsqr"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":0.5,"solver":"lsqr"}'
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     echo "[$pref] to csv: $out"
     echo "$pref,$c,$valid_start,$out" >> "$result_file"
 
-    c="${clf}_chol"
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"solver":"cholesky"}'
+    c="${clf}_a0.7_lsqr"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":0.7,"solver":"lsqr"}'
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
+    echo "[$pref] to csv: $out"
+    echo "$pref,$c,$valid_start,$out" >> "$result_file"
+    
+    c="${clf}_a0.85_lsqr"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":0.85,"solver":"lsqr"}'
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     echo "[$pref] to csv: $out"
     echo "$pref,$c,$valid_start,$out" >> "$result_file"
 
-    c="${clf}_lsqr"
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"solver":"lsqr"}'
+    c="${clf}_a1.15_lsqr"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":1.15,"solver":"lsqr"}'
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
+    echo "[$pref] to csv: $out"
+    echo "$pref,$c,$valid_start,$out" >> "$result_file"
+
+    c="${clf}_a1.3_lsqr"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":1.3,"solver":"lsqr"}'
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
+    echo "[$pref] to csv: $out"
+    echo "$pref,$c,$valid_start,$out" >> "$result_file"
+
+    c="${clf}_a1.8_lsqr"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"alpha":1.8,"solver":"lsqr"}'
     out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     echo "[$pref] to csv: $out"
     echo "$pref,$c,$valid_start,$out" >> "$result_file"
 	
-    c="${clf}_sag"
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"solver":"sag"}'
-    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
+    #c="${clf}_sag"
+    #model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"solver":"sag"}'
+    #out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     # do not remove in case of ensembler
     #rm "${pref}_${clf}.txt"
-    echo "[$pref] to csv: $out"
-    echo "$pref,$c,$valid_start,$out" >> "$result_file"
+    #echo "[$pref] to csv: $out"
+    #echo "$pref,$c,$valid_start,$out" >> "$result_file"
 }
 
 # ensemble part

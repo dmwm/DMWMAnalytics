@@ -211,10 +211,10 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             nfiles = [newdata_file]
         else:
             if '(id)' not in ofile:
-                print("ERROR in model.py: file list is provided, --predict has to contain '(id)'")
+                print("ERROR in model.py: predict list is provided, but --ofile does not contain '(id)'")
                 sys.exit(1)
             nfiles = newdata_file.split(',')
-        for ni, nfile in enumerate(nfiles):
+        for ni, nfile in enumerate(nfiles): # use same model to label list of dataframes
             tdf = read_data(nfile, drops, scaler=scaler)
             if  tcol in tdf.columns:
                 tdf = tdf.drop(tcol, axis=1)
@@ -223,7 +223,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
                 print("Columns:", ','.join(tdf.columns))
                 print("test shapes:", tdf.shape)
             datasets = [int(i) for i in list(tdf['dataset'])]
-            #20160301 'dbs' header changed to 'dbsinst'
+            # 20160301 'dbs' header changed to 'dbsinst'
             dfkeys = tdf.keys()
             if  'dbsinst' in dfkeys:
                 dbs_h = 'dbsinst'
@@ -236,28 +236,25 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             dbses = [int(i) for i in list(tdf[dbs_h])]
             if  scaler:
                 tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
-            time0 = time.time()
             if  verbose:
                 print(tdf)
+            time0 = time.time()
             predictions = fit.predict(tdf) if not proba else np.asarray(fit.predict_proba(tdf))[:,list(fit.classes_).index(1)]
             rtime += time.time()-time0
             data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
-            #if proba:
-            #    print(predictions)
-            #    exit()
             out = pd.DataFrame(data=data)
             if  ofile:
                 out.to_csv(ofile.replace("(clf)", learner).replace("(id)", str(ni)), header=True, index=False)
-            if  timeout: #writing running time
+            if  timeout: # output running time
                 data = {}
-                if  os.path.isfile(timeout):
-                    headers=[]
+                if  os.path.isfile(timeout): # append if file exists
+                    headers = []
                     for line in open(timeout, 'r'):
                         line = line.strip(" \r\n").split(',')
                         if  not headers:
                             headers = line
                             if  line[0] != 'model' or line[1] != 'running_time_s':
-                                print("Error while writing model running score: unrecognized output file found.")
+                                print("Error writing model running time to %s: unrecognized output file found." % timeout)
                             continue
                         else:
                             data[line[0]] = float(line[1])

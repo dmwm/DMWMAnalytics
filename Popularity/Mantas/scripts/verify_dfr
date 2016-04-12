@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-
+#pylint: disable=
+"""
+File        : verify_dfr.py
+Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
+Description : verifies column summaries of two dataframes, no return if success
+"""
 from __future__ import print_function
-
-__author__ = "Mantas Briliauskas"
 
 # system modules
 import os
@@ -22,28 +25,28 @@ class OptionParser(object):
     def __init__(self):
         self.parser = optparse.OptionParser()
         self.parser.add_option("--file1", action="store", type="string",
-            default=None, dest="file1", help="First file for the action")
+            default=None, dest="file1", help="First dataframe file")
         self.parser.add_option("--file2", action="store", type="string",
-            default=None, dest="file2", help="Second file for the action")
+            default=None, dest="file2", help="Second dataframe file")
         self.parser.add_option("--drops", action="store", type="string",
             default=None, dest="drops", help="Columns to drop before summarization")
     def options(self):
         return self.parser.parse_args()
 
-def read_summary(fname, drops=None):
-    if  fname is None or not fname:
+def read_summary(fin, drops=None):
+    "Reads summary for provided file"
+    if  not fin:
         print("ERROR in read_summary: please provide fname")
         sys.exit(1)
     comp = None
     xdf  = None
-    if  fname.endswith('.gz'):
+    if  fin.endswith('.gz'):
         comp = 'gzip'
-    elif fname.endswith('.bz2'):
+    elif fin.endswith('.bz2'):
         comp = 'bz2'
-
     stderr = sys.stderr
     sys.stderr = out = StringIO.StringIO()
-    xdf = pd.read_csv(fname, compression=comp)
+    xdf = pd.read_csv(fin, compression=comp)
     sys.stderr = stderr
     out = out.getvalue()
     reg_spc = re.compile("^\s*$")
@@ -64,6 +67,7 @@ def read_summary(fname, drops=None):
     return desc
 
 def compare(summ1, summ2):
+    "Compares two dfr summaries, returns nothing if success"
     failed = 0
     for col in summ1.columns:
         if  col in summ2.columns:

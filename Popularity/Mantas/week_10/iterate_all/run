@@ -22,12 +22,12 @@ old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
 
 # rolling forecast
-train_start=20140401
-train_end=20140701
+train_start=20150331
+train_end=20151231
 train_max_trail_days=273    #0 for holding merge data start as train_start
-valid_step_days=91          #iteration step
-valid_step_data_ext=6       #take validation data of period [train_end+1; train_end+1+valid_step_days+valid_step_data_ext]
-valid_end=20160101          #20200101 for until data         
+valid_step_days=7           #iteration step
+valid_step_data_ext=5       #take validation data of period [train_end+1; train_end+1+valid_step_days+valid_step_data_ext]
+valid_end=20170101          #20200101 for until data         
 
 # other options
 classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")

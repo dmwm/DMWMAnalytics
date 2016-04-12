@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-
-# file : parse_csv
-
+#pylint: disable=
+"""
+File        : parse_csv.py
+Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
+Description : represents dataframe parsing procedures
+"""
 from __future__ import print_function
-
-__author__ = "Mantas Briliauskas"
 
 # system modules
 import os
@@ -25,32 +26,27 @@ class OptionParser(object):
             dest="fin", default=None, help="Input file, usually a dataframe *.csv.gz")
         self.parser.add_option("--fout", action="store", type="string",
             dest="fout", default=None, help="Output file")
-        msg  = "Provide list of tiers to parse. Default None." 
-        msg += "Use --tiers-mapping if provide string names and dataframe contains tiers id"
         self.parser.add_option("--tiers", action="store", type="string",
-            dest="tiers", default=None, help=msg)
+            dest="tiers", default=None, help="List of tiers to parse, default None")
         self.parser.add_option("--tiers-col", action="store", type="string",
-            dest="col", default=None, help="Tier column name in --fin file")
-        msg  = "Input file for key-value tiers mapping."
-        msg += "Used together with --tiers and --mapping-kval"
+            dest="col", default=None, help="Target tier column name")
         self.parser.add_option("--mapping", action="store", type="string",
-            dest="tiersmap", default=None, help=msg)
-        msg  = "Comma separated names for id and value columns names in tier mapping file. "
-        msg += "Default 'id,tier'. "
-        msg += "Used together with --tiers and --mapping"
+            dest="tiersmap", default=None, help="File with tier id and name mapping, default None")
+        msg  = "Columns in  mapping file to denote tier id and name, default 'id,tier'"
         self.parser.add_option("--mapping-kval", action="store",
             type="string", dest="kval", default="id,tier", help=msg)
         self.parser.add_option("--verbose", action="store",
             type="int", dest="verbose", default=0, help="Verbose mode, default 0, values 0-2")
         msg  = "Convert data to numeric data before parsing. "
         msg += "Default value is False. "
-        msg += "If option is active, non-numeric values are set to -1."
+        msg += "If option is active, non-numeric values are set to -1"
         self.parser.add_option("--convert-to-num", action="store_true",
             dest="ctn", help=msg)
     def options(self):
         return self.parser.parse_args()
 
 def read_data(fname, verbose, convert_to_num):
+    "Reads data to pandas dataframe, avoiding mixed types warning"
     if  fname is None or not fname:
         msg  = "ERROR in parse_csv. "
         msg += "Usage: parse_csv --fin=train.csv.gz --fout=train_.csv.gz "
@@ -74,22 +70,21 @@ def read_data(fname, verbose, convert_to_num):
     sys.stderr = out
     xdf = pd.read_csv(fname, compression=comp)
     out = out.getvalue()
-    if  out and verbose > 1:
-        print("Message from read_csv: ", out)
+    if  out and verbose:
+        print("Message received while reading %s: %s", (fname, out))
     sys.stderr = origstd
     reg_spc = re.compile("^\s*$")
     reg_msg = re.compile("DtypeWarning: Columns [^ ]+ have mixed types")
     if  reg_spc.search(out) is None and reg_msg.search(out) is None:
-        print("ERROR: unexpected message from pd.read_csv received: ", out)
+        print("ERROR: unexpected message received while reading %s: %s" % (fname, out))
         sys.exit(1)
     if  convert_to_num:
         xdf[xdf.columns] = xdf[xdf.columns].convert_objects(convert_numeric=True)
-        #xdf[xdf.columns] = xdf[xdf.columns].astype('float32')
         xdf = xdf.fillna(-1)
     return xdf, comp
 
 def parse_data(dfr, query, col, values, mapping, kval, verbose, convert_to_num):
-    # main function for parsing data, surrently works only with tiers
+    "Selecting parsing procedure"
     supported = {'tiers':'__parse_tiers'}
     values = values.split(',')
     if  query in supported.keys():
@@ -100,6 +95,7 @@ def parse_data(dfr, query, col, values, mapping, kval, verbose, convert_to_num):
         sys.exit(1)
 
 def __parse_tiers(dfr, col, values, mapping, kval, verbose, convert_to_num):
+    "Parsing selected tiers, id-name mapping applied if preferred"
     if  verbose:
         print("Selected values: ", values)
     if  mapping is not None:
@@ -139,12 +135,11 @@ def write_data(dfr, fout, comp):
     fopen(fout, 'w').write(csv)
 
 def main():
-    optmgr  = OptionParser()
-    opts, _ = optmgr.options()
+    optmgr    = OptionParser()
+    opts, _   = optmgr.options()
     dfr, comp = read_data(opts.fin, verbose=opts.verbose, convert_to_num=opts.ctn)
-    # for now only 'tiers' parsing option is supported
-    dfr  = parse_data(dfr, 'tiers', opts.col, opts.tiers, opts.tiersmap,
-        opts.kval, opts.verbose, convert_to_num=opts.ctn)
+    dfr       = parse_data(dfr, 'tiers', opts.col, opts.tiers, opts.tiersmap,
+                opts.kval, opts.verbose, convert_to_num=opts.ctn)
     write_data(dfr, opts.fout, comp)
 
 if __name__ == '__main__':

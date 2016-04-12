@@ -12,12 +12,12 @@
 #   until   : there is no data available
 
 # main script settings
-use_log=0
+use_log=1
 use_ensemble=1
 plot_result=0
 
 # dataframe selection options
-data=("new")
+data=("old")
 old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
 
@@ -36,7 +36,7 @@ classifiers=("BaggingClassifier" "RidgeClassifier" "KNeighborsClassifier")
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tpr,tnr"
 plot_file="graph.png"
-result_file="new_result_out.csv"
+result_file="old_result_out.csv"
 running_time_file="model_running.csv"
 
 finished="no" #iteration indicator
@@ -182,7 +182,7 @@ iteration() {
         echo "[$pref] Preparing validation, transforming all data..."
         merge_csv --fin=$vfiles --fout=${pref}_valid.csv.gz
         __drops=`find_drops --file1=${pref}_train.csv.gz --file2=${pref}_valid.csv.gz --drops=$drops`
-        logstr=""; if [ $use_log -eq 1 ]; then logstr="--log-thr=100000"; fi
+        logstr=""; if [ $use_log -eq 1 ]; then logstr="--log-all"; fi #logstr="--log-thr=100000"; fi
         transform_csv --fin=${pref}_train.csv.gz --fout=${pref}_train_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
         transform_csv --fin=${pref}_valid.csv.gz --fout=${pref}_valid_clf.csv.gz --target=naccess --target-thr=10 --drops=$__drops $logstr
         echo "[$pref] Data is prepared. Verifying..."

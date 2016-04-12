@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
+#pylint: disable=
 """
 File        : reporter.py
-Author      : Mantas Briliauskas
-Description : Represents reporter module used to report prediction files
+Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
+Description : Represents prediction reporter module
 """
 
 from __future__ import print_function
@@ -151,7 +152,7 @@ class Reporter(object):
 
     def __read_pred_data(self, path, fbeg="", fend="*.pred"):
         """
-        Reads scorer data from ".pred" type files
+        Reads semi-structured scorer data from ".pred" type files
         Files formed by check_prediction without --plain-output setting
         """
         files = self.__get_file_list(path, fbeg, fend)
@@ -166,7 +167,7 @@ class Reporter(object):
             ss = []
             n  = 0
             if  not scorers:
-                # values under parentheses
+                # extract values under parentheses
                 r   = re.compile(r"(\([^)]+\))")
                 for l in open(f, 'r').readlines():
                     sr = l.strip(' \t\n\r')
@@ -226,6 +227,7 @@ class Reporter(object):
         return out
 
     def __to_num(self, s):
+        "Converts string to number"
         try:
             return int(s)
         except:

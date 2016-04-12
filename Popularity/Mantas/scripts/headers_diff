@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Description: checks differences between headers
 
 msg="Usage: `basename $0` file1.csv.gz file2.csv.gz"
 

@@ -17,7 +17,7 @@ use_ensemble=0
 plot_result=0
 
 # dataframe selection options
-data=("new")
+data=("old")
 old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
 train_start=20151001
@@ -105,25 +105,29 @@ predict_and_write() {
     # predict_and_measure {old,new} package_classifier validation_start_date
     pref=$1; clf=$2; valid_start=$3
     
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}.txt" --split=0 --timeout=$running_time_file
-    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}.txt" --scorer=$scorer --plain-output`
+    c="${clf}_n10"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"n_neighbors":10, "n_jobs":3}'
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     echo "[$pref] to csv: $out"
-    echo "$pref,$clf,$valid_start,$out" >> "$result_file"
+    echo "$pref,$c,$valid_start,$out" >> "$result_file"
     
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}_wdistance.txt" --split=0 --timeout=$running_time_file --learner-params='{"weights":"distance"}'
-    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}_wdistance.txt" --scorer=$scorer --plain-output`
+    c="${clf}_n13"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"n_neighbors":13,"n_jobs":3}'
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     echo "[$pref] to csv: $out"
-    echo "$pref,$clf,$valid_start,$out" >> "$result_file"
+    echo "$pref,$c,$valid_start,$out" >> "$result_file"
     
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}_n7.txt" --split=0 --timeout=$running_time_file --learner-params='{"n_neighbors":7}'
-    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}_n7.txt" --scorer=$scorer --plain-output`
+    c="${clf}_n16"
+    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"n_neighbors":16,"n_jobs":3}'
+    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
     echo "[$pref] to csv: $out"
-    echo "$pref,$clf,$valid_start,$out" >> "$result_file"
+    echo "$pref,$c,$valid_start,$out" >> "$result_file"
     
-    model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${clf}_l40.txt" --split=0 --timeout=$running_time_file --learner-params='{"leaf_size":40}'
-    out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${clf}_l40.txt" --scorer=$scorer --plain-output`
-    echo "[$pref] to csv: $out"
-    echo "$pref,$clf,$valid_start,$out" >> "$result_file"
+    #c="${clf}"
+    #model --learner=$clf --idcol=id --target=target --train-file="${pref}_train_clf.csv.gz" --scaler=StandardScaler --newdata="${pref}_valid_clf.csv.gz" --predict="${pref}_${c}.txt" --split=0 --timeout=$running_time_file --learner-params='{"leaf_size":40}'
+    #out=`check_prediction --fin="${pref}_valid_clf.csv.gz" --fpred="${pref}_${c}.txt" --scorer=$scorer --plain-output`
+    #echo "[$pref] to csv: $out"
+    #echo "$pref,$c,$valid_start,$out" >> "$result_file"
 }
 
 # ensemble part

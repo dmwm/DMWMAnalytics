@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-
-# file : ensemble_predictions
-
+#pylint: disable=
+"""
+File        : ensemble_predictions.py
+Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
+Description : prepresents package used to ensemble separate predictions
+"""
 from __future__ import print_function
-
-__author__ = "Mantas Briliauskas"
 
 # system modules
 import os
@@ -28,10 +29,13 @@ class OptionParser(object):
             dest="fend", default=".txt", help="Select files only with specific ending, default='.txt'")
         self.parser.add_option("--fout", action="store", type="string",
             dest="fout", default='${fbeg}Ensemble.txt', help="File name to output ensemble result, use ${fbeg} or ${fend} to replace them by --fbeg or --fend respectfully, default='${fbeg}ensemble.txt'")
+        self.parser.add_option("--threshold", action="store", type="float",
+            dest="threshold", default=0.5, help="Threshold to separate positive and negative predictions, default 0.5")
     def options(self):
         return self.parser.parse_args()
 
 def get_file_list(fin, fbeg, fend):
+    "Extracts files using given parameters"
     def find_files(idir, fbeg, fend):
         files = [f for f in os.listdir(idir) \
             if (not fbeg or f.startswith(fbeg)) and (not fend or f.endswith(fend))]
@@ -52,7 +56,8 @@ def get_file_list(fin, fbeg, fend):
         sys.exit(1)
     return filelist
 
-def ensemble_manual(fin, fbeg, fend, fout):
+def ensemble_manual(fin, fbeg, fend, fout, threshold):
+    "Ensembles predictions or probabilities of prediction files"
     filelist = get_file_list(fin, fbeg, fend)
     fout = fout.replace("${fbeg}", fbeg).replace("${fend}", fend)
     if  fout in filelist:
@@ -78,11 +83,12 @@ def ensemble_manual(fin, fbeg, fend, fout):
         n += 1
         if  not all([(lines[0][0] == l[0] and lines[0][1] == l[1]) \
                 for l in lines[1:]]):
-            msg  = "Error in ensemble_predictions: inconsistent data privided. First two columns prediction file must be equal "
-            msg += "in all given files. Mismatching lines: "
+            msg  = "Error in ensemble_predictions: inconsistent data: first two columns in prediction files must be equal "
+            msg += "in all given files. Mismatch: "
             print(msg, lines)
             sys.exit(1)
-        val = round(np.mean([float(line[2]) for line in lines]), 0)
+        xm  = np.mean([float(line[2]) for line in lines])
+        val = 1 if xm >= threshold else 0
         ostream.write(",".join([lines[0][0],lines[0][1],str(val)]) + "\n")
     for i in istreams:
         i.close()
@@ -91,7 +97,7 @@ def ensemble_manual(fin, fbeg, fend, fout):
 def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.options()
-    ensemble_manual(opts.fin, opts.fbeg, opts.fend, opts.fout)
+    ensemble_manual(opts.fin, opts.fbeg, opts.fend, opts.fout, opts.threshold)
 
 if __name__ == '__main__':
     main()

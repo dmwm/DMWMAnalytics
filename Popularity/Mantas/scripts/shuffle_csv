@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-
-# file : file_name
+#pylint: disable=
+"""
+File        : shuffle_csv.py
+Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
+Description : shuffles data in dataframe
+"""
 
 from __future__ import print_function
-
-__author__ = "Mantas Briliauskas"
 
 # system modules
 import os
@@ -28,45 +30,44 @@ class OptionParser(object):
     def options(self):
         return self.parser.parse_args()
 
-def shuffle(data):
-    #print(data.loc[10,:])
-    #adata = data.iloc[np.random.permutation(len(data))]
-    data = data.apply(np.random.permutation)
-    #print(adata.loc[10,:])
-    #exit()
+def shuffle(dfr):
+    "Shuffles the data at random"
+    dfr = dfr.apply(np.random.permutation)
 
-def save_data(data, fout):
-        fstem = '.'.join(fout.split('.')[0:-1])
-        data.to_csv(fstem, index=False)
-        if  fout.endswith('.gz'):
-            check_call(['gzip', '-f ' + fstem])
-        elif fin.endswith('.bz2'):
-            check_call(['bzip2', '-f ' + fstem])
-        elif not fin.endswith('.csv'):
-            print("Error in shuffle_csv: compression %s not supported" % comp)
+def save_data(dfr, fout):
+    "Writes dfr to file"
+    fstem = '.'.join(fout.split('.')[0:-1])
+    data.to_csv(fstem, index=False)
+    if  fout.endswith('.gz'):
+        check_call(['gzip', '-f ' + fstem])
+    elif fin.endswith('.bz2'):
+        check_call(['bzip2', '-f ' + fstem])
+    elif not fin.endswith('.csv'):
+        print("Error in shuffle_csv: compression %s not supported" % comp)
 
 def read_data(fin):
+    "Reads data to dfr"
     if  not os.path.isfile(fin):
         print("ERROR: file %s does not exist" % fin)
         sys.exit(1)
-    xdf  = None
+    dfr  = None
     comp = None
     if  fin.endswith('.gz'):
         comp = 'gzip'
     elif fin.endswith('.bz2'):
         comp = 'bz2'
-    xdf = pd.read_csv(fin, compression=comp)
-    return xdf
+    dfr = pd.read_csv(fin, compression=comp)
+    return dfr
 
 def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.options()
-    data    = read_data(opts.fin)
-    shuffle(data)
+    dfr     = read_data(opts.fin)
+    shuffle(dfr)
     if  opts.fout:
-        save_data(data, opts.fout)
+        save_data(dfr, opts.fout)
     else:
-        save_data(data, opts.fin)
+        save_data(dfr, opts.fin)
 
 if __name__ == '__main__':
     main()

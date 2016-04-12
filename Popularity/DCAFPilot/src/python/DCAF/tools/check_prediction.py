@@ -56,20 +56,21 @@ class OptionParser():
         self.parser.add_option("--plain-output", action="store_true",
             dest="plainout", default=False, help="Output result in comma separated format, default False")
         self.parser.add_option("--tiers-break", action="store_true",
-            dest="tiers_break", default=False, help="Break scores by tiers")
+            dest="tiers_break", default=False, help="Flag to break scores by tiers")
         self.parser.add_option("--tiers-col", action="store", type="string",
-            dest="tiers_col", default="tier", help="Name of tier column for tier break, default 'tier'")
+            dest="tiers_col", default="tier", help="Name of tier column for tier break, default tier")
         self.parser.add_option("--tiers-map", action="store", type="string",
-            dest="tiers_map", default="", help="Mapping file for tier names, default None")
+            dest="tiers_map", default="", help="Mapping file to alias tier ids to tier names, default None")
         self.parser.add_option("--tiers-map-kval", action="store", type="string",
-            dest="tiers_map_kval", default="id,tier", help="Comma separated key and tier column names in mapping file, default 'id,tier'")
+            dest="tiers_map_kval", default="id,tier", help="Columns in mapping file to denote tier id and name, default 'id,tier'")
         self.parser.add_option("--threshold", action="store", type="float",
-            dest="threshold", default=None, help="Threshold for step function to interpret probabilistic prediction as 1 or 0; e.g. 0.5, default=None")
+            dest="threshold", default=None, help="Threshold for probabilistic prediction to step to 1 or 0; e.g. 0.5, default None")
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
 
 def str_to_num(s):
+    "Converts string to number including scientific notation"
     try:
         return int(s)
     except:
@@ -99,13 +100,13 @@ def loader(ifile, target, sep=',', threshold=None):
             arr.append(val)
     return arr
 
-def checker(predictions, y_true, probabilities, scorer, verbose=False, plainout=False, tier=""):
+def checker(predictions, y_true, probabilities, scorer, verbose=False, plainout=False, tier=None):
     "Check our model prediction and dump logloss value"
     if  verbose:
         loss = 0
         tot = 0
-        if  tierflag:
-            print("Predictions for tier : %s" % tier)
+        if  tier:
+            print("Predictions for tier %s       :" % tier)
         for pval, yval in zip(predictions, y_true):
             if  verbose:
                 print("predict value %s, real value %s" % (pval, yval))
@@ -142,12 +143,14 @@ def checker(predictions, y_true, probabilities, scorer, verbose=False, plainout=
             print(plain[:-1])
 
 def get_tiers(dfr, tiers_col, tiers_map, tiers_map_kval, verbose):
-    # returns in same order as in opts.fin file
+    "Extract column of tiers and replace its data by mapping names if provided"
     tiers = dfr.loc[:, tiers_col]
     if  tiers_map:
         mdfr, _ = read_data(tiers_map, verbose, False)
         kcol = tiers_map_kval.split(',')[0]
         vcol = tiers_map_kval.split(',')[1]
+        if  verbose:
+            print("Reading tier mapping file %s, id col: %s, name col: %s" % (tiers_map, kcol, vcol))
         mkeys = mdfr.loc[:, kcol].tolist()
         mvals = mdfr.loc[:, vcol].tolist()
         replc = dict(zip(mkeys, mvals))
@@ -155,8 +158,9 @@ def get_tiers(dfr, tiers_col, tiers_map, tiers_map_kval, verbose):
     return tiers
 
 def dataframe2tiers(tiers, predictions):
+    "Aggregate predictions by tiers"
     data = {}
-    keys = []
+    keys = [] # unique tiers
     for i in xrange(len(tiers)):
         if  tiers[i] in keys:
             data[tiers[i]].append(predictions[i])
@@ -166,14 +170,15 @@ def dataframe2tiers(tiers, predictions):
     return data
 
 def checker_with_tiers(predictions, real_values, probabilities, fin, scorer, tiers_col, tiers_map, tiers_map_kval, plainout, verbose):
+    "Map validation data with tiers extracted from fin and check each tier seprately"
     dfr, _     = read_data(fin, verbose, False)
     tiers      = get_tiers(dfr, tiers_col, tiers_map, tiers_map_kval, verbose)
     tiers_pred = dataframe2tiers(tiers, predictions)
     tiers_real = dataframe2tiers(tiers, real_values)
     tiers_prob = dataframe2tiers(tiers, probabilities)
-    print("tier," + scorer)
+    if  plainout:
+        print("tier," + scorer)
     for tier in sorted(tiers_pred.keys()):
-        # checker(predictions, y_true, scorer, verbose=False, plainout=False, tierflag="")
         checker(tiers_pred[tier], tiers_real[tier], tiers_prob[tier], scorer, verbose, plainout, tier)
 
 def main():
