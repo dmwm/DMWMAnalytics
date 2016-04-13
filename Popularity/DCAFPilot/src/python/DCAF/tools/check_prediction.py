@@ -25,8 +25,7 @@ from sklearn.metrics.scorer import SCORERS
 # package modules
 from DCAF.ml.utils import logloss, rates
 from DCAF.utils.utils import fopen
-from parse_csv import read_data
-
+from DCAF.tools.parse_csv import read_data
 
 class OptionParser():
     def __init__(self, scorers=None):

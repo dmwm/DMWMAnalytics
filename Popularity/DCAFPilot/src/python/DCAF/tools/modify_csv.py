@@ -17,7 +17,7 @@ import optparse
 import StringIO
 
 # package modules
-from parse_csv import read_data
+from DCAF.tools.parse_csv import read_data
 
 class OptionParser(object):
     def __init__(self):
