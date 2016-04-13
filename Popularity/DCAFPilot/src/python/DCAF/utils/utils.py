@@ -102,7 +102,7 @@ def newdate(start_date, step=1):
     month = int(start_date[4:6])
     date = int(start_date[6:8])
     past_date = calendar.timegm(datetime.date(year, month, date).timetuple())
-    return date4unixtstamp(past_date+24*60*60)
+    return date4unixtstamp(past_date+24*60*60*step)
 
 def popdb_date(tstamp):
     "Return date in popDB format YYYY-M-D"
