@@ -67,7 +67,7 @@ def merger(fin, fout, verbose=False):
             filelist = [f for f in files(fin, ext)]
             if  len(filelist):
                 break
-    elif os.path.filexists(fin):
+    elif os.path.isfile(fin): # we got file name
         filelist = [fin]
     if  not filelist:
         print("ERROR; unable to create filelist from %s" % fin)
