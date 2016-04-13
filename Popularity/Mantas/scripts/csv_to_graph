@@ -4,7 +4,7 @@
 """
 File        : csv_to_graph.py
 Author      : Mantas Briliauskas <mbriliauskas AT gmail dot com>
-Description : package for plotting of model verification results
+Description : package for plotting model verification results
 """
 
 from __future__ import print_function
@@ -19,6 +19,7 @@ import datetime
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib.dates import date2num
+from matplotlib.pyplot import cm
 
 # package modules
 from DCAF.utils.utils import fopen
@@ -36,12 +37,18 @@ class OptionParser(object):
             dest="fout", default="graph.png", help="File name to store graph, default graph.png")
         self.parser.add_option("--timein", action="store", type="string",
             dest="timein", default=None, help="File name of models running time, *.csv, default None")
-        self.parser.add_option("--dlabels", action="store", type="int",
-            dest="dlabels", default=1, help="Option to display data labels, 0 for no, default 1")
+        self.parser.add_option("--labels", action="store", type="int",
+            dest="labels", default=1, help="Option to display data labels, 0 for no, default 1")
+        self.parser.add_option("--x-eq", action="store_true",
+            dest="xeq", help="Flag to equalize step for x axis")
+        self.parser.add_option("--leg", action="store", type="int",
+            dest="leg", default=None, help="If data is dense, show legend for particular graph only. Provide id from 0, default None")
+        self.parser.add_option("--col-rb", action="store_true",
+            dest="colrb", help="Use rainbow colors")
     def options(self):
         return self.parser.parse_args()
 
-def plot(data, dates, fout, rundata, dlabels):
+def plot(data, dates, fout, rundata, labels, xeq, leg, colrb):
     "Plots data according the dates"
     if len(data) == 0:
         print("Error: no data provided.")
@@ -57,28 +64,36 @@ def plot(data, dates, fout, rundata, dlabels):
     matplotlib.rcParams.update({'font.size': 10})
     fig = plt.figure(figsize=(15,10)) if rundata else plt.figure(figsize=(10,10))
     fig.subplots_adjust(wspace=0.3, hspace=0.8)
+    c   = None
     for dftype in sorted(data.keys(), reverse=True):
-        # load dates - new and old data may support different ones
-        x = [date2num(datetime.datetime.strptime(str(d), "%Y%m%d")) for d in dates[dftype]]
-        # subplot for every scorer
+        if  xeq:
+            x = np.arange(len(dates[dftype]))
+        else:
+            # load dates - new and old data may provide differently
+            x = [date2num(datetime.datetime.strptime(str(d), "%Y%m%d")) for d in dates[dftype]]
+        # subplot every scorer
         for s in data[dftype]:
-            ni += 1
+            if  colrb:
+                col = iter(cm.rainbow(np.linspace(0,1,len(data[dftype][s]))))
             pls = []
             lab = []
+            ni  += 1
             if  rundata:
                 g = fig.add_subplot(ny, nx, ni+ni/nx)
             else:
                 g = fig.add_subplot(ny, nx, ni)
-            # plot for every classifier
+            # graph every classifier
             for clf in data[dftype][s]:
                 y = data[dftype][s][clf]
                 if  len(dates[dftype]) != len(y):
                     print("Error: misaligned data for classifier %s:" % clf)
                     print("Expected %d datapoints vs %d provided" % (len(dates[dftype]), len(y)))
                     sys.exit(1)
-                plot, = g.plot_date(x=x, y=y, label=clf, fmt="-", marker='o')
-                if  dlabels:
-                    # do not display labels below 0.10 and above 0.90
+                if  colrb:
+                    c = next(col)
+                plot, = g.plot_date(x=x, y=y, label=clf, fmt="-", color=c, marker='o')
+                if  labels:
+                    # display labels between 0.10 and 0.90
                     for i, yv in enumerate(y):
                         g.annotate("(%.2f%%)" % (yv*100) \
                             if  yv<=0.90 and yv>=0.10 else "", xy=(x[i],yv), textcoords='data')
@@ -92,18 +107,20 @@ def plot(data, dates, fout, rundata, dlabels):
                 pls.append(plot)
                 lab.append("%s (%.2f%%)" % (clf, 100*np.mean(data[dftype][s][clf])))
             # checking avg of data to adjust legend position
-            #ssum = sum([sum(data[dftype][s][clf]) for clf in data[dftype][s]])
-            #snum = sum([len(data[dftype][s][clf]) for clf in data[dftype][s]])
+            ssum = sum([sum(data[dftype][s][clf]) for clf in data[dftype][s]])
+            snum = sum([len(data[dftype][s][clf]) for clf in data[dftype][s]])
             # TODO: adjust left-right also against averages
-            #lloc = 'upper left' if ssum/snum < 0.30 else 'lower right'
-            #if  ni == 2:
-            leg = g.legend(pls, lab, loc='best', prop={'size':8}, fancybox=True)
-            leg.get_frame().set_alpha(0.7)
+            lloc = 'upper left' if ssum/snum < 0.30 else 'lower right'
+            if  not leg or ni == leg:
+                # 'best' loc does not provide best option in this place
+                l = g.legend(pls, lab, loc=lloc, prop={'size':8}, fancybox=True)
+                l.get_frame().set_alpha(0.7)
     # plot of model running time
     if  rundata:
         g = fig.add_subplot(1, nx, nx)
         c = rundata.keys()
         x = np.arange(len(c))
+        # hour scale
         y = [v/3600. for v in rundata.values()]
         if  y:
             g.grid()
@@ -114,11 +131,12 @@ def plot(data, dates, fout, rundata, dlabels):
             ax = g.bar(x, y, width=0.5, align='center', alpha=0.5)
             y_bottom, y_top = g.get_ylim()
             y_height = y_top - y_bottom
-            for i, child in enumerate(g.containers[0].get_children()):
-                h = child.get_y() + child.get_height() + y_height * 0.01
-                g.text(child.get_x() + child.get_width()/2., h,
-                    "(%.2fh)" % y[i],
-                    ha='center', va='bottom')
+            if labels:
+                for i, child in enumerate(g.containers[0].get_children()):
+                    h = child.get_y() + child.get_height() + y_height * 0.01
+                    g.text(child.get_x() + child.get_width()/2., h,
+                        "(%.2fh)" % y[i],
+                        ha='center', va='bottom')
     fig.tight_layout()
     fig.savefig(fout, bbox_inches='tight')
 
@@ -210,7 +228,7 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.options()
     data, dates, rundata = read_data(opts.fin, opts.fbeg, opts.fend, opts.timein)
-    plot(data, dates, opts.fout, rundata, opts.dlabels)
+    plot(data, dates, opts.fout, rundata, opts.labels, opts.xeq, opts.leg, opts.colrb)
 
 if __name__ == '__main__':
     main()
