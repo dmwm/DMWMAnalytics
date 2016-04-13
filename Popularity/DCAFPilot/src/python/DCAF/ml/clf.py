@@ -56,7 +56,7 @@ def learners(clf=None, kwds=None):
     models['GaussianNB'] = GaussianNB()
     models['BernoulliNB'] = BernoulliNB()
     models['SGDClassifier'] = SGDClassifier()
-    models['RidgeClassifier'] = RidgeClassifier()
+    models['RidgeClassifier'] = RidgeClassifier(solver='lsqr')
     models['GradientBoostingClassifier'] = GradientBoostingClassifier()
     models['DecisionTreeClassifier'] = DecisionTreeClassifier()
     models['PCA'] = PCA()
