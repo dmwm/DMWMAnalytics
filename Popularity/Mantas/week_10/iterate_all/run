@@ -12,7 +12,7 @@
 #   until   : there is no data available
 
 # main script settings
-use_log=1
+use_log=0
 use_ensemble=1
 plot_result=0
 
@@ -22,16 +22,16 @@ old_path=/data/srv/state/dcafpilot/analytics/old_data
 new_path=/data/srv/state/dcafpilot/analytics/data
 
 # rolling forecast
-train_start=20150331
-train_end=20151231
-train_max_trail_days=273    #0 for holding merge data start as train_start
-valid_step_days=7           #iteration step
+train_start=20150401
+train_end=20150928
+train_max_trail_days=181    #0 for holding merge data start as train_start
+valid_step_days=91          #iteration step
 valid_step_data_ext=5       #take validation data of period [train_end+1; train_end+1+valid_step_days+valid_step_data_ext]
-valid_end=20170101          #20200101 for until data         
+valid_end=20151201          #20200101 for until data         
 
 # other options
-classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
-#classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "XGBClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
+#classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
+classifiers=("KNeighborsClassifier" "RidgeClassifier" "BaggingClassifier")
 drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
 scorer="tpr,tnr"
 plot_file="graph.png"
@@ -201,9 +201,6 @@ iteration() {
         finished="yes"
     fi
 }
-
-#echo `get_dates_diff 20160101 20160201`
-#exit 0
 
 # prepares result file
 prepare_out_csv $result_file
