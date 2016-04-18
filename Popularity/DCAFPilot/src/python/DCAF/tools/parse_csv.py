@@ -45,7 +45,7 @@ class OptionParser(object):
     def options(self):
         return self.parser.parse_args()
 
-def read_data(fname, verbose, convert_to_num):
+def read_data(fname, verbose=False, convert_to_num=False):
     "Reads data to pandas dataframe, avoiding mixed types warning"
     if  fname is None or not fname:
         msg  = "ERROR in parse_csv. "
