@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-python $root/parse_csv.py "$@"
+# find out where package is installed on a system
+root=`python -c "import DCAF; print '/'.join(DCAF.__file__.split('/')[:-1])"`
+# run actual script
+python $root/tools/parse_csv.py ${1+"$@"}
