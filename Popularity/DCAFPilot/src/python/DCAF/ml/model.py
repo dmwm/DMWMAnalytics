@@ -12,6 +12,7 @@ from __future__ import print_function
 import os
 import sys
 import time
+import glob
 import random
 #import pprint
 #try:
@@ -207,14 +208,31 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
     # new data file for which we want to predict
     if  newdata_file:
         nfiles = []
-        if  not ',' in newdata_file:
+        if  os.path.isfile(newdata_file):
             nfiles = [newdata_file]
         else:
-            if '(id)' not in ofile:
-                print("ERROR in model.py: predict list is provided, but --ofile does not contain '(id)'")
+            def idcheck():
+                if  ofile.find('(id)') == -1:
+                    msg  = "ERROR: since file list for --newdata is provided, "
+                    msg += "--predict has to contain string '(id)', see model --help"
+                    print(msg)
+                    sys.exit(1)
+                else:
+                    return True
+            if newdata_file.find(',') != -1 and idcheck():
+                nfiles = newdata_file.split(',')
+            elif newdata_file.find('*') != -1 and idcheck():
+                nfiles = glob.glob(newdata_file)
+            elif os.path.isdir(newdata_file) and idcheck():
+                for ext in ['.csv.gz', '.csv', 'csv.bz2']:
+                    nfiles = [f for f in findfiles(fin, ext)]
+                    if  not len(nfiles):
+                        print("WARNING: no files to predict in %s" % newdata_file)
+                        return
+            else:
+                print("ERROR: unrecognized input --newdata=%s" % newdata_file)
                 sys.exit(1)
-            nfiles = newdata_file.split(',')
-        for ni, nfile in enumerate(nfiles): # use same model to label list of dataframes
+        for ni, nfile in enumerate(nfiles): # iterate on files to predict
             tdf = read_data(nfile, drops, scaler=scaler)
             if  tcol in tdf.columns:
                 tdf = tdf.drop(tcol, axis=1)
@@ -244,7 +262,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
             out = pd.DataFrame(data=data)
             if  ofile:
-                out.to_csv(ofile.replace("(clf)", learner).replace("(id)", str(ni)), header=True, index=False)
+                out.to_csv(ofile.replace("(learner)", learner).replace("(id)", str(ni)), header=True, index=False)
             if  timeout: # output running time
                 data = {}
                 if  os.path.isfile(timeout): # append if file exists
