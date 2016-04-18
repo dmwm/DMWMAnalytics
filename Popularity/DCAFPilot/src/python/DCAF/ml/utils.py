@@ -136,8 +136,10 @@ class OptionParser(object):
             help="split level for train/validation, default 0.33")
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
+        msg  = "new data file or comma separated file list (then --predict must contain '(id)' "
+        msg += "see --predict description)"
         self.parser.add_option("--newdata", action="store", type="string",
-            default="", dest="newdata", help="new data file or provide comma separated file list (then --predict must contain '(id)' to be replaced by file index). Default None")
+            default="", dest="newdata", help=msg)
         self.parser.add_option("--idx", action="store", type="int",
             default=0, dest="idx",
             help="initial index counter, default 0")
@@ -156,16 +158,23 @@ class OptionParser(object):
         self.parser.add_option("--gsearch", action="store", type="string",
             default=None, dest="gsearch",
             help="perform grid search, gsearch=<parameters>")
-        self.parser.add_option("--predict", action="store", type="string",
-            default=None, dest="predict",
-            help="Prediction file name, default None. Use '(model)' for model name or '(id)' for file number if --newdata contains file list")
+        msg  = "A file to record model running time, default=None. In case a record "
+        msg += "for model in output file exist, running times are sumed and saved. "
+        msg += "To obviate this, delete the file first"
         self.parser.add_option("--timeout", action="store", type="string",
             default=None, dest="timeout",
-            help="A file to record models running time, default=None. In case a record for model in output file exist, running times are sumed. To obviate this, delete the file first")
+            help=msg)
+        msg  = "Prediction file name, default None. If --newdata is file list or "
+        msg += "pattern, provide string '(id)' in it to be replaced by file index, "
+        msg += "also (learner) may be used in order to replace it by learner name, "
+        msg += "e.g. --learner=RidgeClassifier --newdata=file1.csv.gz,file2.csv.gz "
+        msg += "--predict=(learner)_out_(id).txt will form two result files "
+        msg += "RidgeClassifier_out_0.txt and RidgeClassifier_out_1.txt"
+        self.parser.add_option("--predict", action="store", type="string",
+            default=None, dest="predict",
+            help="Prediction file name, default None")
         self.parser.add_option("--proba", action="store_true",
             default=False, dest="proba", help="probabilities prediction mode")
-        #self.parser.add_option("--auc-score", action="store_true",
-         #   default=False, dest="auc", help="Returns area under curve value of ROC for probabilistic classifier")
     def options(self):
         "Returns parse list of options"
         return self.parser.parse_args()
