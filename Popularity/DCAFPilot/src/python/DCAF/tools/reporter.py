@@ -138,7 +138,7 @@ class Reporter(object):
                 line = line.strip(' \r\n').split(',')
                 if  not slist:
                     if  not line[0] == 'tier':
-                        print("Error: first header is not 'tier' in file %s" % clf)
+                        print("Error: first header is not 'tier' in file %s" % f)
                         sys.exit(1)
                     slist = line[1:]
                     continue
