@@ -174,11 +174,15 @@ def checker_with_tiers(predictions, real_values, probabilities, fin, scorer, tie
     tiers      = get_tiers(dfr, tiers_col, tiers_map, tiers_map_kval, verbose)
     tiers_pred = dataframe2tiers(tiers, predictions)
     tiers_real = dataframe2tiers(tiers, real_values)
-    tiers_prob = dataframe2tiers(tiers, probabilities)
+    if  probabilities:
+        tiers_prob = dataframe2tiers(tiers, probabilities)
     if  plainout:
         print("tier," + scorer)
     for tier in sorted(tiers_pred.keys()):
-        checker(tiers_pred[tier], tiers_real[tier], tiers_prob[tier], scorer, verbose, plainout, tier)
+        if  probabilities:
+            checker(tiers_pred[tier], tiers_real[tier], tiers_prob[tier], scorer, verbose, plainout, tier)
+        else:
+            checker(tiers_pred[tier], tiers_real[tier], None, scorer, verbose, plainout, tier)
 
 def main():
     "Main function"
