@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 #pylint: disable=
 """
-File       : DCAF.py
+File       : analytics.py
 Author     : Valentin Kuznetsov <vkuznet AT gmail dot com>
 Description: Generic module to perform various analytics tasks
 """
