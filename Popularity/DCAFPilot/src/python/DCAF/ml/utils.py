@@ -172,7 +172,7 @@ class OptionParser(object):
         msg += "RidgeClassifier_out_0.txt and RidgeClassifier_out_1.txt"
         self.parser.add_option("--predict", action="store", type="string",
             default=None, dest="predict",
-            help="Prediction file name, default None")
+            help=msg)
         self.parser.add_option("--proba", action="store_true",
             default=False, dest="proba", help="probabilities prediction mode")
     def options(self):
