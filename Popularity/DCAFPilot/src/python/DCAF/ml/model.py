@@ -84,6 +84,18 @@ def factorize(col, xdf, sdf=None):
         out.append(dval[val])
     return out
 
+def get_dbs_header(tdf, fname):
+    "Returns DBS header, 'dbs' is in old dataframe, 'dbsinst' in new"
+    dfkeys = tdf.keys()
+    if  'dbsinst' in dfkeys:
+        return 'dbsinst'
+    elif 'dbs' in dfkeys:
+        return 'dbs'
+    else:
+        msg = "ERROR: dbs header in file %s was not found"
+        print(msg % fname)
+        sys.exit(1)
+
 def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         drops=None, split=0.3, scorer=None, scaler=None, ofile=None,
         idx=0, limit=-1,  gsearch=None, crossval=None, seed=123,
@@ -211,28 +223,26 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         if  os.path.isfile(newdata_file):
             nfiles = [newdata_file]
         else:
-            def idcheck():
-                if  ofile.find('(id)') == -1:
-                    msg  = "ERROR: since file list for --newdata is provided, "
-                    msg += "--predict has to contain string '(id)', see model --help"
-                    print(msg)
-                    sys.exit(1)
-                else:
-                    return True
-            if newdata_file.find(',') != -1 and idcheck():
+            if newdata_file.find(',') != -1:
                 nfiles = newdata_file.split(',')
-            elif newdata_file.find('*') != -1 and idcheck():
+            elif newdata_file.find('*') != -1:
                 nfiles = glob.glob(newdata_file)
-            elif os.path.isdir(newdata_file) and idcheck():
+            elif os.path.isdir(newdata_file):
                 for ext in ['.csv.gz', '.csv', 'csv.bz2']:
                     nfiles = [f for f in findfiles(fin, ext)]
-                    if  not len(nfiles):
-                        print("WARNING: no files to predict in %s" % newdata_file)
-                        return
             else:
                 print("ERROR: unrecognized input --newdata=%s" % newdata_file)
                 sys.exit(1)
+            if  not len(nfiles):
+                print("WARNING: no files to predict in %s" % newdata_file)
+                return
+        outfname = None
         for ni, nfile in enumerate(nfiles): # iterate on files to predict
+            if  len(nfiles) > 1:
+                outfname = '%s_%s_%s' % (learner, ofile, ni)
+                print("You provided file list, the output file name %s will be replaced with %s_%s_%s" % (ofile, learner, ofile, ni))
+            else:
+                outfname = ofile
             tdf = read_data(nfile, drops, scaler=scaler)
             if  tcol in tdf.columns:
                 tdf = tdf.drop(tcol, axis=1)
@@ -241,16 +251,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
                 print("Columns:", ','.join(tdf.columns))
                 print("test shapes:", tdf.shape)
             datasets = [int(i) for i in list(tdf['dataset'])]
-            # 20160301 'dbs' header changed to 'dbsinst'
-            dfkeys = tdf.keys()
-            if  'dbsinst' in dfkeys:
-                dbs_h = 'dbsinst'
-            elif 'dbs' in dfkeys:
-                dbs_h = 'dbs'
-            else:
-                msg = "ERROR: file %s does not contain neither 'dbs' nor 'dbsinst' column"
-                print(msg % nfile)
-                sys.exit(1)
+            dbs_h = get_dbs_header(tdf, nfile)
             dbses = [int(i) for i in list(tdf[dbs_h])]
             if  scaler:
                 tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
@@ -259,10 +260,9 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             time0 = time.time()
             predictions = fit.predict(tdf) if not proba else np.asarray(fit.predict_proba(tdf))[:,list(fit.classes_).index(1)]
             rtime += time.time()-time0
-            data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
-            out = pd.DataFrame(data=data)
-            if  ofile:
-                out.to_csv(ofile.replace("(learner)", learner).replace("(id)", str(ni)), header=True, index=False)
+            out = pd.DataFrame({'dataset':datasets, dbs_h: dbses, 'prediction':predictions})
+            if  outfname:
+                out.to_csv(outfname, header=True, index=False)
             if  timeout: # output running time
                 data = {}
                 if  os.path.isfile(timeout): # append if file exists
@@ -353,15 +353,7 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         datasets = [int(i) for i in list(tdf['dataset'])]
-        dfkeys = tdf.keys()
-        if  'dbsinst' in dfkeys:
-            dbs_h = 'dbsinst'
-        elif 'dbs' in dfkeys:
-            dbs_h = 'dbs'
-        else:
-            msg = "ERROR: file %s does not contain neither 'dbs' nor 'dbsinst' column"
-            print(msg % newdata_file)
-            sys.exit(1)
+        dbs_h = get_dbs_header(tdf, newdata_file)
         dbses = [int(i) for i in list(tdf[dbs_h])]
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
