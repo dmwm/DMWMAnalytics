@@ -136,8 +136,7 @@ class OptionParser(object):
             help="split level for train/validation, default 0.33")
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
-        msg  = "new data file or comma separated file list (then --predict must contain '(id)' "
-        msg += "see --predict description)"
+        msg  = "new data file, comma separated file list, or pattern"
         self.parser.add_option("--newdata", action="store", type="string",
             default="", dest="newdata", help=msg)
         self.parser.add_option("--idx", action="store", type="int",
@@ -164,12 +163,9 @@ class OptionParser(object):
         self.parser.add_option("--timeout", action="store", type="string",
             default=None, dest="timeout",
             help=msg)
-        msg  = "Prediction file name, default None. If --newdata is file list or "
-        msg += "pattern, provide string '(id)' in it to be replaced by file index, "
-        msg += "also (learner) may be used in order to replace it by learner name, "
-        msg += "e.g. --learner=RidgeClassifier --newdata=file1.csv.gz,file2.csv.gz "
-        msg += "--predict=(learner)_out_(id).txt will form two result files "
-        msg += "RidgeClassifier_out_0.txt and RidgeClassifier_out_1.txt"
+        msg  = "Prediction output file name, default None. If --newdata is one file,"
+        msg += "it will be used to output prediction, if --newdata is file list, output "
+        msg += "file name will be constructed as learner_singleoutname_index.txt"
         self.parser.add_option("--predict", action="store", type="string",
             default=None, dest="predict",
             help=msg)
