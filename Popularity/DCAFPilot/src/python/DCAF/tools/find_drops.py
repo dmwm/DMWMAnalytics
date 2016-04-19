@@ -40,10 +40,8 @@ def find_drops(file1, file2, idrops=None):
     with fopen(file1) as istream1, fopen(file2) as istream2:
         headers1 = istream1.readline().replace('\n', '').split(',')
         headers2 = istream2.readline().replace('\n', '').split(',')
-        if  len(headers1) > len(headers2):
-            drops = set(headers1)-set(headers2)
-        else:
-            drops = set(headers2)-set(headers1)
+        drops = set(headers1)-set(headers2)
+        drops = drops.union(set(headers2)-set(headers1))
         if  idrops:
             print(','.join(set(list(drops)+idrops.split(','))))
         else:

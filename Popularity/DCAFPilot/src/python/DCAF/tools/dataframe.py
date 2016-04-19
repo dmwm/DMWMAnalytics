@@ -64,6 +64,31 @@ class OptionParser():
         "Return list of options"
         return self.parser.parse_args()
 
+def verify_csv(fout, verbose):
+    err = None
+    try:
+        with fopen(fout, 'r') as istream:
+            nc = len(istream.readline().split(','))
+            while err is not None:
+                line = istream.readline()
+                if  not line:
+                    break
+                if  len(line.split(',')) != nc:
+                    err = 'Number of headers differs from number of data in rows.'
+                    break
+    except IOError:
+        err  = 'IOError raised while reading the file.'
+    except Exception as ex:
+        err  = 'Exception raised while reading: '
+        err += ex + '. Arguments: '
+        err += ex.args + '.'
+    if  err is not None:
+        err  = ("Verification of file %s failed. " % fout) + err
+        print(err)
+    else:
+        if  verbose:
+            print("Verification of %s passed successfully." % fout)
+
 def main():
     "Main function"
     optmgr  = OptionParser()
@@ -109,6 +134,7 @@ def main():
     if  opts.verbose:
         print("Elapsed time:", datetime.timedelta(seconds=(time.time()-time0)))
         print(time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime()))
+    verify_csv(fout, opts.verbose)
 
 if __name__ == '__main__':
     main()

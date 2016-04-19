@@ -12,6 +12,7 @@ from __future__ import print_function
 import itertools
 import optparse
 from math import log, exp
+from sklearn import metrics
 
 # B. Bounded logloss
 # INPUT:
@@ -135,8 +136,9 @@ class OptionParser(object):
             help="split level for train/validation, default 0.33")
         self.parser.add_option("--train-file", action="store", type="string",
             default="train.csv", dest="train", help="train file, default train.csv")
+        msg  = "new data file, comma separated file list, or pattern"
         self.parser.add_option("--newdata", action="store", type="string",
-            default="", dest="newdata", help="new data file, default None")
+            default="", dest="newdata", help=msg)
         self.parser.add_option("--idx", action="store", type="int",
             default=0, dest="idx",
             help="initial index counter, default 0")
@@ -155,19 +157,31 @@ class OptionParser(object):
         self.parser.add_option("--gsearch", action="store", type="string",
             default=None, dest="gsearch",
             help="perform grid search, gsearch=<parameters>")
+        msg  = "A file to record model running time, default=None. In case a record "
+        msg += "for model in output file exist, running times are sumed and saved. "
+        msg += "To obviate this, delete the file first"
+        self.parser.add_option("--timeout", action="store", type="string",
+            default=None, dest="timeout",
+            help=msg)
+        msg  = "Prediction output file name, default None. If --newdata is one file,"
+        msg += "it will be used to output prediction, if --newdata is file list, output "
+        msg += "file name will be constructed as learner_singleoutname_index.txt"
         self.parser.add_option("--predict", action="store", type="string",
             default=None, dest="predict",
-            help="Prediction file name, default None")
+            help=msg)
+        self.parser.add_option("--proba", action="store_true",
+            default=False, dest="proba", help="probabilities prediction mode")
     def options(self):
         "Returns parse list of options"
         return self.parser.parse_args()
 
-def rates(y_true, predictions):
-    "Return TP/TN/FP/FN TPR/TNR/FPR/FNR rates for given vectors"
+def rates(y_true, predictions, probs=False):
+    "Return TP/TN/FP/FN TPR/TNR/FPR/FNR/AUC rates for given vectors"
     tp = 0
     tn = 0
     fp = 0
     fn = 0
+    auc = "N/A"
     for lhs, rhs in itertools.izip(y_true, predictions):
         if  lhs == rhs:
             if  lhs == 1:
@@ -195,4 +209,7 @@ def rates(y_true, predictions):
         fnr = float(fn)/(fn+tp)
     except:
         fnr = 0
-    return dict(tp=tp, tn=tn, fp=fp, fn=fn, tpr=tpr, tnr=tnr, fpr=fpr, fnr=fnr)
+    if  probs:
+        xfpr, xtpr, thresholds = metrics.roc_curve(y_true, probs, pos_label=1)
+        auc = metrics.auc(xfpr,xtpr)
+    return dict(tp=tp, tn=tn, fp=fp, fn=fn, tpr=tpr, tnr=tnr, fpr=fpr, fnr=fnr, auc=auc)

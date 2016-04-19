@@ -12,6 +12,7 @@ from __future__ import print_function
 import os
 import sys
 import time
+import glob
 import random
 #import pprint
 #try:
@@ -83,16 +84,30 @@ def factorize(col, xdf, sdf=None):
         out.append(dval[val])
     return out
 
+def get_dbs_header(tdf, fname):
+    "Returns DBS header, 'dbs' is in old dataframe, 'dbsinst' in new"
+    dfkeys = tdf.keys()
+    if  'dbsinst' in dfkeys:
+        return 'dbsinst'
+    elif 'dbs' in dfkeys:
+        return 'dbs'
+    else:
+        msg = "ERROR: dbs header in file %s was not found"
+        print(msg % fname)
+        sys.exit(1)
+
 def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
-        drops=None, split=0.3, scorer=None,
-        scaler=None, ofile=None, idx=0, limit=-1,
-        gsearch=None, crossval=None, seed=123, verbose=False):
+        drops=None, split=0.3, scorer=None, scaler=None, ofile=None,
+        idx=0, limit=-1,  gsearch=None, crossval=None, seed=123,
+        verbose=False, timeout=None, proba=False):
     """
     Build and run ML algorihtm for given train/test dataframe
     and classifier name. The learners are defined externally
     in DCAF.ml.clf module.
     """
     clf = learners()[learner]
+    if  proba and not (hasattr(clf, 'predict_proba') and callable(getattr(clf, 'predict_proba'))):
+        raise Exception("ERROR: model %s does not provide method 'predict_proba'" % learner)
     if  lparams:
         if  isinstance(lparams, str):
             lparams = json.loads(lparams)
@@ -158,10 +173,16 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         x_train = getattr(preprocessing, scaler)().fit_transform(x_train)
     time0 = time.time()
     fit = clf.fit(x_train, y_train)
+    rtime = time.time()-time0
     if  verbose:
         print("Train elapsed time", time.time()-time0)
     if  split:
+        if  proba:
+            print("ERROR in model.py: probabilities not supported in split mode")
+            sys.exit(1)
+        time0 = time.time()
         predictions = fit.predict(x_rest)
+        rtime += time.time()-time0
         try:
             importances = clf.feature_importances_
             if  importances.any():
@@ -198,24 +219,72 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
 
     # new data file for which we want to predict
     if  newdata_file:
-        tdf = read_data(newdata_file, drops, scaler=scaler)
-        if  tcol in tdf.columns:
-            tdf = tdf.drop(tcol, axis=1)
-        if  verbose:
-            print("New data file", newdata_file)
-            print("Columns:", ','.join(tdf.columns))
-            print("test shapes:", tdf.shape)
-        datasets = [int(i) for i in list(tdf['dataset'])]
-        #20160301 'dbs' header changed to 'dbsinst'
-        dbs_h = 'dbsinst' if 'dbsinst' in tdf.keys() else 'dbs'
-        dbses = [int(i) for i in list(tdf[dbs_h])]
-        if  scaler:
-            tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
-        predictions = fit.predict(tdf)
-        data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
-        out = pd.DataFrame(data=data)
-        if  ofile:
-            out.to_csv(ofile, header=True, index=False)
+        nfiles = []
+        if  os.path.isfile(newdata_file):
+            nfiles = [newdata_file]
+        else:
+            if newdata_file.find(',') != -1:
+                nfiles = newdata_file.split(',')
+            elif newdata_file.find('*') != -1:
+                nfiles = glob.glob(newdata_file)
+            elif os.path.isdir(newdata_file):
+                for ext in ['.csv.gz', '.csv', 'csv.bz2']:
+                    nfiles = [f for f in findfiles(fin, ext)]
+            else:
+                print("ERROR: unrecognized input --newdata=%s" % newdata_file)
+                sys.exit(1)
+            if  not len(nfiles):
+                print("WARNING: no files to predict in %s" % newdata_file)
+                return
+        outfname = None
+        for ni, nfile in enumerate(nfiles): # iterate on files to predict
+            if  len(nfiles) > 1:
+                outfname = '%s_%s_%s' % (learner, ofile, ni)
+                print("You provided file list, the output file name %s will be replaced with %s_%s_%s" % (ofile, learner, ofile, ni))
+            else:
+                outfname = ofile
+            tdf = read_data(nfile, drops, scaler=scaler)
+            if  tcol in tdf.columns:
+                tdf = tdf.drop(tcol, axis=1)
+            if  verbose:
+                print("New data file", nfile)
+                print("Columns:", ','.join(tdf.columns))
+                print("test shapes:", tdf.shape)
+            datasets = [int(i) for i in list(tdf['dataset'])]
+            dbs_h = get_dbs_header(tdf, nfile)
+            dbses = [int(i) for i in list(tdf[dbs_h])]
+            if  scaler:
+                tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
+            if  verbose:
+                print(tdf)
+            time0 = time.time()
+            predictions = fit.predict(tdf) if not proba else np.asarray(fit.predict_proba(tdf))[:,list(fit.classes_).index(1)]
+            rtime += time.time()-time0
+            out = pd.DataFrame({'dataset':datasets, dbs_h: dbses, 'prediction':predictions})
+            if  outfname:
+                out.to_csv(outfname, header=True, index=False)
+            if  timeout: # output running time
+                data = {}
+                if  os.path.isfile(timeout): # append if file exists
+                    headers = []
+                    for line in open(timeout, 'r'):
+                        line = line.strip(" \r\n").split(',')
+                        if  not headers:
+                            headers = line
+                            if  line[0] != 'model' or line[1] != 'running_time_s':
+                                print("Error writing model running time to %s: unrecognized output file found." % timeout)
+                            continue
+                        else:
+                            data[line[0]] = float(line[1])
+                if  learner in data:
+                    data[learner] += rtime
+                else:
+                    data[learner] = rtime
+                fstream = open(timeout, 'w')
+                fstream.write("model,running_time_s\n")
+                for key in sorted(data.keys()):
+                    fstream.write("%s,%.3f\n" % (key,data[key]))
+                fstream.close()
 
 def model_iter(train_file_list, newdata_file, idcol, tcol,
     learner, lparams=None, drops=None, split=0.1, scaler=None, ofile=None, seed=123, verbose=False):
@@ -284,7 +353,7 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         if  tcol in tdf.columns:
             tdf = tdf.drop(tcol, axis=1)
         datasets = [int(i) for i in list(tdf['dataset'])]
-        dbs_h = 'dbsinst' if 'dbsinst' in tdf.keys() else 'dbs'
+        dbs_h = get_dbs_header(tdf, newdata_file)
         dbses = [int(i) for i in list(tdf[dbs_h])]
         if  scaler:
             tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
@@ -331,7 +400,8 @@ def main():
                 drops=opts.drops, split=opts.split,
                 scorer=opts.scorer, scaler=opts.scaler, ofile=ofile,
                 idx=opts.idx, limit=opts.limit, gsearch=opts.gsearch,
-                crossval=opts.cv, seed=opts.seed, verbose=opts.verbose)
+                crossval=opts.cv, seed=opts.seed, verbose=opts.verbose,
+                timeout=opts.timeout, proba=opts.proba)
 
 if __name__ == '__main__':
     main()

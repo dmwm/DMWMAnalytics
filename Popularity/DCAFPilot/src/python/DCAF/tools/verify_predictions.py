@@ -29,6 +29,15 @@ class OptionParser():
             dest="oformat", default="", help="Output format, plain or csv, default plain")
         self.parser.add_option("--verbose", action="store", type="int",
             dest="verbose", default=False, help="verbose mode")
+        msg  = "Column of --popdb used in evaluation of popular database, "
+        msg += "default None - no additional filtering will be used"
+        self.parser.add_option("--target", action="store", type="string",
+            dest="target", default=None, help=msg)
+        msg  = "Value to determine popular databases, used with --target value,"
+        msg += "e.g. --target=naccess --target-thr=10, records holding naccess>10 "
+        msg += "will be evaluated as popular"
+        self.parser.add_option("--target-thr", action="store", type="float",
+            dest="thr", default=None, help=msg)
     def get_opt(self):
         "Return list of options"
         return self.parser.parse_args()
@@ -129,7 +138,7 @@ def classify_all(tplist, tnlist, fplist, fnlist):
         print('%s %s %6.2f %6.2f %6.2f %6.2f' % (tier, pad, tp, tn, fp, fn))
     print()
 
-def verify_prediction(pred, popdb, oformat, verbose=0):
+def verify_prediction(pred, popdb, oformat, verbose, target, thr):
     "Verify prediction file against popdb one"
     pdict = read_popdb(popdb)
     total = 0
@@ -143,12 +152,14 @@ def verify_prediction(pred, popdb, oformat, verbose=0):
     tn_list = []
     fp_list = []
     fn_list = []
+    def is_popular(dataset, pdict):
+        return (target is None or float(pdict[dataset][target]) > thr)
     for line in fopen(pred, 'r').readlines():
         prob, dataset = line.replace('\n', '').split(',')
         total += 1
         if  float(prob)>0:
             popular += 1
-        if  dataset in pdict:
+        if  dataset in pdict and is_popular(dataset, pdict):
             totpop += 1
             if  float(prob)>0:
                 tpos += 1
@@ -228,7 +239,7 @@ def verify_prediction(pred, popdb, oformat, verbose=0):
 def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
-    verify_prediction(opts.pred, opts.popdb, opts.oformat, opts.verbose)
-
+    verify_prediction(opts.pred, opts.popdb, opts.oformat, opts.verbose,
+        opts.target, opts.thr)
 if __name__ == '__main__':
     main()
