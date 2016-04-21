@@ -4,7 +4,7 @@
 """
 File        : shuffle_csv.py
 Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
-Description : data shuffling in dataframe
+Description : shuffles data in dataframe
 """
 
 from __future__ import print_function
@@ -32,16 +32,16 @@ class OptionParser(object):
 
 def shuffle(dfr):
     "Shuffles the data at random"
-    dfr = dfr.apply(np.random.permutation)
+    return dfr.apply(np.random.permutation)
 
 def save_data(dfr, fout):
     "Writes dfr to file"
     fstem = '.'.join(fout.split('.')[0:-1])
-    data.to_csv(fstem, index=False)
+    dfr.to_csv(fstem, index=False)
     if  fout.endswith('.gz'):
-        check_call(['gzip', '-f ' + fstem])
+        check_call(['gzip', '-f', fstem])
     elif fin.endswith('.bz2'):
-        check_call(['bzip2', '-f ' + fstem])
+        check_call(['bzip2', '-f', fstem])
     elif not fin.endswith('.csv'):
         print("Error in shuffle_csv: compression %s not supported" % comp)
 
@@ -63,7 +63,7 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.options()
     dfr     = read_data(opts.fin)
-    shuffle(dfr)
+    dfr     = shuffle(dfr)
     if  opts.fout:
         save_data(dfr, opts.fout)
     else:
