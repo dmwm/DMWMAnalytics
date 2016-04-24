@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# Description: checks differences between headers
+
+msg="Usage: `basename $0` file1.csv.gz file2.csv.gz"
+
+if [[ "$#" -ne 2 ]] || [[ ! $1 =~ .+\.csv\.gz ]]\
+        || [[ ! $2 =~ .+\.csv\.gz$ ]] ; then
+    echo $msg
+    exit 1
+fi
+
+headers() {
+    echo "$( zcat $1 | head -1 | sed s/,/\\n/g )"
+}
+
+f1=head1.tmp
+f2=head2.tmp
+
+echo "$(headers $1)" > $f1
+echo "$(headers $2)" > $f2
+
+diff $f1 $f2
+
+rm $f1 $f2

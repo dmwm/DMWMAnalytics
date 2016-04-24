@@ -57,8 +57,9 @@ class Reporter(object):
         """
         data = self.__read_csv_data(path, fbeg, fend)
         out  = ""
+        beg  = (" ".join(fbeg.split("_"))).capitalize()
         for clf in sorted(data.keys()):
-            title = (" ".join(clf.split("_"))).capitalize()
+            title = beg + (" ".join(clf.split("_"))).capitalize()
             out += self.__pd_table(title, data[clf]['slist'], data[clf]['tlist'], data[clf]['sdata'])
             out += "\n"
         self.__write(out)
@@ -138,7 +139,7 @@ class Reporter(object):
                 line = line.strip(' \r\n').split(',')
                 if  not slist:
                     if  not line[0] == 'tier':
-                        print("Error: first header is not 'tier' in file %s" % clf)
+                        print("Error: first header is not 'tier' in file %s" % f)
                         sys.exit(1)
                     slist = line[1:]
                     continue

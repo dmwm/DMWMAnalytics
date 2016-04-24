@@ -231,7 +231,7 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
                 for ext in ['.csv.gz', '.csv', 'csv.bz2']:
                     nfiles = [f for f in findfiles(fin, ext)]
             else:
-                print("ERROR: unrecognized input --newdata=%s" % newdata_file)
+                print("ERROR: no files found for --newdata=%s" % newdata_file)
                 sys.exit(1)
             if  not len(nfiles):
                 print("WARNING: no files to predict in %s" % newdata_file)
