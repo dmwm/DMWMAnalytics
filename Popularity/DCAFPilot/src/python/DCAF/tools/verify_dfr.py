@@ -4,7 +4,7 @@
 """
 File        : verify_dfr.py
 Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
-Description : compares column summaries of two dataframes
+Description : verifies column summaries of two dataframes, no return if success
 """
 from __future__ import print_function
 

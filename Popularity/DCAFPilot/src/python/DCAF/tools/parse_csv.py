@@ -123,9 +123,12 @@ def __parse_tiers(dfr, col, values, mapping, kval, verbose, convert_to_num):
             print("Mapping key column   : ", mkeycol)
             print("Mapping value column : ", mvalcol)
             print("Extracted mapping    :\n", maps[extr])
+    #print(dfr['id'].mean())
     if  verbose:
         print("Original dataframe size : [%d,%d]" % (dfr.shape[0], dfr.shape[1]))
-    dfr = dfr.loc[dfr[col].isin(values)]
+    dfr = dfr[dfr[col].isin(values)]
+    #print(dfr['id'].mean())
+    #exit()
     if  verbose:
         print("Parsed data size        : [%d,%d]" % (dfr.shape[0], dfr.shape[1]))
     return dfr
