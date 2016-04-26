@@ -32,7 +32,8 @@ class OptionParser(object):
 
 def shuffle(dfr):
     "Shuffles the data at random"
-    return dfr.apply(np.random.permutation)
+    dfr.reindex(np.random.permutation(dfr.index), axis=0)
+    return dfr
 
 def save_data(dfr, fout):
     "Writes dfr to file"
