@@ -51,6 +51,7 @@ def learners(clf=None, kwds=None):
     models['LinearSVC'] = svm.LinearSVC()
     models['SVC'] = svm.SVC()
     models['KNeighborsClassifier'] = KNeighborsClassifier()
+    models['KNeighborsClassifier'].n_jobs = 8
     models['RandomForestClassifier'] = RandomForestClassifier()
     models['ExtraTreesClassifier'] = ExtraTreesClassifier()
     models['GaussianNB'] = GaussianNB()

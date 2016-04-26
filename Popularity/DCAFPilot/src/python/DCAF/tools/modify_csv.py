@@ -4,7 +4,7 @@
 """
 File        : modify_csv.py
 Author      : Mantas Briliauskas <m dot briliauskas AT gmail dot com>
-Description : represents dataframe modification procedures
+Description : represents dataframe modification options
 """
 from __future__ import print_function
 
