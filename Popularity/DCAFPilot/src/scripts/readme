@@ -1,0 +1,111 @@
+==============================================
+|1| Single prediction for 2016 first two weeks
+==============================================
+1. Copy single.sh and single_report.py to your directory dir1
+2. Clear *.pred files from <dir1>
+3. Run <dir1>/single.sh with settings:
+ - data: old, new (in bash ("old" "new"))
+ - train_start          : 20150101
+ - train_end            : 20151231   (for use of 2015 as training period)
+ - valid_start          : 20160101
+ - valid_end            : 20160120   (for use of 2016 first two weeks for validation)
+4. After finish under <dir1> run ./single_report.py (default text inside)
+5. Use report.rep.
+
+=================================
+|2| Rolling forecast for the 2016
+=================================
+1. Copy roll2.sh to your directory dir1
+2. Run <dir1>/roll2.sh with settings:
+ - data: old, new (in bash ("old" "new"))
+ - train_start          : 20150101
+ - train_end            : 20151231   (for use of 2015 as training period)
+ - train_max_trail_days : 0          (for fixed training period start)
+ - valid_step_days      : 7          (for use of 1 week of validation period)
+ - valid_step_data_ext  : 5          (for prolonging of validation period to catch a weekly dataframe)
+ - valid_end            : 20170101   (for use of all 2016 dataframes)
+3. After finish under the <dir1> run csv_to_graph --fin=result_out.csv --timein=model_running.csv --col-rb
+4. Use graph.png.
+
+NOTE: may be fastened with run in 2 instances under same <dir1> direcory:
+ - run first instance using "old" data and "result_file" set to "old_result_out.csv"
+ - edit same <dir1>/roll2.sh and run second instance using "new" data and "result_file" set to "new_result_out.csv"
+ - after finish, combine both result files to "result_out.csv"
+ - continue with step 3
+
+======================================
+|3| Rolling forecast for the 2013-2016
+======================================
+1. Copy roll2.sh two times to two different directories dir1 and dir2
+2. Run <dir1>/roll2.sh with settings:
+ - data: old
+ - train_start          : 20130101
+ - train_end            : 20130930   (for use of 9 months training period)
+ - train_max_trail_days : 272        (for use of 9 months training period)
+ - valid_step_days      : 91         (for use of 3 months of validation period)
+ - valid_step_data_ext  : 5          (making sure not to miss any dataframes)
+ - valid_end            : 20160101
+3. In parallel run <dir2>/roll2.sh with settings:
+ - data: old
+ - train_start          : 20150401
+ - train_end            : 20151231   (for use of 9 months training period)
+ - train_max_trail_days : 272        (for use of 9 months training period)
+ - valid_step_days      : 7          (for use of 1 week of validation period)
+ - valid_step_data_ext  : 5          (making sure not to miss any dataframes)
+ - valid_end            : 20170101   (use all 2016 dataframes)
+4. After both finish combain <dir1>/result_out.csv and <dir2>/result_out.csv to <any>/result.csv
+5. Using pandas sum <dir1>/model_running.csv and <dir2>/model_running.csv to <any>/running.csv
+6. Under the <any> run csv_to_graph --fin=result.csv --timein=running.csv --x-eq --col-rb
+7. Use graph.png.
+
+==================================
+|4| Prediction using filtered data
+==================================
+1. Copy filtered.sh and filtered_report.py to your directory dir1
+2. Clear *.pred files from <dir1>
+3. Run <dir1>/filtered.sh with settings:
+ - output_tiers : 0
+ - use_ensemble : 1 (if relevant)
+ - tiers        : "AOD,AODSIM,MINIAOD,MINIAODSIM,USER" (or different)
+4. After finish under <dir1> run ./filtered_report.py (default text inside)
+5. Use report.rep.
+
+========================================================
+|5| Prediction using filtered data and tier-break output
+========================================================
+1. Copy files to your directory dir1:
+ - filtered.sh
+ - filtered_report_tier.py
+ - old_tiers.txt
+ - new_tiers.txt
+2. Clear *.pred files from <dir1>
+3. Run <dir1>/filtered.sh with settings:
+ - output_tiers : 1
+ - use_ensemble : 1 (if relevant)
+ - tiers        : "AOD,AODSIM,MINIAOD,MINIAODSIM,USER" (or different)
+4. After finish under <dir1> run ./filtered_report_tier.py (default text inside)
+5. Use report.rep.
+
+=======================================
+|6| Plot ROC AUC scores using 2016 data
+=======================================
+1. Copy roll2.sh to your directory dir1
+2. Run <dir1>/roll2.sh with settings:
+ - data: old, new (in bash ("old" "new"))
+ - train_start          : 20150101
+ - train_end            : 20151231   (for use of 2015 as training period)
+ - train_max_trail_days : 0          (for fixed training period start)
+ - valid_step_days      : 7          (for use of 1 week of validation period)
+ - valid_step_data_ext  : 5          (for prolonging of validation period to catch a weekly dataframe)
+ - valid_end            : 20170101   (for use of all 2016 dataframes)
+ - scorer               : "tpr,tnr,auc"
+ - in line 131          : add to run model with --proba
+ - in line 132          : add to run check_prediction with --threshold=0.5
+3. After finish under the <dir1> run csv_to_graph --fin=result_out.csv --timein=model_running.csv --col-rb
+4. Use graph.png.
+
+NOTE: may be fastened with run in 2 instances under same <dir1> direcory:
+ - run first instance using "old" data and "result_file" set to "old_result_out.csv"
+ - edit same <dir1>/roll2.sh and run second instance using "new" data and "result_file" set to "new_result_out.csv"
+ - after finish, combine both result files to "result_out.csv"
+ - continue with step 3
