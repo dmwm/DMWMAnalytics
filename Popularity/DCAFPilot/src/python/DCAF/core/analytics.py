@@ -178,10 +178,18 @@ class DCAF(object):
                 summary = self.dbs.dataset_summary(dataset, dbsinst)
                 dashboard = self.dashboard.dataset_info(dataset, timeframe[0], timeframe[1])
             nrels = len(releases)
-            series = rtypes['series']
-            majors = rtypes['majors']
-            minors = rtypes['minors']
-            relclf = rtypes['rtypes']
+            series = {}
+            for k in rtypes['series'].keys():
+                series[k] = 0
+            majors = {}
+            for k in rtypes['majors'].keys():
+                majors[k] = 0
+            minors = {}
+            for k in rtypes['minors'].keys():
+                minors[k] = 0
+            relclf = {}
+            for k in rtypes['rtypes'].keys():
+                relclf[k] = 0
             for rel in releases:
                 rserie, rmajor, rminor = rel_ver(rel)
                 if  not cmssw_test(rserie, rmajor, rminor):
