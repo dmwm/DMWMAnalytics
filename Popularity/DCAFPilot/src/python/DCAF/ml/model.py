@@ -29,6 +29,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn import preprocessing
 from sklearn.metrics.scorer import SCORERS
 from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import Pipeline
 from sklearn import metrics
 
 # local modules
@@ -61,8 +62,11 @@ def read_data(fname, drops=[], idx=0, limit=-1, scaler=None):
     # fill NAs
     xdf = xdf.fillna(0)
     # drop fields
-    if  drops:
-        xdf = xdf.drop(drops, axis=1)
+    todrop = list(set(drops)&set(xdf.columns.tolist()))
+    if  todrop:
+        xdf = xdf.drop(todrop, axis=1)
+#     if  drops:
+#         xdf = xdf.drop(drops, axis=1)
     # drop duplicates
 #    xdf = xdf.drop_duplicates(take_last=True, inplace=False)
     if  limit > -1:
@@ -119,6 +123,8 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             setattr(clf, key, val)
     setattr(clf, "random_state", seed)
     random.seed(seed)
+    if  scaler:
+        clf = Pipeline([('scaler',getattr(preprocessing, scaler)()), ('clf', clf)])
     print(clf)
     if  split:
         if  isinstance(split, int):
@@ -169,8 +175,6 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
         crossvalidation(clf, xdf, target)
         sys.exit(0)
 
-    if  scaler:
-        x_train = getattr(preprocessing, scaler)().fit_transform(x_train)
     time0 = time.time()
     fit = clf.fit(x_train, y_train)
     rtime = time.time()-time0
@@ -253,8 +257,6 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
             datasets = [int(i) for i in list(tdf['dataset'])]
             dbs_h = get_dbs_header(tdf, nfile)
             dbses = [int(i) for i in list(tdf[dbs_h])]
-            if  scaler:
-                tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
             if  verbose:
                 print(tdf)
             time0 = time.time()
@@ -307,6 +309,8 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
             raise Exception('Invalid data type for lparams="%s", type: %s' % (lparams, type(lparams)))
         for key, val in lparams.items():
             setattr(clf, key, val)
+    if  scaler:
+        clf = Pipeline([('scaler',getattr(preprocessing, scaler)()), ('clf', clf)])
     print("clf:", clf)
 
     if  drops:
@@ -329,8 +333,6 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
             print("Columns:", ','.join(xdf.columns))
             print("Target:", target)
 
-        if  scaler:
-            xdf = getattr(preprocessing, scaler)().fit_transform(xdf)
         if  split:
             x_train, x_rest, y_train, y_rest = \
                     train_test_split(xdf, target, test_size=0.1, random_state=seed)
@@ -355,8 +357,6 @@ def model_iter(train_file_list, newdata_file, idcol, tcol,
         datasets = [int(i) for i in list(tdf['dataset'])]
         dbs_h = get_dbs_header(tdf, newdata_file)
         dbses = [int(i) for i in list(tdf[dbs_h])]
-        if  scaler:
-            tdf = getattr(preprocessing, scaler)().fit_transform(tdf)
         predictions = fit.predict_proba(tdf)
         data = {'dataset':datasets, dbs_h: dbses, 'prediction':predictions}
         out = pd.DataFrame(data=data)
