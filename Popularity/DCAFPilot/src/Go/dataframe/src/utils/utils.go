@@ -189,7 +189,16 @@ func hexdec(s string) uint64 {
 		}
 		d = (16 * d) + d1
 	}
-	return d
+	return newrange(d)
+}
+
+func newrange(v uint64) uint64 {
+	oldMin := uint64(0)
+	oldMax := uint64(2 << 31)
+	newMax := uint64(2<<63 - 1)
+	newMin := uint64(0)
+	newVal := (((v - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
+	return uint64(newVal)
 }
 
 // helper function to increment dict value

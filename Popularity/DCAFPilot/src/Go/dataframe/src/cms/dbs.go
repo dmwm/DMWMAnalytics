@@ -9,6 +9,7 @@ package cms
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 	"utils"
 )
@@ -101,18 +102,27 @@ func datasetReleases(dataset string, ch chan Record) {
 	series := make(map[string]int)
 	majors := make(map[string]int)
 	minors := make(map[string]int)
+	var totFull, totPatch, totPre int
 	for _, drec := range records {
 		val := drec["release_version"]
 		if val == nil {
 			continue
 		}
 		for _, ver := range val.([]interface{}) {
-			arr := strings.Split(ver.(string), "_") // CMSSW_X_Y_Z_...
+			rel := ver.(string)
+			arr := strings.Split(rel, "_") // CMSSW_X_Y_Z_...
 			if len(arr) >= 4 {
-				utils.IncDictValue(&series, arr[1]) // series number X
-				utils.IncDictValue(&majors, arr[2]) // majors number Y
-				utils.IncDictValue(&minors, arr[3]) // minors number Z
+				series[arr[1]] = 1 // series number X
+				majors[arr[2]] = 1 // majors number Y
+				minors[arr[3]] = 1 // minors number Z
+				//                 utils.IncDictValue(&series, arr[1]) // series number X
+				//                 utils.IncDictValue(&majors, arr[2]) // majors number Y
+				//                 utils.IncDictValue(&minors, arr[3]) // minors number Z
 			}
+			full, patch, pre := relType(rel)
+			totFull += full
+			totPatch += patch
+			totPre += pre
 		}
 	}
 	rec := make(Record)
@@ -125,7 +135,30 @@ func datasetReleases(dataset string, ch chan Record) {
 	for k, v := range minors {
 		rec[fmt.Sprintf("rel3_%s", k)] = v
 	}
+	rec[fmt.Sprintf("relt_0")] = totFull
+	rec[fmt.Sprintf("relt_1")] = totPatch
+	rec[fmt.Sprintf("relt_2")] = totPre
 	ch <- rec
+}
+
+// helper function to determine release type
+func relType(rel string) (int, int, int) {
+	full := 1
+	var patch, pre int
+	match, err := regexp.MatchString("_patch", rel)
+	if err != nil {
+		return 0, 0, 0
+	}
+	if match {
+		patch = 1
+		full = 0
+	}
+	match, err = regexp.MatchString("_pre", rel)
+	if match {
+		pre = 1
+		full = 0
+	}
+	return full, patch, pre
 }
 
 // helper function to get release information about dataset
