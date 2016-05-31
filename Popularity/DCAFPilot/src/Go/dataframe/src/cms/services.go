@@ -8,8 +8,8 @@ package cms
 
 import "fmt"
 
-func dbsInstances() Record {
-	return Record{"prod/global": 0, "prod/phys01": 1, "prod/phys02": 2, "prod/phys03": 3}
+func dbsInstances() []string {
+	return []string{"prod/global", "prod/phys01", "prod/phys02", "prod/phys03"}
 }
 func dbsUrl(dbsinst string) string {
 	return fmt.Sprintf("https://cmsweb.cern.ch/dbs/%s/DBSReader", dbsinst)

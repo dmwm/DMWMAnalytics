@@ -24,7 +24,7 @@ func GenerateMap(datamap, fout string) {
 	utils.TestEnv()
 	var names []string
 	var records []Record
-	for dbsinst, dbsId := range dbsInstances() {
+	for dbsId, dbsinst := range dbsInstances() {
 		if datamap == "dataset" || datamap == "datasets" {
 			names = dbsDatasets(dbsinst)
 		} else if datamap == "tier" || datamap == "tiers" {

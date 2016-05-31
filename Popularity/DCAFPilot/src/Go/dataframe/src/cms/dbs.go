@@ -9,6 +9,7 @@ package cms
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"regexp"
 	"strings"
 	"utils"
@@ -32,7 +33,7 @@ func loadDBSData(furl string, data []byte) []Record {
 func dbsTiers(dbsinst string) []string {
 	var tiers []string
 	api := "datatiers"
-	for dbsinst, _ := range dbsInstances() {
+	for _, dbsinst := range dbsInstances() {
 		furl := fmt.Sprintf("%s/%s", dbsUrl(dbsinst), api)
 		response := utils.FetchResponse(furl, "")
 		if response.Error == nil {
@@ -52,7 +53,7 @@ func dbsTiers(dbsinst string) []string {
 func dbsDatasets(dbsinst string) []string {
 	var datasets []string
 	api := "datasets"
-	for dbsinst, _ := range dbsInstances() {
+	for _, dbsinst := range dbsInstances() {
 		furl := fmt.Sprintf("%s/%s", dbsUrl(dbsinst), api)
 		response := utils.FetchResponse(furl, "")
 		if response.Error == nil {
@@ -69,7 +70,7 @@ func dbsDatasets(dbsinst string) []string {
 }
 func allDatasets() Record {
 	rdict := make(Record)
-	for dbsinst, _ := range dbsInstances() {
+	for _, dbsinst := range dbsInstances() {
 		rdict[dbsinst] = dbsDatasets(dbsinst)
 	}
 	return rdict
@@ -81,7 +82,7 @@ func datasetsInTimeWindow(start, stop string) []string {
 	api := "datasets"
 	mint := utils.UnixTime(start)
 	maxt := utils.UnixTime(stop)
-	for dbsinst, _ := range dbsInstances() {
+	for _, dbsinst := range dbsInstances() {
 		furl := fmt.Sprintf("%s/%s/?min_cdate=%d&max_cdate=%d&dataset_access_type=VALID", dbsUrl(dbsinst), api, mint, maxt)
 		response := utils.FetchResponse(furl, "")
 		if response.Error == nil {
@@ -138,6 +139,7 @@ func datasetReleases(dataset string, ch chan Record) {
 	rec[fmt.Sprintf("relt_0")] = totFull
 	rec[fmt.Sprintf("relt_1")] = totPatch
 	rec[fmt.Sprintf("relt_2")] = totPre
+	rec["nrel"] = len(records)
 	ch <- rec
 }
 
@@ -165,11 +167,14 @@ func relType(rel string) (int, int, int) {
 func datasetSummary(dataset string, ch chan Record) {
 	api := "filesummaries"
 	records, dbsinst := dbsInfo(dataset, api, "")
-	dbsRec := dbsInstances()
-	dbsId, ok := dbsRec[dbsinst]
-	if !ok {
-		dbsId = -1
+	dbsId := 0
+	for idx, dbs := range dbsInstances() {
+		if dbs == dbsinst {
+			dbsId = idx
+			break
+		}
 	}
+	size_norm := math.Pow(2, 30) // normalization factor for file size
 	for _, rec := range records {
 		if rec != nil {
 			rec["dataset"] = utils.Hash2(dbsinst, dataset)
@@ -178,6 +183,7 @@ func datasetSummary(dataset string, ch chan Record) {
 			rec["procds"] = procds
 			rec["tier"] = tier
 			rec["dbsinst"] = dbsId
+			rec["file_size"] = rec["file_size"].(float64) / size_norm
 			ch <- rec
 			return
 		}
@@ -189,11 +195,11 @@ func datasetSummary(dataset string, ch chan Record) {
 // helper function to get release information about dataset
 func datasetParent(dataset string, ch chan Record) {
 	api := "datasetparents"
-	records, dbsinst := dbsInfo(dataset, api, "")
+	records, _ := dbsInfo(dataset, api, "")
 	for _, rec := range records {
 		if rec != nil {
-			dataset := rec["parent_dataset"].(string)
-			rec["parent"] = utils.Hash2(dbsinst, dataset)
+			//             dataset := rec["parent_dataset"].(string)
+			//             rec["parent"] = utils.Hash2(dbsinst, dataset)
 			ch <- rec
 			return
 		}
@@ -226,11 +232,35 @@ func datasetDetails(dataset string, ch chan Record) {
 // helper function to get release information about dataset
 func dbsInfo(dataset, api, details string) ([]Record, string) {
 	var out []Record
-	for dbsinst, _ := range dbsInstances() {
-		furl := fmt.Sprintf("%s/%s/?dataset=%s", dbsUrl(dbsinst), api, dataset)
-		if len(details) > 0 {
-			furl += "&detail=True"
+	dbsinst := findDBSInstance(dataset)
+	if dbsinst == "" {
+		return out, ""
+	}
+	furl := fmt.Sprintf("%s/%s/?dataset=%s", dbsUrl(dbsinst), api, dataset)
+	if len(details) > 0 {
+		furl += "&detail=True"
+	}
+	response := utils.FetchResponse(furl, "")
+	if response.Error == nil {
+		records := loadDBSData(furl, response.Data)
+		if utils.VERBOSE > 1 {
+			fmt.Println("furl", furl, records)
 		}
+		if len(records) != 0 { // we got records from specific dbs instance
+			return records, dbsinst
+		}
+	} else {
+		if utils.VERBOSE > 1 {
+			fmt.Println("DBS error with", furl, response)
+		}
+	}
+	return out, ""
+}
+
+// find DBS instance which knows about given dataset
+func findDBSInstance(dataset string) string {
+	for _, dbsinst := range dbsInstances() {
+		furl := fmt.Sprintf("%s/datasets/?dataset=%s", dbsUrl(dbsinst), dataset)
 		response := utils.FetchResponse(furl, "")
 		if response.Error == nil {
 			records := loadDBSData(furl, response.Data)
@@ -238,7 +268,7 @@ func dbsInfo(dataset, api, details string) ([]Record, string) {
 				fmt.Println("furl", furl, records)
 			}
 			if len(records) != 0 { // we got records from specific dbs instance
-				return records, dbsinst
+				return dbsinst
 			}
 		} else {
 			if utils.VERBOSE > 1 {
@@ -246,5 +276,5 @@ func dbsInfo(dataset, api, details string) ([]Record, string) {
 			}
 		}
 	}
-	return out, ""
+	return ""
 }
