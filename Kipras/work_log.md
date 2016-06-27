@@ -2,4 +2,6 @@
 
 ### Week 1
 
-1. Setting up VM
+27 Jun 2016  
+
+Setting up VM
