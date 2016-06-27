@@ -4,4 +4,4 @@
 
 27 Jun 2016  
 
--Setting up VM
+- Setting up VM
