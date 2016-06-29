@@ -1,4 +1,4 @@
-ummer student (2016)
+Summer student (2016)
 
 ### Week 1
 
