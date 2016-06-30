@@ -21,7 +21,7 @@ Summer student (2016)
 > - RF, SGD and XGB classifiers should be used for modelling. 
 > - We should also try to combine multiple classifiers together to get better predictions.
 > 
-> **PART No 1**  
+> **PART No 2**  
 > - At the beginning  run a simple modeling algorithm on SPARK
 > - Later move all model process to SPARK to decrees computing time
 
