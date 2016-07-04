@@ -2,6 +2,11 @@ Summer student (2016)
 
 ### Week 1
 
+31 Jun 2016
+
+- Running roll script on fixed data. Results in week_1 folder. 
+- Exploring differencies between old and new data.
+
 30 Jun 2016
 
 - Review of the project plan:
