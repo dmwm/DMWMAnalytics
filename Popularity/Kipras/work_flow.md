@@ -2,6 +2,10 @@ Summer student (2016)
 
 ### Week 2
 
+5 Jul 
+
+- Analyzing drop parameters code part. Got the actual results. That are very similar to the previous. Which means we can drop those parameters with almost no loss of accuracy.
+
 4 Jul 2016
 
 - Idea for the next day to find out witch parameters are actually used in model script.
