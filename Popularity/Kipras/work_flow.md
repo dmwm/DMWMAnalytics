@@ -2,7 +2,20 @@ Summer student (2016)
 
 ### Week 2
 
-5 Jul 
+5 Jul 2016
+
+- Calculating ration of popular and other datasets in our weekly data. Everything looks normal. 
+
+| Data | Week      | Pop  | Total | Proc |
+|------|-----------|------|-------|------|
+| Old  | 0526-0601 | 1611 | 12066 | 13%  |
+| Old  | 0602-0608 | 1337 | 11570 | 11%  |
+| Old  | 0609-0615 | 1773 | 12107 | 14%  |
+| Old  | 0616-0622 | 1477 | 11899 | 12%  |
+| New  | 0526-0601 | 1803 | 12367 | 14%  |
+| New  | 0602-0608 | 1569 | 11679 | 13%  |
+| New  | 0609-0615 | 1918 | 12305 | 15%  |
+| New  | 0616-0622 | 1744 | 12223 | 14%  |
 
 - Analyzing drop parameters code part. Got the actual results. That are very similar to the previous. Which means we can drop those parameters with almost no loss of accuracy.
 
