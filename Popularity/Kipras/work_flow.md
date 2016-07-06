@@ -2,9 +2,13 @@ Summer student (2016)
 
 ### Week 2
 
+6 Jul 2016
+
+- Trying different scalers. 
+
 5 Jul 2016
 
-- Calculating ration of popular and other datasets in our weekly data. Everything looks normal. 
+- Calculating ratio of popular and other datasets in our weekly data. Everything looks normal. 
 
 | Data | Week      | Pop  | Total | Proc |
 |------|-----------|------|-------|------|
