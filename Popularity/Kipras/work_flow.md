@@ -2,9 +2,13 @@ Summer student (2016)
 
 ### Week 2
 
+6 Jul 2016
+
+- Trying different scalers. No significant changes in most of the clasifiers. However SGD clasifier performs poorly on new data with no scaler and MinMaxScaler.
+
 5 Jul 2016
 
-- Calculating ration of popular and other datasets in our weekly data. Everything looks normal. 
+- Calculating ratio of popular and other datasets in our weekly data. Everything looks normal. 
 
 | Data | Week      | Pop  | Total | Proc |
 |------|-----------|------|-------|------|
