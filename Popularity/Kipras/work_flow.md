@@ -2,6 +2,10 @@ Summer student (2016)
 
 ### Week 2
 
+7-8 Jul 2016 
+
+- Experimenting with PCA, configuring VM and learning hadoop spark.
+
 6 Jul 2016
 
 - Trying different scalers. No significant changes in most of the clasifiers. However SGD clasifier performs poorly on new data with no scaler and MinMaxScaler.
