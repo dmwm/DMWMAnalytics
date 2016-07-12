@@ -2,6 +2,10 @@ Summer student (2016)
 
 ### Week 2
 
+11-12 Jul 2016
+
+- Got PCA results, they are close to what we had before. However they took around 4 times more time to calculate.
+
 7-8 Jul 2016 
 
 - Experimenting with PCA, configuring VM and learning hadoop spark.
