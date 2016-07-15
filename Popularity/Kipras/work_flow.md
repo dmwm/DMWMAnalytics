@@ -6,21 +6,18 @@ Summer student (2016)
 
 - Trying different drops. Valentin suggesged:
 
-> drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modification_date,
-> last_modified_by,mcmevts,mcmpid,mcmtype,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,
-> primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
-> s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+> drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modification_date,last_modified_by,mcmevts,mcmpid,mcmtype,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
 
 Which gives prety good results. RandomForestClassifier (old data TPR, TNR ; new data TPR TNR) - (89.85% , 99.23% ; 86.69% , 98.94%) 
 
 I tried no to drop some of these parameters(these changes has no effect on old data).
 
-> Date related params: creation_date, last_modification_date. Results on new data TPR +3%
-> Modification related params: last_modified_by,last_modification_date. Results on new data TPR +3%
-> Mcm type params: mcmevts,mcmpid,mcmtype. Results on new data TPR -2%
-> Parent ds related params: parent_dataset,parent_dataset_id. Results on new data TPR +4.5%
-> Primary ds related params primary_ds_name,primary_ds_type. Results on new data TPR +3.5%
-> Process params: processed_ds_name,processing_version. Results on new data TPR +4%
+- Date related params: creation_date, last_modification_date. Results on new data TPR +3%
+- Modification related params: last_modified_by,last_modification_date. Results on new data TPR +3%
+- Mcm type params: mcmevts,mcmpid,mcmtype. Results on new data TPR -2%
+- Parent ds related params: parent_dataset,parent_dataset_id. Results on new data TPR +4.5%
+- Primary ds related params primary_ds_name,primary_ds_type. Results on new data TPR +3.5%
+- Process params: processed_ds_name,processing_version. Results on new data TPR +4%
 
 After that I tried to combined best results giving drops. However none of the all possible compositions of process, primary, parent parameters are not giving better results. 
 
