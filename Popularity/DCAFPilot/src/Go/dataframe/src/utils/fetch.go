@@ -127,12 +127,21 @@ func FetchResponse(rurl, args string) ResponseType {
 		return response
 	}
 	var req *http.Request
+	var e error
 	if len(args) > 0 {
 		var jsonStr = []byte(args)
-		req, _ = http.NewRequest("POST", rurl, bytes.NewBuffer(jsonStr))
+		req, e = http.NewRequest("POST", rurl, bytes.NewBuffer(jsonStr))
+		if e != nil {
+			response.Error = e
+			return response
+		}
 		req.Header.Set("Content-Type", "application/json")
 	} else {
-		req, _ = http.NewRequest("GET", rurl, nil)
+		req, e = http.NewRequest("GET", rurl, nil)
+		if e != nil {
+			response.Error = e
+			return response
+		}
 		req.Header.Add("Accept-Encoding", "identity")
 		if strings.Contains(rurl, "sitedb") {
 			req.Header.Add("Accept", "application/json")
