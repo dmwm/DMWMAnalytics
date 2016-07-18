@@ -1,0 +1,58 @@
+Initial drop:
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+
+Second drop (after correlation matrix):
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct,rel1_8,rel1_5,nfiles,rel3_0,parent,rel1_3"
+
+Third drop (after pca noticed that some columns has same values for all datasets):
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct,rel1_8,rel1_5,nfiles,rel3_0,parent,rel1_3,
+dataset_access_type,nrel,xtcrosssection,mcmevts,flown_with,idataset,mcmpid,mcmtype,parent,parent_dataset,parent_dataset_id,
+pdataset,prep_id,primary_ds_name,primary_ds_type,processed_ds_name,pwg"
+
+Fourth drop (Valentin's suggestion):
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modification_date,
+last_modified_by,mcmevts,mcmpid,mcmtype,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,
+primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
+s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
+Union drop (Union of all previous):
+drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct,rel1_8,rel1_5,nfiles,rel3_0,parent,rel1_3,
+dataset_access_type,nrel,xtcrosssection,mcmevts,flown_with,idataset,mcmpid,mcmtype,parent_dataset,parent_dataset_id,pdataset,
+prep_id,primary_ds_name,primary_ds_type,processed_ds_name,pwg,campain,creation_date,tier_name,dataset_id,energy,
+last_modification_date,last_modified_by,nseq,physics_group_name,processing_version,this_dataset,cpu"
+
+NoDate drop (creation_date, last_modification_date)
+drops="campain,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,
+last_modified_by,mcmevts,mcmpid,mcmtype,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,
+primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
+s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
+NoModify drop (last_modified_by,last_modification_date)
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,
+mcmevts,mcmpid,mcmtype,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,
+primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
+s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
+NoMcm drop (mcmevts,mcmpid,mcmtype)
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modified_by,
+last_modification_date,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,
+primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
+s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
+NoParent drop (parent_dataset,parent_dataset_id,pdataset)
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modified_by,
+last_modification_date,mcmevts,mcmpid,mcmtype,nseq,physics_group_name,prep_id,
+primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
+s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
+NoPrimary drop (primary_ds_name,primary_ds_type)
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modified_by,
+last_modification_date,mcmevts,mcmpid,mcmtype,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,
+processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
+s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
+NoProcess drop (processed_ds_name,processing_version)
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modified_by,
+last_modification_date,mcmevts,mcmpid,mcmtype,nseq,parent_dataset,parent_dataset_id,pdataset,physics_group_name,prep_id,
+primary_ds_name,primary_ds_type,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,
+s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"

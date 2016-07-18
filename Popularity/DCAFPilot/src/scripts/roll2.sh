@@ -12,8 +12,8 @@ plot_result=0
 
 # dataframe selection options
 data=("old" "new")
-old_path=/data/srv/state/dcafpilot/analytics/old_data
-new_path=/data/srv/state/dcafpilot/analytics/data
+old_path=/afs/cern.ch/user/v/valya/public/analytics/data_old
+new_path=/afs/cern.ch/user/v/valya/public/analytics/data
 
 # rolling forecast
 train_start=20150101

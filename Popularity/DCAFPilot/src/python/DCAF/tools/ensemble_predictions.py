@@ -11,6 +11,7 @@ from __future__ import print_function
 # system modules
 import os
 import sys
+import glob
 import numpy as np
 import pandas as pd
 import optparse
@@ -39,7 +40,7 @@ def get_file_list(fin, fbeg, fend):
     def find_files(idir, fbeg, fend):
         files = [f for f in os.listdir(idir) \
             if (not fbeg or f.startswith(fbeg)) and (not fend or f.endswith(fend))]
-        if  fin != ".":
+        if  idir != ".":
             files = [os.path.join(idir, f) for f in files]
         return files
     filelist = []
@@ -50,7 +51,7 @@ def get_file_list(fin, fbeg, fend):
     elif fin.find('*') != -1: # pattern
         filelist = glob.glob(fin)
     elif os.path.isdir(fin):  # we got directory name
-        filelist = find_files(fin, fin, ext)
+        filelist = find_files(fin, fbeg, fend)
     if  len(filelist) < 2:
         print("ERROR in ensembling: please provide directory or file list to process. Less than 2 files found. Received:\n%s" % fin)
         sys.exit(1)
