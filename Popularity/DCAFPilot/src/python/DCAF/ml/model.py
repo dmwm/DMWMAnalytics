@@ -254,15 +254,19 @@ def model(train_file, newdata_file, idcol, tcol, learner, lparams=None,
                 print("New data file", nfile)
                 print("Columns:", ','.join(tdf.columns))
                 print("test shapes:", tdf.shape)
-            datasets = [int(i) for i in list(tdf['dataset'])]
-            dbs_h = get_dbs_header(tdf, nfile)
-            dbses = [int(i) for i in list(tdf[dbs_h])]
+            datasets = [int(i) for i in list(tdf.get('dataset', []))]
+            if  datasets:
+                dbs_h = get_dbs_header(tdf, nfile)
+                dbses = [int(i) for i in list(tdf[dbs_h])]
             if  verbose:
                 print(tdf)
             time0 = time.time()
             predictions = fit.predict(tdf) if not proba else np.asarray(fit.predict_proba(tdf))[:,list(fit.classes_).index(1)]
             rtime += time.time()-time0
-            out = pd.DataFrame({'dataset':datasets, dbs_h: dbses, 'prediction':predictions})
+            if  datasets:
+                out = pd.DataFrame({'dataset':datasets, dbs_h: dbses, 'prediction':predictions})
+            else:
+                out = pd.DataFrame({'prediction':predictions})
             if  outfname:
                 out.to_csv(outfname, header=True, index=False)
             if  timeout: # output running time
