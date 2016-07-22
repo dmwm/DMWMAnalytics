@@ -2,6 +2,18 @@ Summer student (2016)
 
 ### Week 3
 
+20-22 Jul 2016
+
+- Learning hadoop spark (...)
+- Running a RandomForestClassifier on given data (done)
+- Running a hadoop model script from inside roll2.sh (done)
+- Moving files from local dir to HDFS (if not exist on HDFS) from inside script (done) 
+- Making proper output in hadoop model that could be used by roll2.sh (pending)
+- Moving files from HDFS back to local dir (pending)
+- Measuring classifier execution time (haven't started yet)
+
+### Week 3
+
 13-15 Jul 2016
 
 - Trying different drops. Valentin suggesged:
