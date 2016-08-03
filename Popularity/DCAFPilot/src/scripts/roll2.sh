@@ -26,9 +26,14 @@ valid_step_data_ext=5       # validation data extension to period starting[train
 valid_end=20170101          # stop date. use future date like 20200101 to run until data  
 
 # other options
-classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
-#classifiers=("KNeighborsClassifier" "RidgeClassifier" "BaggingClassifier")
-drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+#classifiers=("AdaBoostClassifier" "BaggingClassifier" "DecisionTreeClassifier" "ExtraTreesClassifier" "GradientBoostingClassifier" "XGBClassifier" "KNeighborsClassifier" "RandomForestClassifier" "RidgeClassifier" "SGDClassifier")
+classifiers=("DecisionTreeClassifier" "GradientBoostingClassifier" "XGBClassifier" "RandomForestClassifier" "SGDClassifier")
+# drops used for old data (generated via python dataframe)
+# drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+
+# drops used with new data (generated via Go version of dataframe)
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modification_date,last_modified_by,mcmevts,mcmpid,mcmtype,nseq,pdataset,physics_group_name,prep_id,primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
 scorer="tpr,tnr"
 plot_file="graph.png"
 result_file="result_out.csv"
