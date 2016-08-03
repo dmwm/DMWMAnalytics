@@ -43,11 +43,17 @@ if [ $diff -le 7 ]; then
 fi
 # write generator script
 echo "#!/bin/bash" > $gfile
-echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
-echo "mkdir -p $ddir/log" >> gfile
+#echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
+echo "mkdir -p $ddir/log" >> $gfile
+# previous way to generate dataframes, via python dataframe
+#dates --start=$start_day | awk \
+#'{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout="DDIR"/dataframe-"$1"-"$2".csv.gz 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
+#DDIR=$ddir CFG=$cfg DBSEXTRA=$dbsextra >> $gfile
+# new way to generate dataframes, via Go implementation of dataframe
 dates --start=$start_day | awk \
-'{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout="DDIR"/dataframe-"$1"-"$2".csv.gz 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
-DDIR=$ddir CFG=$cfg DBSEXTRA=$dbsextra >> $gfile
+'{print "nohup dataframe2go --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout="DDIR"/dataframe-"$1"-"$2".csv 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
+DDIR=$ddir DBSEXTRA=$dbsextra >> $gfile
+echo "ls $ddir/dataframe-*.csv | awk '{print \"gzip \"\$1\"\"}' | /bin/sh " >> $gfile
 
 # change generator script permissions
 chmod +x $gfile
