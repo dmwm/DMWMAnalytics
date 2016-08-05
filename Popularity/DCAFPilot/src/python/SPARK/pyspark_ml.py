@@ -7,8 +7,8 @@
 import time
 import argparse
 
-from utils import getTrainDataFileNames, getStartDate
-from classifiers import getClassifier
+from utils.utils import getTrainDataFileNames, getStartDate
+from utils.classifiers import getClassifier
 
 from pyspark import SparkContext
 from pyspark.sql import SQLContext

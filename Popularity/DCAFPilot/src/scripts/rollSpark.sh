@@ -10,7 +10,7 @@ drops="naccess,campain,creation_date,tier_name,dataset_access_type,dataset_id,en
 
 PYSPARK_PYTHON='/afs/cern.ch/user/v/valya/public/python27' \
          spark-submit \
-         --jars spark-csv_2.11-1.4.0.jar,commons-csv-1.4.jar \
+         --packages com.databricks:spark-csv_2.10:1.4.0 \
          --master yarn-client \
          --executor-memory 2g \
          --driver-class-path '/usr/lib/hive/lib/*' \
