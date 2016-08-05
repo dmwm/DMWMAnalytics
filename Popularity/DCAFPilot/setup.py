@@ -177,7 +177,7 @@ def main():
     author       = "Valentin Kuznetsov",
     author_email = "vkuznet [at] gmail [dot] com>",
     keywords     = ["DCAF"]
-    package_dir  = {'DCAF': 'src/python/DCAF'}
+    package_dir  = {'DCAF': 'src/python/DCAF', 'SPARK': 'src/python/SPARK'}
     packages     = find_packages('src/python')
     data_files   = [] # list of tuples whose entries are (dir, [data_files])
     cms_license  = "CMS experiment software"
