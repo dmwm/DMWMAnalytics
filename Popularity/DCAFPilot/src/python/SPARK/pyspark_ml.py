@@ -1,14 +1,18 @@
 #!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable=
 
-# File       : pyspark_ml.py
-# Author     : Kipras Kancys <kipras [DOT] kan  AT gmail [dot] com>
-# Description: pyspark model
+"""
+Code to perform rolling prediction on SPARK
+"""
+
+__author__ = "Kipras Kancys"
 
 import time
 import argparse
 
-from SPARK.utils.utils import getTrainDataFileNames, getStartDate
-from SPARK.utils.classifiers import getClassifier
+from SPARK.utils.utils import get_file_names, get_start_date
+from SPARK.utils.classifiers import get_classifier
 
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
@@ -66,11 +70,11 @@ class SparkLogger(object):
         "Print message via Spark Logger to warning stream"
         self.lprint('warning', msg)
 
-def labelData(data): return data.map(lambda row: LabeledPoint(row[-1], row[:-1]))
+def label_data(data): return data.map(lambda row: LabeledPoint(row[-1], row[:-1]))
 
-def loadAndPrepData(sqlContext, sc, tfiles, vfile, drops):
-
-    columns = getMutualColumns(sc, tfiles +[vfile])
+def load_data(sqlContext, sc, tfiles, vfile):
+    "Loads and makes data of the same structure"
+    columns = get_mutual_columns(sc, tfiles +[vfile])
 
     valid_data = sqlContext.read.format('com.databricks.spark.csv') \
             .options(header='true', inferschema='true') \
@@ -82,28 +86,28 @@ def loadAndPrepData(sqlContext, sc, tfiles, vfile, drops):
     train_data = train_data.select(columns)
 
     for ffile in tfiles[1:]:
-            temp = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load(ffile)
-            temp = temp.select(columns)
-            train_data = train_data.unionAll(temp)
+        temp = sqlContext.read.format('com.databricks.spark.csv').options(header='true', inferschema='true').load(ffile)
+        temp = temp.select(columns)
+        train_data = train_data.unionAll(temp)
+
+    return valid_data, train_data
+
+def prep_data(sqlContext, data, drops):
+    """Prepares date for ML. Preparation includes: making a label column (by the rule: naacess > 10),
+	applying drops and transforming data into LabeledPoint"""
 
     binarizer = Binarizer(threshold=10.0, inputCol="naccess", outputCol="target")
-
-    train_data = binarizer.transform(train_data)
-    valid_data = binarizer.transform(valid_data)
+    data = binarizer.transform(data)
 
     drops = drops.split(",")
-    cols = [x for x in train_data.columns if x not in set(drops)]
+    cols = [x for x in data.columns if x not in set(drops)]
 
-    train_data = train_data.select(cols)
-    valid_data = valid_data.select(cols)
+    data = data.select(cols)
 
-    trLabeled = labelData(train_data)
-    training = sqlContext.createDataFrame(trLabeled, ['features','label'])
+    labeled = label_data(data)
+    preped_data = sqlContext.createDataFrame(labeled, ['features','label'])
 
-    tsLabeled = labelData(valid_data)
-    testing = sqlContext.createDataFrame(tsLabeled, ['features','label'])
-
-    return training, testing
+    return preped_data
 
 def model(classifiers, training, testing, week):
 
@@ -114,7 +118,7 @@ def model(classifiers, training, testing, week):
 
         timeStart = time.time()
 
-        clf = getClassifier(classifier)
+        clf = get_classifier(classifier)
 
         labelIndexer = StringIndexer(inputCol="label", outputCol="indexed")
         featureIndexer = VectorIndexer(inputCol="features", outputCol="indexedFeatures")
@@ -132,7 +136,8 @@ def model(classifiers, training, testing, week):
 
     return results, timing
 
-def getMutualColumns(sc, files):
+def get_mutual_columns(sc, files):
+    "Collects headers of all files and keeps the ones that exist in all dataframes"
     f1 = sc.textFile(files[0])
     columns = sc.parallelize(f1.first().split(","))
     for file in files[1:]:
@@ -153,8 +158,8 @@ def main():
     optmgr  = OptionParser()
     opts = optmgr.parser.parse_args()
 
-    valid_start = getStartDate(opts.train_end)
-    filesValid = getTrainDataFileNames(valid_start, opts.valid_end, valid_step_days, False)
+    valid_start = get_start_date(opts.train_end)
+    validFiles = get_file_names(valid_start, opts.valid_end, valid_step_days)
 
     clf = opts.clf.split(",")
     train_end = opts.train_end
@@ -167,21 +172,25 @@ def main():
     results = "dftype,clf,date,areaUnderROC,areaUnderPR\n"
     time = "model,running_time_s\n"
 
-    for week in filesValid:
+    for week in validFiles:
 
         weekString = week.split("-")[1]
 
         print("Validation file " + week)
-        filesTrain = getTrainDataFileNames(opts.train_start, train_end, valid_step_days, False)
-        print("Training files: " + filesTrain[0] + ":" + filesTrain[-1] )
+        trainFiles = get_file_names(opts.train_start, train_end, valid_step_days)
+        print("Training files: " + trainFiles[0] + ":" + trainFiles[-1])
+        train_data, valid_data = load_data(sqlContext, sc, trainFiles, week)
+        training = prep_data(sqlContext, train_data, opts.drops)
+        validating = prep_data(sqlContext, valid_data, opts.drops)
 
-        training, testing = loadAndPrepData(sqlContext, sc, filesTrain, week, opts.drops)
-        resultsTemp, timeTemp = model(clf, training, testing, weekString)
+        resultsTemp, timeTemp = model(clf, training, validating, weekString)
 
         results = results + resultsTemp
 
         for i in range(0, len(clf)):
             timing[i] += timeTemp[i]
+
+        train_end = get_start_date(week.split("-")[2].split(".csv")[0])
 
     iterator = 0
 
