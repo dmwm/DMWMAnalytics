@@ -45,10 +45,12 @@ class OptionParser(object):
             dest="leg", default=None, help="Option to show legend for one particular graph only. Provide id from 1, default None")
         self.parser.add_option("--col-rb", action="store_true",
             dest="colrb", help="Use rainbow colors")
+        self.parser.add_option("--fontsize", action="store", type="int",
+             dest="fontsize", default=10, help="Font size, for titles +2 is used")
     def options(self):
         return self.parser.parse_args()
 
-def plot(data, dates, fout, rundata, labels, xeq, leg, colrb):
+def plot(data, dates, fout, rundata, labels, xeq, leg, colrb, fontsize):
     "Plots data according the dates"
     if len(data) == 0:
         print("Error: no data provided.")
@@ -61,7 +63,7 @@ def plot(data, dates, fout, rundata, labels, xeq, leg, colrb):
     # number of subplots per height
     ny = len(data)
     ni = 0
-    matplotlib.rcParams.update({'font.size': 10})
+    matplotlib.rcParams.update({'font.size': fontsize, 'font.weight': 'bold'})
     fig = plt.figure(figsize=(15,10)) if rundata else plt.figure(figsize=(10,10))
     fig.subplots_adjust(wspace=0.3, hspace=0.8)
     c   = None
@@ -106,7 +108,7 @@ def plot(data, dates, fout, rundata, labels, xeq, leg, colrb):
                 g.set_yticks([0.2*t for t in xrange(0,6)])
                 g.set_xticklabels(dates[dftype], rotation=45, ha="right")
                 g.set_yticklabels(["{:3.2f}%".format(v*100) for v in g.get_yticks()])
-                g.set_title("Classifiers validation using %s dataframe, %s (%%)" % (dftype.lower(), s.upper()), fontsize=10, y=1.01)
+                g.set_title("Classifiers validation using %s dataframe, %s (%%)" % (dftype.lower(), s.upper()), fontsize=fontsize+2, y=1.01)
                 pls.append(plot)
                 lab.append("%s (%.2f%%)" % (clf, 100*np.mean(data[dftype][s][clf])))
             # checking avg of data to adjust legend position
@@ -116,7 +118,7 @@ def plot(data, dates, fout, rundata, labels, xeq, leg, colrb):
             lloc = 'upper left' if ssum/snum < 0.20 else 'lower left'
             if  not leg or ni == leg:
                 # 'best' loc does not provide best option in this place
-                l = g.legend(pls, lab, loc=lloc, prop={'size':8}, fancybox=True)
+                l = g.legend(pls, lab, loc=lloc, prop={'weight':'normal'}, fancybox=True)
                 l.get_frame().set_alpha(0.6)
     # plot of model running time
     if  rundata:
@@ -128,8 +130,8 @@ def plot(data, dates, fout, rundata, labels, xeq, leg, colrb):
         if  y:
             g.grid()
             g.set_xticks(x)
-            g.set_xticklabels(c, rotation=45, ha='right', fontsize=8)
-            g.set_title("Classifiers running time (hours)", fontsize=10, y=1.01)
+            g.set_xticklabels(c, rotation=45, ha='right')
+            g.set_title("Classifiers running time (hours)", fontsize=fontsize+2, y=1.01)
             g.set_xlim(-1, len(c))
             ax = g.bar(x, y, width=0.5, align='center', alpha=0.5)
             y_bottom, y_top = g.get_ylim()
@@ -232,7 +234,7 @@ def main():
     data, dates, rundata = read_data(opts.fin, opts.fbeg,
             opts.fend, opts.timein)
     plot(data, dates, opts.fout, rundata, opts.labels,
-            opts.xeq, opts.leg, opts.colrb)
+            opts.xeq, opts.leg, opts.colrb, opts.fontsize)
 
 if __name__ == '__main__':
     main()
