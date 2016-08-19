@@ -234,7 +234,7 @@ def main():
     data, dates, rundata = read_data(opts.fin, opts.fbeg,
             opts.fend, opts.timein)
     plot(data, dates, opts.fout, rundata, opts.labels,
-            opts.xeq, opts.leg, opts.colrb)
+            opts.xeq, opts.leg, opts.colrb, opts.fontsize)
 
 if __name__ == '__main__':
     main()
