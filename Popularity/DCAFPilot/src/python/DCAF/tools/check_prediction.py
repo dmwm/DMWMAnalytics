@@ -90,7 +90,8 @@ def loader(ifile, target, sep=',', threshold=None):
                 headers = row
                 tidx = headers.index(target)
                 continue
-            if  len(row) < 2:
+#             if  len(row) < 2:
+            if  not row or (isinstance(row, list) and len(row)==1 and not row[0]):
                 break
             # changed since previous approach did not recognice scientific notation
             val  = str_to_num(row[tidx])
@@ -194,7 +195,7 @@ def main():
     if  opts.threshold:
         probabilities = loader(opts.fpred, opts.fpred_target, opts.fpred_sep, None)
     if  len(predictions) != len(real_values):
-        print("Error: input file and prediction file lengths are different")
+        print("Error: input file and prediction file lengths are different: %s vs %s" % (len(predictions), len(real_values)))
         sys.exit(1)
     if  opts.tiers_break:
         checker_with_tiers(predictions, real_values, probabilities, opts.fin, opts.scorer, opts.tiers_col, opts.tiers_map, opts.tiers_map_kval, opts.plainout, opts.verbose)
