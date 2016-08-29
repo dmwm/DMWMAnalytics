@@ -63,7 +63,7 @@ EOF
 
 run_alg()
 {
-for alg in "RandomForestClassifier" "SGDClassifier" "LinearSVC" "vw" "xgboost"; do
+for alg in "RandomForestClassifier" "SGDClassifier" "LinearSVC" "xgboost"; do
     echo ""
     echo "##### Run $alg for $1/$2 #####"
     if [ -f pred.txt ]; then
