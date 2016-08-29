@@ -8,21 +8,26 @@ if [ $# -eq 2 ]; then
     wdir=$1
     ddir=$2
 else
-    echo "Usage: cron4models.sh <workdir> <train set, e.g. data/train or data/train/2014*.csv.gz>"
+    echo "Usage: cron4models.sh <workdir> <train set, e.g. data/train or data/train/2014*.csv>"
     exit 1
 fi
 cd $wdir
 
+# VK, no need for MongoDB seed anymore since we'll use Go dataframes
 # seed MongoDB with fresh snapshot of DBS datasets
-dataframe --seed-cache --verbose=1
+# dataframe --seed-cache --verbose=1
 
 echo "Workdir $wdir"
 # generic naming conventions
 train=train.csv.gz
 train_clf=train_clf.csv.gz
 
-# model parameters, subject to change over time
-drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+# drops used for old data (generated via python dataframe)
+# drops="nusers,totcpu,rnaccess,rnusers,rtotcpu,nsites,s_0,s_1,s_2,s_3,s_4,wct"
+
+# drops used with new data (generated via Go version of dataframe)
+drops="campain,creation_date,tier_name,dataset_access_type,dataset_id,energy,flown_with,idataset,last_modification_date,last_modified_by,mcmevts,mcmpid,mcmtype,nseq,pdataset,physics_group_name,prep_id,primary_ds_name,primary_ds_type,processed_ds_name,processing_version,pwg,this_dataset,rnaccess,rnusers,rtotcpu,s_0,s_1,s_2,s_3,s_4,totcpu,wct,cpu,xtcrosssection"
+
 target=naccess
 thr=10
 # or we may use complex target
@@ -31,8 +36,8 @@ thr=10
 
 # find out last date
 today=`date +%Y%m%d`
-if [ -n "`ls $ddir | grep csv.gz`" ]; then
-    last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
+if [ -n "`ls $ddir | grep csv`" ]; then
+    last_file=`ls $ddir/*.csv | sort -n | tail -1`
     last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
 else
     last_date=""
@@ -48,16 +53,21 @@ else
 fi
 
 # merge data
+echo "Workdir: $PWD"
 echo "merge_csv --fin=$ddir --fout=$train"
 merge_csv --fin=$ddir --fout=$train --verbose
 
 # generate new data
 newtstamps="$start_day-$today"
-new=new-$newtstamps.csv.gz
-newdata=newdata-$newtstamps.csv.gz
+new=new-$newtstamps.csv
+echo "WORKDIR: $PWD"
 echo "New data: $new"
-echo "dataframe --start=$start_day --stop=$today --newdata --fout=$new"
-dataframe --start=$start_day --stop=$today --newdata --fout=$new
+echo "dataframe2go -start=$start_day -stop=$today -newdata -fout=$new"
+dataframe2go -start=$start_day -stop=$today -newdata -fout=$new
+
+# gzip new data since dataframe2go does not perform gzip
+gzip $new
+new=new-$newtstamps.csv.gz
 
 # find common set of drop headers
 drops=`find_drops --file1=$new --file2=$train --drops=$drops`
@@ -70,6 +80,7 @@ echo "$wdir/$train_clf"
 zcat $train_clf | head -1
 
 # transform the newdata
+newdata=newdata-$newtstamps.csv.gz
 echo "transform_csv --fin=$new --fout=$newdata --target=naccess --target-thr=$thr --drops=$drops"
 transform_csv --fin=$new --fout=$newdata --target=naccess --target-thr=$thr --drops=$drops
 echo "$wdir/$newdata"
