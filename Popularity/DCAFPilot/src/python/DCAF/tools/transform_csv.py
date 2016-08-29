@@ -14,6 +14,9 @@ from __future__ import print_function
 import os
 import re
 import sys
+import math
+import uuid
+import time
 import gzip
 import bz2
 from math import log
@@ -36,6 +39,8 @@ class OptionParser():
             dest="fin", default="", help="Input file")
         self.parser.add_option("--fout", action="store", type="string",
             dest="fout", default="", help="Output file")
+        self.parser.add_option("--idcol", action="store", type="string",
+            dest="idcol", default="", help="id column name")
         self.parser.add_option("--target", action="store", type="string",
             dest="target", default="", help="Target column name")
         msg  = 'Target threshold, default 0 (use -1 to keep the value intact) or '
@@ -67,6 +72,11 @@ class OptionParser():
         "Return list of options"
         return self.parser.parse_args()
 
+def getuid():
+    "Return UID"
+    uid = uuid.uuid1()
+    return str(math.log(uid.int)).replace('.', '')
+
 def get_log_cols(fin, logthr, logignore, nrows=10):
     comp = None
     if  fin.endswith(".gz"):
@@ -81,7 +91,7 @@ def get_log_cols(fin, logthr, logignore, nrows=10):
         logcols = list(set(logcols)-set(logignore))
     return logcols
 
-def transform(fin, fout, target, thr, drops, verbose=0, logcols='', logall=False, logbias=2, logthr=None, logignore=''):
+def transform(fin, fout, idcol, target, thr, drops, verbose=0, logcols='', logall=False, logbias=2, logthr=None, logignore=''):
     "Perform transformation on given CSV file"
     istream = fopen(fin, 'r')
     ostream = fopen(fout, 'wb')
@@ -96,10 +106,10 @@ def transform(fin, fout, target, thr, drops, verbose=0, logcols='', logall=False
             if  drops:
                 new_headers = []
                 for idx, val in enumerate(headers):
-                    if  val in drops or val == target:
+                    if  val in drops or val == target or val == idcol:
                         continue
                     new_headers.append(val)
-                ostream.write(','.join(new_headers)+',target\n')
+                ostream.write('id,'+','.join(new_headers)+',target\n')
             continue
         try:
             item = line.replace('\n', '').replace('<nil>', '-1')
@@ -130,9 +140,12 @@ def transform(fin, fout, target, thr, drops, verbose=0, logcols='', logall=False
                 except:
                     print("Please supply valid python condition, e.g. row['naccess']>10 and row['nusers']>5")
                     sys.exit(1)
-        new_vals = []
+        if  idcol in row.keys():
+            new_vals = [str(int(row[idcol]))]
+        else:
+            new_vals = [getuid()]
         for key in new_headers:
-            if  key in drops or key == target:
+            if  key in drops or key == target or key == idcol:
                 continue
             new_vals.append(str(row[key]))
         new_vals.append(str(tval))
@@ -152,7 +165,7 @@ def main():
     optmgr  = OptionParser()
     opts, _ = optmgr.get_opt()
     drops = opts.drops.split(',')
-    transform(opts.fin, opts.fout, opts.target, opts.thr, drops,
+    transform(opts.fin, opts.fout, opts.idcol, opts.target, opts.thr, drops,
         opts.verbose, opts.logcols, opts.logall, opts.logbias,
         opts.logthr, opts.logignore)
 
