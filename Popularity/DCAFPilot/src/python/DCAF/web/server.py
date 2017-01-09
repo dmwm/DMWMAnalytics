@@ -17,15 +17,15 @@ import ConfigParser
 from optparse import OptionParser
 from json import JSONEncoder
 
-def popular_datasets(fname):
+def popular_datasets(fname, thr):
     "Return content of given file and return list of popular datasets"
     with open(fname, 'r') as istream:
         line = istream.readline().replace('\n', '')
         if  line:
             prob, dataset = line.split(',')
             prob = float(prob)
-            if prob > 0.5:
-                yield dataset
+            if prob > float(thr):
+                yield (prob, dataset)
 
 def exposejson (func):
     """CherryPy expose JSON decorator"""
@@ -57,7 +57,7 @@ class DCAFRoot(object):
     def __init__(self, idir):
         self.idir = idir
 
-    def pop_datasets(self, date=None):
+    def pop_datasets(self, date=None, thr=0.5):
         "Retrieve popular datasets for different algorithms"
         tstamp = time.strftime("%Y%m%d", time.gmtime())
         files = [os.path.join(self.idir, f) for f in os.listdir(self.idir)]
@@ -85,7 +85,7 @@ class DCAFRoot(object):
             for fname in os.listdir(idir):
                 if  fname.endswith('predicted'):
                     alg = fname.split('.')[0]
-                    pdict[alg] = list(popular_datasets(os.path.join(idir, fname)))
+                    pdict[alg] = list(popular_datasets(os.path.join(idir, fname), thr))
             out.append(dict(classifiers=pdict, trange=last_dir, tstamp=tstamp))
         return out
 
@@ -95,16 +95,22 @@ class DCAFRoot(object):
         return self.pop_datasets(date)
 
     @cherrypy.expose
-    def index(self):
+    def index(self, **kwds):
         "Main method"
-        title = 'DCAF predictions'
+        date = kwds.get('data', None)
+        thr = kwds.get('thr', 0.5)
+        if  date:
+            title = 'DCAF predictions, date=%s' % date
+        else:
+            title = 'DCAF predictions'
+        title += ', threshold=%s' % thr
         out = ""
-        for pdict in self.pop_datasets():
+        for pdict in self.pop_datasets(date, thr):
             out += '<h2>%s</h2><hr/>\n' % pdict['trange']
             for alg, datasets in pdict['classifiers'].items():
                 out += "<h3>%s</h3>\n" % alg
-                for dataset in datasets:
-                    out += dataset+"<br/>\n"
+                for prob, dataset in datasets:
+                    out += prob + " " + dataset+"<br/>\n"
         return page(out, title)
 
 def server(cfile):
