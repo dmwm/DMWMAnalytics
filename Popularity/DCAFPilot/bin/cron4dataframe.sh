@@ -21,6 +21,9 @@ dbsextra=10000
 if [ -n "`ls $ddir | grep csv.gz`" ]; then
     last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
     last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
+else if [ -n "`ls $ddir | grep csv`" ]; then
+    last_file=`ls $ddir/*.csv | sort -n | tail -1`
+    last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
 else
     # get a date from a past such that we'll step one day from it and still have a week
     # i.e. we need to get a 9 days back timestamp. On Linux we can use GNU date
@@ -45,13 +48,17 @@ fi
 echo "#!/bin/bash" > $gfile
 #echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
 echo "mkdir -p $ddir/log" >> $gfile
+echo "STATEDIR=/data/srv/state/dcafpilot" >> $gfile
+echo "export X509_USER_PROXY=$STATEDIR/proxy/proxy.cert" >> $gfile
+echo "export X509_USER_CERT=$X509_USER_PROXY" >> $gfile
+echo "export X509_USER_KEY=$X509_USER_PROXY" >> $gfile
 # previous way to generate dataframes, via python dataframe
 #dates --start=$start_day | awk \
 #'{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout="DDIR"/dataframe-"$1"-"$2".csv.gz 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
 #DDIR=$ddir CFG=$cfg DBSEXTRA=$dbsextra >> $gfile
 # new way to generate dataframes, via Go implementation of dataframe
 dates --start=$start_day | awk \
-'{print "nohup dataframe2go -verbose=1 -start="$1" -stop="$2" -dbsExtra="DBSEXTRA" -fout="DDIR"/dataframe-"$1"-"$2".csv 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
+'{print "dataframe2go -verbose=1 -chunkSize=50 -start="$1" -stop="$2" -dbsExtra="DBSEXTRA" -fout="DDIR"/dataframe-"$1"-"$2".csv 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log"}' \
 DDIR=$ddir DBSEXTRA=$dbsextra >> $gfile
 #echo "ls $ddir/dataframe-*.csv | awk '{print \"gzip \"\$1\"\"}' | /bin/sh " >> $gfile
 
