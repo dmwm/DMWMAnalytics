@@ -21,7 +21,7 @@ dbsextra=10000
 if [ -n "`ls $ddir | grep csv.gz`" ]; then
     last_file=`ls $ddir/*.csv.gz | sort -n | tail -1`
     last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
-else if [ -n "`ls $ddir | grep csv`" ]; then
+elif [ -n "`ls $ddir | grep csv`" ]; then
     last_file=`ls $ddir/*.csv | sort -n | tail -1`
     last_date=`echo $last_file | awk '{z=split($1,a,"/"); split(a[z],b,"."); n=split(b[1],c,"-"); print c[n]}'`
 else
@@ -49,9 +49,9 @@ echo "#!/bin/bash" > $gfile
 #echo "dataframe --config=$cfg --seed-cache --verbose=1" >> $gfile
 echo "mkdir -p $ddir/log" >> $gfile
 echo "STATEDIR=/data/srv/state/dcafpilot" >> $gfile
-echo "export X509_USER_PROXY=$STATEDIR/proxy/proxy.cert" >> $gfile
-echo "export X509_USER_CERT=$X509_USER_PROXY" >> $gfile
-echo "export X509_USER_KEY=$X509_USER_PROXY" >> $gfile
+echo "export X509_USER_PROXY=\$STATEDIR/proxy/proxy.cert" >> $gfile
+echo "export X509_USER_CERT=\$X509_USER_PROXY" >> $gfile
+echo "export X509_USER_KEY=\$X509_USER_PROXY" >> $gfile
 # previous way to generate dataframes, via python dataframe
 #dates --start=$start_day | awk \
 #'{print "nohup dataframe --config="CFG" --verbose=1 --start="$1" --stop="$2" --dbs-extra="DBSEXTRA" --fout="DDIR"/dataframe-"$1"-"$2".csv.gz 2>&1 1>& "DDIR"/log/dataframe-"$1"-"$2".log < /dev/null &"}' \
