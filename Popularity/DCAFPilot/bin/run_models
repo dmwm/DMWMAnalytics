@@ -10,10 +10,11 @@ if [ $# -eq 3 ]; then
     train=$1
     ndata=$2
     action=$3
+    datasets=$4
 else
-    echo "Usage: run_models.sh <file1> <file2> <predict|validate>"
-    echo "For validation: run_models train_file valid_file validate"
-    echo "For prediction: run_models train_file newdata_file predict"
+    echo "Usage: run_models.sh <file1> <file2> <predict|validate> <datasets_file>"
+    echo "For validation: run_models train_file valid_file validate datasets_file"
+    echo "For prediction: run_models train_file newdata_file predict datasets_file"
     exit 1
 fi
 # convert train/ndata files into VW/libSVM formats
@@ -92,7 +93,10 @@ for alg in "RandomForestClassifier" "SGDClassifier" "LinearSVC" "xgboost"; do
         check_prediction --fin=$2 --fpred=pred.txt --scorer=$scorers
     else
         echo "Predicted datasets: $alg.predicted"
-        pred2dataset --fin=pred.txt --fout=$alg.predicted
+        # if data were processed w/ MongoDB use pred2dataset
+        # pred2dataset --fin=pred.txt --fout=$alg.predicted
+        # if data were processed w/ Go use preds2dataset
+        preds2dataset --fin=pred.txt --datasets=$datasets --fout=$alg.predicted
     fi
 done
 }

@@ -88,7 +88,7 @@ zcat $newdata | head -1
 
 # run models via run_models script
 echo "run_models $train_clf $newdata predict"
-run_models $train_clf $newdata predict
+run_models $train_clf $newdata predict $ddir/datasets.txt.gz
 
 # final touch
 echo
