@@ -6,7 +6,7 @@
 # based on action (predict|validate) the new_data file can be
 # either actual new data or validation file
 
-if [ $# -eq 3 ]; then
+if [ $# -eq 4 ]; then
     train=$1
     ndata=$2
     action=$3
