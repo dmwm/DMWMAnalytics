@@ -1,6 +1,21 @@
 Summer student (2016)
 
-### Week 3
+### Week 5
+
+28 Jul 2016
+
+- Got the final output. Very low TP rate (need to investigate it) and high execution time(need to improve it).
+
+25-27 Jul 2016
+
+- Combining roll script and model on spark.
+- Model output file formatting
+- Retrieving files from HDFS and merging them
+- Time measuring and producing proper format results file
+- Ssh analytix problem
+- Fixing paths
+
+### Week 4
 
 20-22 Jul 2016
 
